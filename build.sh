@@ -2,7 +2,7 @@
 
 version_now=`grep version variables.jsonnet | \
                awk '{print $2}' | sed -e 's/"//g' -e 's/,//'`
-check_version=`aws s3 ls s3://packer-artifacts/boxes/ | \
+check_version=`aws s3 ls s3://packer-artifacts/boxes/basic | \
                sed -e 's/\ *PRE\ *//' -e 's/\///' | grep $version_now`
 
 if [ -n "$check_version" ]; then
