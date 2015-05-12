@@ -1,7 +1,7 @@
 {
   "type": "vagrant",
   "only": ["virtualbox-ovf", "vmware-vmx", "parallels-pvm"],
-  "compression_level": 0,
+  "compression_level": 9,
   
   // leave these without the -iso otherwise they will not take
   "override": {

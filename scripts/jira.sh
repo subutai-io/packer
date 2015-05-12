@@ -10,7 +10,7 @@ cp ~/jira.init .
 sudo ln -s $PWD/jira.init /etc/init.d/jira
 
 cat >.jirarc <<EOL
-CATALINA_OPTS="$JVM_OPTS -Xms256m -Xmx256m -XX:MaxPermSize=68m -XX:ReservedCodeCacheSize=28m"
+CATALINA_OPTS="$JVM_OPTS -Xms256m -Xmx512m"
 export CATALINA_OPTS
 EOL
 

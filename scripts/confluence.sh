@@ -9,7 +9,7 @@ cp ~/confluence.init .
 sudo ln -s $PWD/confluence.init /etc/init.d/confluence 
 
 cat >.confluencerc <<EOL
-CATALINA_OPTS="$JVM_OPTS -Xms256m -Xmx256m -XX:MaxPermSize=68m -XX:ReservedCodeCacheSize=28m"
+CATALINA_OPTS="$JVM_OPTS -Xms256m -Xmx512m"
 export CATALINA_OPTS
 EOL
 
@@ -19,7 +19,8 @@ sed -i '98i. /home/vagrant/atlassian/.atlassianrc' $CATALINA
 sed -i '99i. /home/vagrant/atlassian/confluence/.confluencerc' $CATALINA
 sed -i '100i\ ' $CATALINA
 
-echo 'confluence.home=/var/atlassian/confluence' >> \
-  default/confluence/WEB-INF/classes/confluence-init.properties
+echo 'confluence.home=/var/atlassian/confluence' > default/confluence/WEB-INF/classes/confluence-init.properties
 
+echo contents of confluence-init.properties
+cat default/confluence/WEB-INF/classes/confluence-init.properties
 

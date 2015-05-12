@@ -10,7 +10,7 @@ cp ~/crowd.init .
 sudo ln -s $PWD/crowd.init /etc/init.d/crowd
 
 cat >.crowdrc <<EOL
-CATALINA_OPTS="$JVM_OPTS -Xms128m -Xmx128m -XX:MaxPermSize=28m -XX:ReservedCodeCacheSize=14m"
+CATALINA_OPTS="$JVM_OPTS -Xms128m -Xmx384m"
 export CATALINA_OPTS
 EOL
 
