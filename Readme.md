@@ -53,8 +53,42 @@ The S3 plugins are disabled since they're problematic. You'll have to build and
 deploy straight to S3 by hand unfortunately.
 
 
-# Notes and Running
+## Usage Notes
 
-# To Do List
+So you have the following standalone products and the Atlassian Plugin SDK 
+installed on this virtual machine:
+
+* Confluence
+* JIRA
+* Stash
+* Crowd
+
+After vagrant ssh'ing into the machine you can run any one of the standalone
+atlassian product services using either of the following commands:
+
+    sudo service jira start
+    sudo service confluence start 
+    sudo service crowd start
+    sudo service stash start
+
+If you want to test your plugin in a system of multiple standalone instances 
+(sometimes this might be needed due to product interactions), then starting up
+the instances using this mechanism and installing your plugins is a great way
+to finally test your plugins.
+
+If you want to working on a specific product plugin, then you can add an inline 
+shell provisioning directive to your Vagrant file to automatically start up
+you plugin development environment in your host directory mapping for your
+project. Usually this is the /vagrant folder but you can change this. Here's
+what you can do:
+
+    cd /vagrant; atlas-run-standalone --product jira
+
+Then you can goto your browser at http://localhost:2990/jira/ to see JIRA in
+action.
+
+For more information you can start on the Atlassian Plugin Tutorial here:
+
+    https://developer.atlassian.com/docs/getting-started/set-up-the-atlassian-plugin-sdk-and-build-a-project/create-a-helloworld-plugin-project
 
 
