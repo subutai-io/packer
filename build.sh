@@ -41,9 +41,9 @@ if [ "$?" -ne 0 ]; then
   exit 1
 fi
 
-time packer build -except=null,virtualbox-ovf,parallels-pvm template.json
+#time packer build -except=null,virtualbox-ovf,parallels-pvm template.json
 #time packer build -except=null,vmware-vmx,parallels-pvm template.json
 #time packer build -except=null,vmware-vmx,virtualbox-ovf template.json
-#time packer build -except=null template.json
+time packer build -except=null template.json
 exit
 
