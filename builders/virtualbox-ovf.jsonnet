@@ -1,6 +1,7 @@
     {
       "type": "virtualbox-ovf",
-      "source_path": "../base/subutai-base-virtualbox/packer-virtualbox-iso-1430689804.ovf",
+      "source_path": "{{user `ovf_path`}}",
+      "boot_wait": "4s",
       "ssh_username": "{{user `ssh_name`}}",
       "ssh_password": "{{user `ssh_pass`}}",
       "ssh_wait_timeout": "10000s",

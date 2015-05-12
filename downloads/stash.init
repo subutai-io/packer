@@ -10,27 +10,11 @@
 # Description:       Enable Stash service provided by Stash daemon.
 ### END INIT INFO
 
-. /opt/atlassian/.atlassianrc
-. /opt/atlassian/.stashrc
+. /home/vagrant/atlassian/.atlassianrc
+. /home/vagrant/atlassian/stash/.stashrc
 
-CATALINA_HTTP_PORT=7990
-CATALINA_HTTPS_PORT=8443
-
-# figure out the IP address we are using
-IP_ADDR=`ifconfig | grep 'inet addr:' | \
-   grep -v '127.0.0.1' | \
-   awk '{ print $2}'   | \
-   cut -d: -f2`
-echo IP = $IP_ADDR
-
-echo Redirecting HTTP port 80 to CATALINA_HTTP_PORT $CATALINA_HTTP_PORT
-iptables -t nat -I PREROUTING --src 0/0 --dst $IP_ADDR -p tcp --dport 80 -j REDIRECT --to-ports $CATALINA_HTTP_PORT
-
-echo Redirecting HTTPS port 443 to CATALINA_HTTPS_PORT $CATALINA_HTTPS_PORT
-iptables -t nat -I PREROUTING --src 0/0 --dst $IP_ADDR -p tcp --dport 443 -j REDIRECT --to-ports $CATALINA_HTTPS_PORT
-
-RUN_AS_USER=atlassian
-CATALINA_HOME=/opt/atlassian/stash/default
+RUN_AS_USER=vagrant
+CATALINA_HOME=/home/vagrant/atlassian/stash/default
 
 start() {
         echo "Starting Stash: "

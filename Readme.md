@@ -13,6 +13,25 @@ and test your plugin on them as well.
 * Uses the vagrant user to run Atlassian services
 * Maps all the needed atlassian SDK ports as well as the standalone ports
 
+### Standalone and SDK Ports
+
+>  # confluence standalone and plugin sdk ports
+>  config.vm.network "forwarded_port", guest: 8090, host: 8090
+>  config.vm.network "forwarded_port", guest: 1090, host: 1090
+>
+>  # jira standalone and plugin sdk ports
+>  config.vm.network "forwarded_port", guest: 8080, host: 8080
+>  config.vm.network "forwarded_port", guest: 2990, host: 2990
+>
+>  # crowd standalone and plugin sdk ports
+>  config.vm.network "forwarded_port", guest: 8095, host: 8095
+>  config.vm.network "forwarded_port", guest: 4990, host: 4990
+>
+>  # stash standalone and plugin sdk ports
+>  config.vm.network "forwarded_port", guest: 7991, host: 7991
+>  config.vm.network "forwarded_port", guest: 7990, host: 7990
+
+
 ## Environment Parameters and User Configuration Variables
 
 We have the following user configuration varables of which some depend on 

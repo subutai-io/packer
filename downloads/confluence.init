@@ -10,31 +10,11 @@
 # Description:       Enable Confluence service provided by Confluence daemon.
 ### END INIT INFO
 
-. /opt/atlassian/.atlassianrc
-. /opt/atlassian/confluence/.confluencerc
+. /home/vagrant/atlassian/.atlassianrc
+. /home/vagrant/atlassian/confluence/.confluencerc
 
-
-CATALINA_HTTP_PORT=8090
-CATALINA_HTTPS_PORT=8443
-
-# figure out the IP address we are using
-IP_ADDR=`ifconfig | grep 'inet addr:' | \
-   grep -v '127.0.0.1' | \
-   awk '{ print $2}'   | \
-   cut -d: -f2`
-echo IP = $IP_ADDR
-
-echo Redirecting HTTP port 80 to CATALINA_HTTP_PORT $CATALINA_HTTP_PORT
-iptables -t nat -I PREROUTING --src 0/0 --dst $IP_ADDR -p tcp --dport 80 -j REDIRECT --to-ports $CATALINA_HTTP_PORT
-
-echo Redirecting HTTPS port 443 to CATALINA_HTTPS_PORT $CATALINA_HTTPS_PORT
-iptables -t nat -I PREROUTING --src 0/0 --dst $IP_ADDR -p tcp --dport 443 -j REDIRECT --to-ports $CATALINA_HTTPS_PORT
-
-JAVA_HOME=/opt/atlassian/java/jdk1.7.0_25
-export JAVA_HOME
-
-RUN_AS_USER=atlassian
-CATALINA_HOME=/opt/atlassian/confluence/default
+RUN_AS_USER=vagrant
+CATALINA_HOME=/home/vagrant/atlassian/confluence/default
 
 start() {
         echo "Starting Confluence: "

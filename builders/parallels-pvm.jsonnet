@@ -1,6 +1,7 @@
     {
       "type": "parallels-pvm",
-      "source_path": "../base/subutai-base-parallels/packer-parallels-iso.pvm",
+      "source_path": "{{user `pvm_path`}}",
+      "boot_wait": "4s",
       "ssh_username": "{{user `ssh_name`}}",
       "ssh_password": "{{user `ssh_pass`}}",
       "ssh_wait_timeout": "10000s",
@@ -12,6 +13,5 @@
         [
           [ "set", "{{.Name}}", "--memsize", "1536" ],
           [ "set", "{{.Name}}", "--cpus", "4" ],
-          [ "set", "{{.Name}}", "--device-set", "hdd0", "--type", "expand", "--size", "40960" ],
         ]
     }

@@ -18,8 +18,8 @@
     "crowd_ver": "2.8.2",
     "stash_ver": "3.8.1",
 
-    "ovf_path": "{{env `OVF_PATH`}}",
-    "vmx_path": "{{env `VMX_PATH`}}",
-    "pvm_path": "{{env `PVM_PATH`}}"
+    "ovf_path": "{{env `BASIC_OVF_PATH`}}",
+    "vmx_path": "{{env `BASIC_VMX_PATH`}}",
+    "pvm_path": "{{env `BASIC_PVM_PATH`}}"
 }
 

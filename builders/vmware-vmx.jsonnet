@@ -1,6 +1,7 @@
     {
       "type": "vmware-vmx",
-      "source_path": "../base/subutai-base-vmware/packer-vmware-iso.vmx",
+      "source_path": "{{user `vmx_path`}}",
+      "boot_wait": "4s",
       "ssh_username": "{{user `ssh_name`}}",
       "ssh_password": "{{user `ssh_pass`}}",
       "ssh_wait_timeout": "10000s",

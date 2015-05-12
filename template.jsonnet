@@ -14,8 +14,15 @@
     },
     {
       "type": "shell",
+      "environment_vars": [
+        "CONF_VER={{user `conf_ver`}}",
+        "JIRA_VER={{user `jira_ver`}}",
+        "CROWD_VER={{user `crowd_ver`}}",
+        "STASH_VER={{user `stash_ver`}}",
+      ],
       "scripts": [
         "scripts/checks.sh",
+        "scripts/disk.sh",
         "scripts/java.sh",
         "scripts/atlas_sdk.sh",
         "scripts/atlassian.sh",
@@ -30,8 +37,5 @@
   ],
   "post-processors": [ [
     import "post-processors/vagrant.jsonnet",
-    import "post-processors/virtualbox-ovf-s3.jsonnet",
-    import "post-processors/vmware-vmx-s3.jsonnet",
-    import "post-processors/parallels-pvm-s3.jsonnet"
   ] ]
 }

@@ -23,6 +23,7 @@ if [[ -f /tmp/02proxy ]]; then
 fi
 
 echo 'export JAVA_HOME=/usr/lib/jvm/java-8-oracle' >> ~/.bashrc
+echo 'export JRE_HOME=/usr/lib/jvm/java-8-oracle/jre' >> ~/.bashrc
 export JAVA_HOME=/usr/lib/jvm/java-8-oracle
 java -version
 

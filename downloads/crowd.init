@@ -10,18 +10,12 @@
 # Description:          Enable Crowd service provided by Crowd daemon.
 ### END INIT INFO
 
-. /opt/atlassian/.atlassianrc
-. /opt/atlassian/crowd/.crowdrc
+. /home/vagrant/atlassian/.atlassianrc
+. /home/vagrant/atlassian/crowd/.crowdrc
 
-RUN_AS_USER=atlassian
-CATALINA_HOME=/opt/atlassian/crowd/default
+RUN_AS_USER=vagrant
+CATALINA_HOME=/home/vagrant/atlassian/crowd/default
 
-
-/sbin/iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 8095
-/sbin/iptables -t nat -A PREROUTING -i eth0 -p udp --dport 80 -j REDIRECT --to-port 8095
-
-/sbin/iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 443 -j REDIRECT --to-port 8443
-/sbin/iptables -t nat -A PREROUTING -i eth0 -p udp --dport 443 -j REDIRECT --to-port 8443
 
 start() {
         echo "Starting Crowd: "
