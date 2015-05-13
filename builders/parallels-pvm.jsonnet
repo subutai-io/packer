@@ -11,7 +11,7 @@
       "output_directory": "subutai-{{user `boxname`}}-parallels",
       "prlctl": 
         [
-          [ "set", "{{.Name}}", "--memsize", "1536" ],
-          [ "set", "{{.Name}}", "--cpus", "4" ],
+          [ "set", "{{.Name}}", "--memsize", "512" ],
+          [ "set", "{{.Name}}", "--cpus", "2" ],
         ]
     }
