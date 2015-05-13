@@ -2,6 +2,8 @@
 
 PARENT=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
+$PARENT/downloads/download.sh
+
 if [ -d "$PARENT/../basic" ]; then
   if [ -f "$PARENT/../basic/images.sh" ]; then
     . "$PARENT/../basic/images.sh"

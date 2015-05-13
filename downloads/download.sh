@@ -19,7 +19,8 @@ NODE_URL="$BASE_URL/$NODE_VER/$NODE_FILE"
 
 # Start downloading if they do not already exist
 for url in "$NODE_URL"; do
-  atfile=`echo $url | awk -F '/' '{print $8}'`
+  atfile=`echo $url | awk -F '/' '{print $7}'`
+  echo atfile = $atfile
 
   if [[ -f "$atfile" ]]; then
     echo $atfile exists will NOT download.
