@@ -10,12 +10,12 @@ box for use with jekyll based websites.
 * Jekyll is setup to run as a service with jekyll serve using node
 * Automatically downloads node based on the version in variables.jsonnet
 * Configuration provided in variables.jsonnet to set
-  ** the box name
-  ** the box version
-  ** the ruby version
-  ** the node version
-  ** the site home: set to /vagrant
-  ** can be configured to use other ovf, vmx, and pvm images
+  * the box name
+  * the box version
+  * the ruby version
+  * the node version
+  * the site home: set to /vagrant
+  * can be configured to use other ovf, vmx, and pvm images
 * Has ~/start_jekyll.sh and ~/stop_jekyll.sh scripts for quick start and stop
 
 ## Usage
@@ -64,7 +64,7 @@ Note that this box will be installed on the Atlas Cloud using
 ## To Do List
 
 * Image is large, let's figure out a way to shrink it down:
-  ** Use packer snapshotting feature which should come out soon
-  ** Use some mechanism to remove files from the basic image used
-  ** Do we really need everything on this box?
+  * Use packer snapshotting feature which should come out soon
+  * Use some mechanism to remove files from the basic image used
+  * Do we really need everything on this box?
 
