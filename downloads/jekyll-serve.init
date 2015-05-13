@@ -1,0 +1,54 @@
+#!/bin/bash
+
+### BEGIN INIT INFO
+# Provides:             jekyll-serve
+# Required-Start:       $remote_fs $syslog $network
+# Required-Stop:        $remote_fs $syslog
+# Default-Start:        2 3 4 5
+# Default-Stop:         0 1 6
+# Short-Description:    Start Jekyll serve daemon at boot time
+# Description:          Enable Jekyll service provided by Jekyll serve.
+### END INIT INFO
+
+
+RUN_AS_USER=vagrant
+USER_HOME="$(echo ~$RUN_AS_USER)"
+
+
+start() {
+        echo "Starting jekyll-serve: "
+        if [ "x$USER" != "x$RUN_AS_USER" ]; then
+          su - $RUN_AS_USER -c "$USER_HOME/start_jekyll.sh"
+        else
+          $USER_HOME/start_jekyll.sh
+        fi
+
+        echo "done."
+}
+stop() {
+        echo "Shutting jekyll-serve: "
+        if [ "x$USER" != "x$RUN_AS_USER" ]; then
+          su - $RUN_AS_USER -c "$USER_HOME/stop_jekyll.sh"
+        else
+          $USER_HOME/stop_jekyll.sh
+        fi
+        echo "done."
+}
+
+case "$1" in
+  start)
+        start
+        ;;
+  stop)
+        stop
+        ;;
+  restart)
+        stop
+        sleep 3
+        start
+        ;;
+  *)
+        echo "Usage: $0 {start|stop|restart}"
+esac
+
+exit 0
