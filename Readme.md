@@ -36,7 +36,10 @@ in your vagrant file:
 
     config.vm.provision "shell", inline: "sudo service jekyll-serve start"
 
-# To Do List
+Note that this box will be installed on the Atlas Cloud using 
+'subutai/jekyll-site' as the organization qualified name. 
+
+## To Do List
 
 * Image is large, let's figure out a way to shrink it down:
 ** Use packer snapshotting feature which should come out soon
