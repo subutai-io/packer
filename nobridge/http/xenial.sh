@@ -68,7 +68,7 @@ d-i   partman-lvm/confirm_nooverwrite    boolean  true
 d-i   partman-auto/confirm               boolean  true
 EOF
 
-cat ./http/partition.cfg >> ./preseeds/xenial.cfg
+cat ./http/partition.cfg >> ./http/xenial.cfg
 
 cat >> ./http/xenial.cfg <<-EOF
 d-i   partman/confirm_write_new_label  boolean true
