@@ -6,15 +6,6 @@ if [ -z "$APT_PROXY_PORT" ]; then
   APT_PROXY_PORT=3142
 fi
 
-# echo
-# echo "Starting up with values:"
-# echo "PROXY_ON        = $PROXY_ON"
-# echo "PASSWORD        = $PASSWORD"
-# echo "APT_PROXY_PORT  = $APT_PROXY_PORT"
-# echo "APT_PROXY_URL   = $APT_PROXY_URL"
-# echo "APT_PROXY_HOST  = $APT_PROXY_HOST"
-# read
-
 # Checks LAN apt proxies availability
 check_proxy() {
   if [ -n "$1" ]; then # if arg provided use it
@@ -49,7 +40,10 @@ do_local_proxy() {
 
   if [ "$answer" = "y" ]; then
     do_vbguest_plugin >&2
+
+    cd ../cache
     vagrant up >&2
+    cd ../nobridge
 
     while [ -z "$(check_proxy $local_proxy)" ]; do
       echo "Local proxy $local_proxy is not up. Waiting 10s ..." >&2
@@ -100,16 +94,6 @@ else
     PROXY_ON="false"
   fi
 fi
-
-# echo
-# echo "Generating preseed file based on parameters:"
-# echo "PROXY_ON        = $PROXY_ON"
-# echo "PASSWORD        = $PASSWORD"
-# echo "APT_PROXY_PORT  = $APT_PROXY_PORT"
-# echo "APT_PROXY_URL   = $APT_PROXY_URL"
-# echo "APT_PROXY_HOST  = $APT_PROXY_HOST"
-# echo
-# read
 
 # TODO: export password from variables in json file
 PROXY_ON=$PROXY_ON PASSWORD=$PASSWORD APT_PROXY_PORT=$APT_PROXY_PORT \

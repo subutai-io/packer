@@ -1,24 +1,16 @@
-# Without libdbus virtualbox would not start automatically after compile
-sudo apt-get -y install --no-install-recommends libdbus-1-3
+echo "==> Installing VirtualBox guest additions"
 
-# Remove existing VirtualBox guest additions
-if [ -e /etc/init.d/virtualbox-ose-guest-utils ]; then
-  sudo /etc/init.d/virtualbox-ose-guest-utils stop
-  sudo rmmod vboxguest
-  sudo aptitude -y purge virtualbox-ose-guest-x11 virtualbox-ose-guest-dkms virtualbox-ose-guest-utils
-  sudo aptitude -y install dkms
+# Assuming the following packages are installed
+apt-get install -y linux-headers-$(uname -r) build-essential perl
+apt-get install -y dkms
+
+VBOX_VERSION=$(cat /home/${SSH_USERNAME}/.vbox_version)
+mount -o loop /home/${SSH_USERNAME}/VBoxGuestAdditions_$VBOX_VERSION.iso /mnt
+sh /mnt/VBoxLinuxAdditions.run
+umount /mnt
+rm /home/${SSH_USERNAME}/VBoxGuestAdditions_$VBOX_VERSION.iso
+rm /home/${SSH_USERNAME}/.vbox_version
+
+if [[ $VBOX_VERSION = "4.3.10" ]]; then
+    ln -s /opt/VBoxGuestAdditions-4.3.10/lib/VBoxGuestAdditions /usr/lib/VBoxGuestAdditions
 fi
-
-# Install the VirtualBox guest additions
-VBOX_VERSION=$(cat /home/$SSH_USERNAME/.vbox_version)
-VBOX_ISO=VBoxGuestAdditions_$VBOX_VERSION.iso
-sudo mount -o loop $VBOX_ISO /mnt
-sudo yes|sudo sh /mnt/VBoxLinuxAdditions.run
-sudo umount /mnt
-
-# Temporary fix for VirtualBox Additions version 4.3.10
-# issue #12879, see https://www.virtualbox.org/ticket/12879
-[ -e /usr/lib/VBoxGuestAdditions ] || sudo ln -s /opt/VBoxGuestAdditions-$VBOX_VERSION/lib/VBoxGuestAdditions /usr/lib/VBoxGuestAdditions
-
-# Cleanup
-sudo rm $VBOX_ISO
