@@ -124,7 +124,7 @@ fi
 
 echo "==> Running packer build on template.json ..."
 date
-PACKER_LOG=1 PROXY_ON=$PROXY_ON PASSWORD=$PASSWORD APT_PROXY_PORT=$APT_PROXY_PORT \
+PROXY_ON=$PROXY_ON PASSWORD=$PASSWORD APT_PROXY_PORT=$APT_PROXY_PORT \
    APT_PROXY_URL=$APT_PROXY_URL APT_PROXY_HOST=$APT_PROXY_HOST       \
    time packer build -on-error=ask -only=virtualbox-iso -except=null template.json
 date

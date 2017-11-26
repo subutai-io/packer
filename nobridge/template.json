@@ -3,22 +3,17 @@
       {
         "boot_command": [
             "{{ user `boot_command_prefix` }}",
-            "/install/vmlinuz noapic ",
+            "/install/vmlinuz noapic net.ifnames=0 ",
             "url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/{{ user `preseed` }} ",
             "debian-installer={{ user `locale` }} auto locale={{ user `locale` }} kbd-chooser/method=us ",
-            "hostname={{ user `hostname` }}, net.ifnames=0 ",
             "grub-installer/bootdev=/dev/sda<wait> ",
+            "hostname={{ user `hostname` }} ",
             "fb=false debconf/frontend=noninteractive ",
             "keyboard-configuration/modelcode=SKIP keyboard-configuration/layout=USA ",
-            "keyboard-configuration/variant=USA console-setup/ask_detect=false ",
-            "passwd/user-password={{ user `ssh_password` }} ",
-            "passwd/user-password-again={{ user `ssh_password` }} ",
-            "passwd/username={{ user `ssh_username` }} ",
             "initrd=/install/initrd.gz -- <enter>"
           ],
          "boot_wait": "3s",
          "disk_size": "{{user `disk_size`}}",
-         "guest_additions_path": "VBoxGuestAdditions_{{.Version}}.iso",
          "guest_os_type": "{{ user `virtualbox_guest_os_type` }}",
          "headless": "{{ user `headless` }}",
          "http_directory": "http",
@@ -118,8 +113,8 @@
         "skip_export": "false",
         "ssh_username": "subutai",
         "ssh_password": "ubuntai",
-        "version": "1.0.6",
+        "version": "2.0.0",
         "virtualbox_guest_os_type": "Ubuntu_64",
-        "vm_name": "subutai-stretch"
+        "vm_name": "subutai-nobridge"
    }
 }

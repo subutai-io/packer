@@ -18,6 +18,12 @@ d-i passwd/user-password-again password $PASSWORD
 d-i user-setup/encrypt-home boolean false
 d-i user-setup/allow-password-weak boolean true
 
+d-i keyboard-configuration/modelcode SKIP
+d-i keyboard-configuration/layout USA
+d-i keyboard-configuration/variant USA
+d-i console-setup/ask_detect boolean false
+d-i keyboard-configuration/xkb-keymap select
+
 # Clock and time zone setup
 d-i clock-setup/utc boolean true
 d-i time/zone string UTC
@@ -103,8 +109,8 @@ else
 cat >> ./http/xenial.cfg <<-EOF
 # No live proxy, using normal package mirrors
 d-i     mirror/country          string enter information manually
-d-i     mirror/http/hostname    string http.us.debian.org
-d-i     mirror/http/directory   string /debian
+d-i     mirror/http/hostname    string archive.ubuntu.org
+d-i     mirror/http/directory   string /ubuntu
 d-i     mirror/suite            string stable
 d-i     mirror/http/proxy       string
 
