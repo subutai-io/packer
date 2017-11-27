@@ -31,6 +31,8 @@ if [ $? > 0 ]; then
   snap_errcode=$?
 
   # TODO use another internationalized script for this
+  # Might be best to do the management installation in its own script
+
   if [ -n "$(cat snap.stderr | grep 'x509: certificate signed by unknown authority')" ]; then
     echo "It seems you're using a local CDN cache node with a self signed certiifcate."
 
