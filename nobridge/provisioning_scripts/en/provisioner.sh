@@ -5,6 +5,8 @@ wget -O final_message.sh https://raw.githubusercontent.com/subutai-io/packer/mas
 wget -O rhost_message.sh https://raw.githubusercontent.com/subutai-io/packer/master/nobridge/provisioning_scripts/en/rhost_message.sh
 wget -O system_checks.sh https://raw.githubusercontent.com/subutai-io/packer/master/nobridge/provisioning_scripts/en/en/system_checks.sh
 
+chmod +x *.sh
+
 case $SUBUTAI_ENV in
   dev*)
     CMD="subutai-dev"
@@ -35,4 +37,4 @@ else
 fi
 
 CONSOLE_PORT=$CONSOLE_PORT ./final_message.sh
-    
+rm *.sh    
