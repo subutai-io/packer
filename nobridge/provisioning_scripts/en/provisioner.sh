@@ -1,9 +1,9 @@
 #!/bin/bash
 
-wget -O peer_cmd.sh https://github.com/subutai-io/packer/raw/master/provisioning_scripts/en/peer_cmd.sh
-wget -O final_message.sh https://github.com/subutai-io/packer/raw/master/provisioning_scripts/en/final_message.sh
-wget -O rhost_message.sh https://github.com/subutai-io/packer/raw/master/provisioning_scripts/en/rhost_message.sh
-wget -O system_checks.sh https://github.com/subutai-io/packer/raw/master/provisioning_scripts/en/system_checks.sh
+wget -O peer_cmd.sh https://raw.githubusercontent.com/subutai-io/packer/master/nobridge/provisioning_scripts/en/peer_cmd.sh
+wget -O final_message.sh https://raw.githubusercontent.com/subutai-io/packer/master/nobridge/provisioning_scripts/en/final_message.sh
+wget -O rhost_message.sh https://raw.githubusercontent.com/subutai-io/packer/master/nobridge/provisioning_scripts/en/rhost_message.sh
+wget -O system_checks.sh https://raw.githubusercontent.com/subutai-io/packer/master/nobridge/provisioning_scripts/en/en/system_checks.sh
 
 case $SUBUTAI_ENV in
   dev*)

@@ -155,6 +155,6 @@ Vagrant.configure("2") do |config|
       "SUBUTAI_ENV"      => "#{extconf['subutaiEnv']}",      
       "SUBUTAI_PEER"     => "#{extconf['subutaiPeer']}",      
       "SUBUTAI_SNAP"     => "#{extconf['subutaiSnap']}",      
-    }, path: "https://github.com/subutai-io/packer/raw/master/provisioning_scripts/en/provisioner.sh"
+    }, path: "https://raw.githubusercontent.com/subutai-io/packer/master/nobridge/provisioning_scripts/en/provisioner.sh"
 end
 
