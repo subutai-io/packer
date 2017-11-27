@@ -25,12 +25,44 @@ case $SUBUTAI_ENV in
 esac
 
 echo "Installing $CMD Snap ..."
-snap install $CMD --devmode --beta
+snap install $CMD --devmode --beta 2> snap.err
+
+if [ $? > 0 ]; then
+  snap_errcode=$?
+
+  # TODO use another internationalized script for this
+  if [ -n "$(cat snap.stderr | grep 'x509: certificate signed by unknown authority')" ]; then
+    echo "It seems you're using a local CDN cache node with a self signed certiifcate."
+
+    if [ "$CMD" == "subutai-dev" || "$CMD" == "subutai-master" ]; then
+      echo "You're not using production so I'll enable insecure CDN downloads for you now."
+      config="/var/snap/$CMD/current/agent.gcfg"
+      /bin/cat $config \
+        | sed -e 's/Allowinsecure.*/Allowinsecure = true/g' \
+        > $config.new
+      mv $config $config.bak
+      mv $config.new $config
+      echo "Trying management import again ..."
+      snap install $CMD --devmode --beta 2> snap.err
+      if [ $? > 0 ]; then
+        (>&2 cat snap.err)
+        exit $?
+      fi
+    else
+      echo "You must enable the allowInsecure property in the subutai.yaml file allow insecure CDN use."
+      (>&2 cat snap.err)
+      exit $snap_errcode
+    fi
+  fi
+
+  (>&2 cat snap.err)
+  exit $snap_errcode
+fi
 
 echo "Mounting container storage ..."
 /snap/$CMD/current/bin/btrfsinit /dev/mapper/main-btrfs &> /dev/null
 
-if [ "$SUBUTAI_PEER" = "$SUBUTAI_PEER" ]; then
+if [ "$SUBUTAI_PEER" == "$SUBUTAI_PEER" ]; then
   CMD=$CMD ./peer_cmd.sh
 else
   ./rhost_message.sh
