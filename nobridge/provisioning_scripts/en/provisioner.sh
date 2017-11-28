@@ -27,17 +27,25 @@ case $SUBUTAI_ENV in
     CMD="subutai"
 esac
 
+cmd_path="$(which $CMD)"
 
-echo "Installing $CMD Snap ..."
-snap install $CMD --devmode --beta 2> snap.err
-if [ $? -ne 0 ]; then exit 1; fi
+if [ -n "$cmd_path" ]; then
+  echo "Snap $CMD is installed, refreshing ..."
+  snap refresh $CMD
+else
+  echo "Installing $CMD Snap ..."
+  snap install $CMD --devmode --beta
+  cmd_path="$(which $CMD)"
+fi
 
-  # echo "Snap Installed: refreshing ..."
-  # snap refresh $CMD
+if [ -z "$cmd_path" ]; then
+  echo "[WARNING] Snap $CMD installation failed aborting!"
+  exit 1;
+fi
 
 if [ -z "$(grep main-btrfs /proc/mounts)" ]; then
   echo "Mounting container storage ..."
-  /snap/$CMD/current/bin/btrfsinit /dev/mapper/main-btrfs &> /dev/null
+  /snap/$CMD/current/bin/btrfsinit /dev/mapper/main-btrfs -f #&> /dev/null
   if [ $? -ne 0 ]; then exit 1; fi
   sleep 2
 else

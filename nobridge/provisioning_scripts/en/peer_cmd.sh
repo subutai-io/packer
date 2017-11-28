@@ -1,17 +1,19 @@
 #!/bin/bash
 
-
 /bin/cat <<EOM
 Provisioning management capabilities (converting RH into peer)
 This might take a little time ...
 EOM
 
+set -x
+errcode=0
 if [ -n "$(/snap/bin/$CMD list | grep management)" ]; then
   echo "Management seems to already be installed. Checking for upgrades..."
   /snap/bin/$CMD update management
   exit 0
 else
   /snap/bin/$CMD import management 2> import.err
+  echo "[DEBUG] errcode = $errcode after import attempt"
   errcode=$?
 fi
 
