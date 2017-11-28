@@ -2,11 +2,11 @@
 
 base="https://raw.githubusercontent.com/subutai-io/packer/master/nobridge/provisioning_scripts/en/"
 
-wget -O peer_cmd.sh $base/peer_cmd.sh >/dev/null 2>&1
-wget -O final_message.sh $base/final_message.sh >/dev/null 2>&1
-wget -O rhost_message.sh $base/rhost_message.sh >/dev/null 2>&1
-wget -O system_checks.sh $base/system_checks.sh >/dev/null 2>&1
-wget -O insecure.sh $base/insecure.sh >/dev/null 2>&1
+wget --no-cache -O peer_cmd.sh $base/peer_cmd.sh >/dev/null 2>&1
+wget --no-cache -O final_message.sh $base/final_message.sh >/dev/null 2>&1
+wget --no-cache -O rhost_message.sh $base/rhost_message.sh >/dev/null 2>&1
+wget --no-cache -O system_checks.sh $base/system_checks.sh >/dev/null 2>&1
+wget --no-cache -O insecure.sh $base/insecure.sh >/dev/null 2>&1
 
 chmod +x *.sh
 
