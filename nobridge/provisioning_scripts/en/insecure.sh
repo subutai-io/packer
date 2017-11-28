@@ -7,5 +7,5 @@ config="/var/snap/$CMD/current/agent.gcfg"
     > $config.new
 mv $config $config.bak
 mv $config.new $config
-systemctl restart snap.subutai.agent-service.service
+systemctl restart snap.$CMD.agent-service.service
 echo "Now you can use a local CDN cache node with a self-signed certificate."
