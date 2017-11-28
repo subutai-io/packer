@@ -27,9 +27,8 @@ case $SUBUTAI_ENV in
     CMD="subutai"
 esac
 
-echo "Installing $CMD Snap ..."
-
 if [ -n "$(snap list | grep subutai)" ]; then
+  echo "Installing $CMD Snap ..."
   snap install $CMD --devmode --beta 2> snap.err
   if [ $? -ne 0 ]; then exit 1; fi
 else
