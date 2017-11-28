@@ -33,12 +33,12 @@ echo "Mounting container storage ..."
 /snap/$CMD/current/bin/btrfsinit /dev/mapper/main-btrfs &> /dev/null
 if [ $? -ne 0 ]; then exit 1; fi
 
-if [ $ALLOW_INSECURE -eq true ]; then
+if [ "$ALLOW_INSECURE" = true ]; then
   CMD=$CMD ./insecure.sh
   if [ $? -ne 0 ]; then exit 1; fi
 fi
 
-if [ $SUBUTAI_PEER -eq true ]; then
+if [ "$SUBUTAI_PEER" = true ]; then
   CMD=$CMD ./peer_cmd.sh
   if [ $? -ne 0 ]; then exit 1; fi
 else
