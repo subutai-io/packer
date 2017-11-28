@@ -7,18 +7,18 @@ EOM
 
 /snap/bin/$CMD import management 2> import.err
 
-if [ "$?" -ne "0" ]; then
+if [ $? -ne 0 ]; then
   errcode=$?
   certificate=`cat import.err | grep "x509: certificate signed by unknown authority"`
   if [ -n "$certificate" ]; then
     echo "It seems you're using a local CDN cache node with a self signed certiifcate."
 
-    if [ "$CMD" == "subutai-dev" || "$CMD" == "subutai-master" ]; then
+    if [ "$CMD" == "subutai-dev" -o "$CMD" == "subutai-master" ]; then
       echo "You're not using production so I'll enable insecure CDN downloads for you now."
-      ./insecure.sh
+      CMD=$CMD ./insecure.sh
       echo "Trying management import again ..."
       /snap/bin/$CMD import management
-      if [ "$?" -ne "0" ]; then
+      if [ $? -ne 0 ]; then
         exit $?
       fi
     else
