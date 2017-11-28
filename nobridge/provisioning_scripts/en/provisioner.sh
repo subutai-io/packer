@@ -27,17 +27,15 @@ case $SUBUTAI_ENV in
     CMD="subutai"
 esac
 
-if [ -n "$(snap list | grep subutai)" ]; then
-  echo "Installing $CMD Snap ..."
-  snap install $CMD --devmode --beta 2> snap.err
-  if [ $? -ne 0 ]; then exit 1; fi
-else
-  echo "Snap Installed: refreshing ..."
-  snap refresh $CMD
-fi
 
-df -h /dev/mapper/main-btrfs
-if [ $? -ne 0 ]; then
+echo "Installing $CMD Snap ..."
+snap install $CMD --devmode --beta 2> snap.err
+if [ $? -ne 0 ]; then exit 1; fi
+
+  # echo "Snap Installed: refreshing ..."
+  # snap refresh $CMD
+
+if [ -z "$(grep main-btrfs /proc/mounts)" ]; then
   echo "Mounting container storage ..."
   /snap/$CMD/current/bin/btrfsinit /dev/mapper/main-btrfs &> /dev/null
   if [ $? -ne 0 ]; then exit 1; fi
@@ -59,4 +57,4 @@ else
 fi
 
 CONSOLE_PORT=$CONSOLE_PORT ./final_message.sh
-rm *.sh    
+#rm *.sh    

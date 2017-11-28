@@ -6,7 +6,7 @@ Provisioning management capabilities (converting RH into peer)
 This might take a little time ...
 EOM
 
-if [ -n "$(/snap/bin/$CMD | grep management)" ]; then
+if [ -n "$(/snap/bin/$CMD list | grep management)" ]; then
   echo "Management seems to already be installed. Checking for upgrades..."
   /snap/bin/$CMD upgrade management
   exit 0
