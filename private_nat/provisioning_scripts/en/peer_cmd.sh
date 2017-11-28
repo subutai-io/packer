@@ -43,6 +43,7 @@ if [ $errcode -ne 0 ]; then
 fi
 
 /bin/cat <<EOM
+
 SUCCESS: Your peer is up. Welcome to the Horde!
 -----------------------------------------------
 

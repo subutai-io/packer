@@ -1,5 +1,5 @@
-Base Box `nobridge`
-==================
+Base Box `private_nat`
+======================
 
 This box builds a NAT'd RH or Peer based on configuration settings.
 

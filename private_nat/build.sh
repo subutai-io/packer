@@ -43,7 +43,7 @@ do_local_proxy() {
 
     cd ../cache
     vagrant up >&2
-    cd ../nobridge
+    cd ../private_nat
 
     while [ -z "$(check_proxy $local_proxy)" ]; do
       echo "Local proxy $local_proxy is not up. Waiting 10s ..." >&2
