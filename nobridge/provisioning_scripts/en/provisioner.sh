@@ -26,12 +26,20 @@ esac
 
 echo "Installing $CMD Snap ..."
 snap install $CMD --devmode --beta 2> snap.err
+if [ $? -ne 0 ]; then exit 1; fi
 
 echo "Mounting container storage ..."
 /snap/$CMD/current/bin/btrfsinit /dev/mapper/main-btrfs &> /dev/null
+if [ $? -ne 0 ]; then exit 1; fi
+
+if [ "$ALLOW_INSECURE" == "true" ]; then
+  CMD=$CMD ./insecure.sh
+  if [ $? -ne 0 ]; then exit 1; fi
+fi
 
 if [ "$SUBUTAI_PEER" == "true" ]; then
   CMD=$CMD ./peer_cmd.sh
+  if [ $? -ne 0 ]; then exit 1; fi
 else
   ./rhost_message.sh
 fi

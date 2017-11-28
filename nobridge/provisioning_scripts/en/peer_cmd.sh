@@ -15,12 +15,7 @@ if [ "$?" -ne "0" ]; then
 
     if [ "$CMD" == "subutai-dev" || "$CMD" == "subutai-master" ]; then
       echo "You're not using production so I'll enable insecure CDN downloads for you now."
-      config="/var/snap/$CMD/current/agent.gcfg"
-      /bin/cat $config \
-        | sed -e 's/Allowinsecure.*/Allowinsecure = true/g' \
-        > $config.new
-      mv $config $config.bak
-      mv $config.new $config
+      ./insecure.sh
       echo "Trying management import again ..."
       /snap/bin/$CMD import management
       if [ "$?" -ne "0" ]; then
