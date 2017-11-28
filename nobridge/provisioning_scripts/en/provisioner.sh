@@ -1,10 +1,10 @@
 #!/bin/bash
 
-wget -O peer_cmd.sh https://raw.githubusercontent.com/subutai-io/packer/master/nobridge/provisioning_scripts/en/peer_cmd.sh
-wget -O final_message.sh https://raw.githubusercontent.com/subutai-io/packer/master/nobridge/provisioning_scripts/en/final_message.sh
-wget -O rhost_message.sh https://raw.githubusercontent.com/subutai-io/packer/master/nobridge/provisioning_scripts/en/rhost_message.sh
-wget -O system_checks.sh https://raw.githubusercontent.com/subutai-io/packer/master/nobridge/provisioning_scripts/en/en/system_checks.sh
-wget -O insecure.sh https://raw.githubusercontent.com/subutai-io/packer/master/nobridge/provisioning_scripts/en/en/insecure.sh
+wget –quiet -O peer_cmd.sh https://raw.githubusercontent.com/subutai-io/packer/master/nobridge/provisioning_scripts/en/peer_cmd.sh
+wget –quiet -O final_message.sh https://raw.githubusercontent.com/subutai-io/packer/master/nobridge/provisioning_scripts/en/final_message.sh
+wget –quiet -O rhost_message.sh https://raw.githubusercontent.com/subutai-io/packer/master/nobridge/provisioning_scripts/en/rhost_message.sh
+wget –quiet -O system_checks.sh https://raw.githubusercontent.com/subutai-io/packer/master/nobridge/provisioning_scripts/en/en/system_checks.sh
+wget –quiet -O insecure.sh https://raw.githubusercontent.com/subutai-io/packer/master/nobridge/provisioning_scripts/en/en/insecure.sh
 
 chmod +x *.sh
 
@@ -33,12 +33,12 @@ echo "Mounting container storage ..."
 /snap/$CMD/current/bin/btrfsinit /dev/mapper/main-btrfs &> /dev/null
 if [ $? -ne 0 ]; then exit 1; fi
 
-if [ "$ALLOW_INSECURE" == "true" ]; then
+if [ $ALLOW_INSECURE -eq true ]; then
   CMD=$CMD ./insecure.sh
   if [ $? -ne 0 ]; then exit 1; fi
 fi
 
-if [ "$SUBUTAI_PEER" == "true" ]; then
+if [ $SUBUTAI_PEER -eq true ]; then
   CMD=$CMD ./peer_cmd.sh
   if [ $? -ne 0 ]; then exit 1; fi
 else
