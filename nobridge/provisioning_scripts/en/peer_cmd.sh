@@ -13,8 +13,8 @@ if [ -n "$(/snap/bin/$CMD list | grep management)" ]; then
   exit 0
 else
   /snap/bin/$CMD import management #2> import.err
-  echo "[DEBUG] errcode = $errcode after import attempt"
   errcode=$?
+  echo "[DEBUG] errcode = $errcode after import attempt"
 fi
 
 if [ $? -ne 0 ]; then
