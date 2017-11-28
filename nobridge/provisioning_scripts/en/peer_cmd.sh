@@ -9,8 +9,8 @@ EOM
 
 if [ "$?" -ne "0" ]; then
   errcode=$?
-
-  if [ -n "$(cat import.err | grep 'x509: certificate signed by unknown authority')" ]; then
+  certificate=`cat import.err | grep "x509: certificate signed by unknown authority"`
+  if [ -n "$certificate" ]; then
     echo "It seems you're using a local CDN cache node with a self signed certiifcate."
 
     if [ "$CMD" == "subutai-dev" || "$CMD" == "subutai-master" ]; then
