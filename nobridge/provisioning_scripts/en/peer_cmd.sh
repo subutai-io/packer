@@ -13,9 +13,10 @@ if [ -n "$(/snap/bin/$CMD list | grep management)" ]; then
 else
   /snap/bin/$CMD import management 2> import.err
   errcode=$?
-  echo '[DEBUG] errcode = '$errcode'after import attempt'
+  echo '[DEBUG] errcode = '$errcode' after import attempt'
 fi
 
+set -x
 if [ $errcode -ne 0 ]; then
   certificate=`cat import.err | grep "x509: certificate signed by unknown authority"`
   if [ -n "$certificate" ]; then
