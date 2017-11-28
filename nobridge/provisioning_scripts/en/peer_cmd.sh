@@ -8,7 +8,7 @@ EOM
 
 if [ -n "$(/snap/bin/$CMD list | grep management)" ]; then
   echo "Management seems to already be installed. Checking for upgrades..."
-  /snap/bin/$CMD upgrade management
+  /snap/bin/$CMD update management
   exit 0
 else
   /snap/bin/$CMD import management 2> import.err
