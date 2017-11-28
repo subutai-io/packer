@@ -65,4 +65,4 @@ else
 fi
 
 CONSOLE_PORT=$CONSOLE_PORT ./final_message.sh
-#rm *.sh    
+rm *.sh    
