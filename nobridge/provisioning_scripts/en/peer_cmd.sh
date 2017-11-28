@@ -18,7 +18,6 @@ else
 fi
 
 if [ $errcode -ne 0 ]; then
-  errcode=$?
   certificate=`cat import.err | grep "x509: certificate signed by unknown authority"`
   if [ -n "$certificate" ]; then
     echo "It seems you're using a local CDN cache node with a self signed certiifcate."
