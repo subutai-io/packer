@@ -28,6 +28,8 @@ if [ $errcode -ne 0 ]; then
       errcode=$?
       if [ $errcode -ne 0 ]; then
         exit $errcode
+      else
+        rm -f import.err; touch import.err
       fi
     else
       echo "You must enable the allowInsecure property in the subutai.yaml file allow insecure CDN use."
