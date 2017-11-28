@@ -23,31 +23,16 @@ extconf = {
   "desiredPort"     => 9999,       # integer for console port
   "allowInsecure"   => false,      # boolean to enable insecure CDN and snap
   "subutaiEnv"      => "prod",     # subutai environment to use
-  "subutaiPeer"     => false,      # whether or not to provision the managemetn console (peer)
+  "subutaiPeer"     => true,      # whether or not to provision the managemetn console (peer)
   "subutaiSnap"     => nil,        # alternative snap to provision
-  "subutaiManTmpl"  => nil         # alternative subutai management template to provision
+  "subutaiManTmpl"  => nil,        # alternative subutai management template to provision
+  "subutaiDesktop"  => false,      # installs a desktop environment with tray and p2p client
+  "aptProxyUrl"     => nil         # if provided apt configuration is altered to use this proxy
 }
-
-# Exit hook to save or restore configurations
-at_exit do
-  # we save and restore based on the vagrant command
-  command = ARGV[0]
-  puts "Arguments provided to vagrant"
-  ARGV.each { |i| puts i }
-  puts "Exit hook on command #{command}"
-end
 
 # Override smart defaults if extended yaml configuration exists
 if File.exist?(extconf_file)
   extconf = YAML.load_file(extconf)
-end
-
-# Generate random mac address
-# ---------------------------
-def gen_mac()
-  # starting with 08:00:27 to not freakout vbox
-  mac = '080027' + 3.times.map { '%02x' % rand(0..255) }.join()
-  return mac
 end
 
 # Finds an available port
@@ -68,16 +53,18 @@ end
 # Finds free port for console and records it in configs
 # -----------------------------------------------------
 def find_console_port(port)
-  while is_port_open?("127.0.0.1", port)
-    port += 1
+  if ARGV[0] == "up" then
+    while is_port_open?("127.0.0.1", port)
+      port += 1
+    end
   end
 
   console_port_file = ".vagrant/machines/default/virtualbox/console_port"
   file_parent = ".vagrant/machines/default/virtualbox/"
-  if File.exists?(file_parent) && File.exists?(console_port_file)
+  if File.exists?(file_parent) && File.exists?(console_port_file) && ARGV[0] != "up"
     portText = IO.read(console_port_file)
     return portText.to_i
-  else 
+  else
     FileUtils::mkdir_p(file_parent)
     IO.write(console_port_file, "#{port}")
   end 
@@ -85,48 +72,21 @@ def find_console_port(port)
   return port
 end
 
-# Extracts configuration from the directory path
-# ----------------------------------------------
-def config_by_layout()
-  list = File.expand_path(Dir.pwd).split('/')
-  list.delete_at(0)
-
-  if ! list.include? "subutai" then
-    puts "No subutai root, stopped config by layout"
-    return nil
-  end
-  
-  # if list.indexes().size = 1
-  #   index = list.index "subutai"
-  # else
-  #   index = list.rindex "subutai"
-  # end
-
-  # subutaiEnv = list[index+1]
-  # provisionType = list[index+2]
-  # boxName = list[index+3]
-
-  return nil
-end
-
-def layout_convention()
-  list = File.expand_path(Dir.pwd).split('/')
-  list.delete_at(0)
-  # root = find_subutai_root()
-
-  # if root != nil then
-  #   puts "Not following directory layout conventions. Abandoning configuration by layout."
-  # end
-end 
-
-config_by_layout()
 extconf.store('consolePort', find_console_port(extconf['desiredPort']))
 box_path = File.dirname(__FILE__)
 
 Vagrant.require_version ">= 2.0.1"
 
+puts "==> Provisioner configuration settings used:"
+puts "    ----------------------------------------"
+puts "    CONSOLE_PORT:      => #{extconf['consolePort']}"
+puts "    ALLOW_INSECURE:    => #{extconf['allowInsecure']}"
+puts "    SUBUTAI_ENV:       => #{extconf['subutaiEnv']}"
+puts "    SUBUTAI_PEER:      => #{extconf['subutaiPeer']}"      
+puts "    SUBUTAI_SNAP:      => #{extconf['subutaiSnap']}"      
+puts "    SUBUTAI_DESKTOP:   => #{extconf['subutaiDesktop']}"
+
 Vagrant.configure("2") do |config|
-  config.vm.base_mac = gen_mac()
   config.vm.box = "subutai/nobridge"
   config.ssh.username = "subutai"
   config.ssh.password = "ubuntai"
@@ -155,6 +115,8 @@ Vagrant.configure("2") do |config|
       "SUBUTAI_ENV"      => "#{extconf['subutaiEnv']}",      
       "SUBUTAI_PEER"     => "#{extconf['subutaiPeer']}",      
       "SUBUTAI_SNAP"     => "#{extconf['subutaiSnap']}",      
-    }, path: "https://raw.githubusercontent.com/subutai-io/packer/master/nobridge/provisioning_scripts/en/provisioner.sh"
-end
+      "SUBUTAI_DESKTOP"  => "#{extconf['subutaiDesktop']}",      
+      }, path: "https://raw.githubusercontent.com/subutai-io/packer/master/nobridge/provisioning_scripts/en/provisioner.sh"
+      # }, path: "/Users/akarasulu/Projects/subutai.io/packer/nobridge/provisioning_scripts/en/provisioner.sh"
+    end
 
