@@ -17,7 +17,7 @@ else
   echo "[DEBUG] errcode = $errcode after import attempt"
 fi
 
-if [ $? -ne 0 ]; then
+if [ $errcode -ne 0 ]; then
   errcode=$?
   certificate=`cat import.err | grep "x509: certificate signed by unknown authority"`
   if [ -n "$certificate" ]; then
