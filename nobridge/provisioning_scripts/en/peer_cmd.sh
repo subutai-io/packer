@@ -29,8 +29,9 @@ if [ $errcode -ne 0 ]; then
       CMD=$CMD ./insecure.sh
       echo "Trying management import again ..."
       /snap/bin/$CMD import management
-      if [ $? -ne 0 ]; then
-        exit $?
+      errcode=$?
+      if [ $errcode -ne 0 ]; then
+        exit $errcode
       fi
     else
       echo "You must enable the allowInsecure property in the subutai.yaml file allow insecure CDN use."
