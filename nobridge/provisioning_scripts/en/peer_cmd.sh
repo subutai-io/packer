@@ -13,16 +13,12 @@ if [ -n "$(/snap/bin/$CMD list | grep management)" ]; then
 else
   /snap/bin/$CMD import management 2> import.err
   errcode=$?
-  echo '[DEBUG] errcode = '$errcode' after import attempt'
 fi
 
-set -x
 if [ $errcode -ne 0 ]; then
   certificate="$(cat import.err | grep -e '.*x509.*certificate.*')"
-  echo 'certificate = '$certificate
-
   if [ -n "$certificate" ]; then
-    echo "It seems you're using a local CDN cache node with a self signed certiifcate."
+    echo "You're using a local CDN cache node with a self signed certiifcate."
 
     if [ "$CMD" == "subutai-dev" -o "$CMD" == "subutai-master" ]; then
       echo "You're not using production so I'll enable insecure CDN downloads for you now."
@@ -41,7 +37,7 @@ if [ $errcode -ne 0 ]; then
   fi
 
   (>&2 cat import.err)
-  exit $errcode
+  if [ $errcode -ne 0 ]; then exit $errcode; fi
 fi
 
 /bin/cat <<EOM
