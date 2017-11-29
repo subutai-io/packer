@@ -1,0 +1,26 @@
+Vagrant.configure("2") do |config|
+  config.vm.box = "debian/stretch64"
+  config.vm.network "forwarded_port", guest: 3142, host: 3142
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+  config.vbguest.auto_update = false
+  config.vbguest.no_remote = true
+
+  config.vm.provider "virtualbox" do |v|
+    v.name = "apt-cacher-ng"
+  end
+
+  config.vm.provision "file", source: "~/Downloads/apt-cacher-ng.tgz", destination: "apt-cacher-ng.tgz"
+  
+  config.vm.provision "shell", inline: <<-SHELL
+    DEBIAN_FRONTEND=noninteractive apt-get update
+    DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
+    DEBIAN_FRONTEND=noninteractive apt-get install apt-cacher-ng
+    
+    if [ -f /home/vagrant/apt-cacher-ng.tgz ]; then
+      cd /var/cache
+      tar -zxvf /home/vagrant/apt-cacher-ng.tgz
+      chown -R apt-cacher-ng:apt-cacher-ng /var/cache/apt-cacher-ng
+    fi
+
+    SHELL
+end

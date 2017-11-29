@@ -54,7 +54,12 @@
             "override": {
                "virtualbox": {
                   "output": "{{user `vm_name`}}-{{user `version`}}.box",
-                  "vagrantfile_template": "virtualbox/Vagrantfile"
+                  "vagrantfile_template": "virtualbox/Vagrantfile",
+                  "include": [
+                    "../ruby/ports.rb",
+                    "../ruby/hooks.rb",
+                    "../ruby/subconf.rb"
+                  ]
                }
             },
             "type": "vagrant"

@@ -1,96 +1,31 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-require 'socket'
-require 'timeout'
 require 'fileutils'
-require 'yaml'
 
-# Loads the extended YAML configuration which might not exist. Either way the 
-# smart defaults in the extconf below will be overwritten using the
-# config_by_layout function that uses directory structure to infer config
-# settings.
-extconf_file = "subutai.yaml"
+require_relative 'hooks.rb'
+require_relative 'ports.rb'
+require_relative 'subconf.rb'
 
-# Start with some smart defaults
-extconf = {
-  "DESIRED_PORT"      => 9999,       # integer for console port
-  "ALLOW_INSECURE"    => false,      # boolean to enable insecure CDN and snap
-  "SUBUTAI_ENV"       => "prod",     # subutai environment to use
-  "SUBUTAI_PEER"      => true,       # whether or not to provision the managemetn console (peer)
-  "SUBUTAI_SNAP"      => nil,        # alternative snap to provision
-  "SUBUTAI_MAN_TMPL"  => nil,        # alternative subutai management template to provision
-  "SUBUTAI_DESKTOP"   => false,      # installs a desktop environment with tray and p2p client
-  "APT_PROXY_URL"     => nil         # if provided apt configuration is altered to use this proxy
-}
+SubConf.load     # loads the subutai.yaml file
+SubConf.env      # overrides from the environment
+                 # set the alternative snap if available or via hook
+SubConf.put('ALT_SNAP', hook_handler(SubConf.get 'SUBUTAI_SNAP'))
+                 # set the alternative management template if available or via hook
+SubConf.put('ALT_MANAGEMENT', hook_handler(SubConf.get 'SUBUTAI_MAN_TMPL'))
+                 # set the console port
+SubConf.put('CONSOLE_PORT', find_port(SubConf.get('DESIRED_PORT'), 'console', 'virtualbox'))
+SubConf.print
 
-# Override smart defaults if extended yaml configuration exists
-if File.exist?(extconf_file)
-  extconf = YAML.load_file(extconf)
-end
-
-ENV.each do |key, value|
-  extconf.store(key, value)
-end
-
-# Finds an available port
-# -----------------------
-def is_port_open?(host, port)
-  Timeout.timeout(1) do
-    s = TCPSocket.new(host, port)
-    s.close rescue nil
-
-    return true
-  end
-rescue Timeout::Error, Errno::ECONNREFUSED, Errno::EHOSTUNREACH, \
-       Errno::ENETUNREACH, Errno::EACCES, Errno::ENOTCONN, \
-       Errno::EADDRNOTAVAIL
-  return false
-end
-
-# Finds free port for console and records it in configs
-# -----------------------------------------------------
-def find_console_port(port)
-  if ARGV[0] == "up" then
-    while is_port_open?("127.0.0.1", port)
-      port += 1
-    end
-  end
-
-  console_port_file = ".vagrant/machines/default/virtualbox/console_port"
-  file_parent = ".vagrant/machines/default/virtualbox/"
-  if File.exists?(file_parent) && File.exists?(console_port_file) && ARGV[0] != "up"
-    portText = IO.read(console_port_file)
-    return portText.to_i
-  else
-    FileUtils::mkdir_p(file_parent)
-    IO.write(console_port_file, "#{port}")
-  end 
-
-  return port
-end
-
-extconf.store('CONSOLE_PORT', find_console_port(extconf['DESIRED_PORT']))
-box_path = File.dirname(__FILE__)
-
+# everything blow here is the usual vagrant configurations
 Vagrant.require_version ">= 2.0.1"
-
-puts "==> Provisioner configuration settings used:"
-puts "    ----------------------------------------"
-puts "    CONSOLE_PORT:      => #{extconf['CONSOLE_PORT']}"
-puts "    ALLOW_INSECURE:    => #{extconf['ALLOW_INSECURE']}"
-puts "    SUBUTAI_ENV:       => #{extconf['SUBUTAI_ENV']}"
-puts "    SUBUTAI_PEER:      => #{extconf['SUBUTAI_PEER']}"      
-puts "    SUBUTAI_SNAP:      => #{extconf['SUBUTAI_SNAP']}"      
-puts "    SUBUTAI_DESKTOP:   => #{extconf['SUBUTAI_DESKTOP']}"
-
 Vagrant.configure("2") do |config|
   config.vm.box = "subutai/private_nat"
   config.ssh.username = "subutai"
   config.ssh.password = "ubuntai"
 
   config.vm.network "private_network", :type => 'dhcp', nic_type: "virtio"
-  config.vm.network "forwarded_port", guest: 8443, host: extconf['CONSOLE_PORT']
+  config.vm.network "forwarded_port", guest: 8443, host: SubConf.get('CONSOLE_PORT')
 
   config.vm.provider "virtualbox" do |vb|
     vb.memory = "4096"
@@ -107,15 +42,26 @@ Vagrant.configure("2") do |config|
     vb.linked_clone = true
   end
 
+  if ! SubConf.get('ALT_SNAP').nil? then
+    config.vm.provision "file", source: "#{SubConf.get('ALT_SNAP')}", destination: "$HOME/subutai.snap"
+  end
+
+  if ! SubConf.get('ALT_MANAGEMENT').nil? then
+    config.vm.provision "file", source: "#{SubConf.get('ALT_MANAGEMENT')}", destination: "$HOME/subutai.management"
+  end
+
   config.vm.provision "shell", env: {
-      "CONSOLE_PORT"     => "#{extconf['CONSOLE_PORT']}",
-      "ALLOW_INSECURE"   => "#{extconf['ALLOW_INSECURE']}",    
-      "SUBUTAI_ENV"      => "#{extconf['SUBUTAI_ENV']}",      
-      "SUBUTAI_PEER"     => "#{extconf['SUBUTAI_PEER']}",      
-      "SUBUTAI_SNAP"     => "#{extconf['SUBUTAI_SNAP']}",      
-      "SUBUTAI_DESKTOP"  => "#{extconf['SUBUTAI_DESKTOP']}",      
+      "CONSOLE_PORT"     => "#{SubConf.get 'CONSOLE_PORT'}",
+      "ALLOW_INSECURE"   => "#{SubConf.get 'ALLOW_INSECURE'}",    
+      "SUBUTAI_ENV"      => "#{SubConf.get 'SUBUTAI_ENV'}",      
+      "SUBUTAI_PEER"     => "#{SubConf.get 'SUBUTAI_PEER'}",      
+      "SUBUTAI_SNAP"     => "#{SubConf.get 'SUBUTAI_SNAP'}",      
+      "SUBUTAI_DESKTOP"  => "#{SubConf.get 'SUBUTAI_DESKTOP'}",      
+      "SUBUTAI_MAN_TMPL" => "#{SubConf.get 'SUBUTAI_MAN_TMPL'}",      
+      "ALT_SNAP"         => "#{SubConf.get 'ALT_SNAP'}",      
+      "ALT_MANAGEMENT"   => "#{SubConf.get 'ALT_MANAGEMENT'}",      
+      "APT_PROXY_URL"    => "#{SubConf.get 'APT_PROXY_URL'}",      
       }, path: "https://raw.githubusercontent.com/subutai-io/packer/master/private_nat/provisioning_scripts/en/provisioner.sh"
       # }, path: "/Users/akarasulu/Projects/subutai.io/packer/private_nat/provisioning_scripts/en/provisioner.sh"
 end
-
 

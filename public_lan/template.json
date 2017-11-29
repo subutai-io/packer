@@ -1,0 +1,291 @@
+{
+   "builders": [
+      {
+         "ssh_host": "{{user `null_host`}}",
+         "ssh_password": "{{user `ssh_pass`}}",
+         "ssh_username": "{{user `ssh_name`}}",
+         "type": "null"
+      },
+      {
+         "boot_command": [
+            "<esc><wait>",
+            "install",
+            " auto",
+            " net.ifnames=0",
+            " url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/{{ user `preseed` }}",
+            " debian-installer=en_US",
+            " locale=en_US",
+            " keymap=us",
+            " netcfg/get_hostname=subutai",
+            " netcfg/get_domain=vm ",
+            "<enter>"
+         ],
+         "boot_wait": "3s",
+         "disk_size": "{{user `disk_size`}}",
+         "guest_additions_path": "VBoxGuestAdditions_{{.Version}}.iso",
+         "guest_os_type": "{{ user `virtualbox_guest_os_type` }}",
+         "headless": "{{ user `headless` }}",
+         "http_directory": "preseeds",
+         "iso_checksum": "{{ user `iso_checksum` }}",
+         "iso_checksum_type": "{{ user `iso_checksum_type` }}",
+         "iso_urls": [
+            "{{ user `iso_path` }}/{{ user `iso_name` }}",
+            "{{ user `iso_url` }}"
+         ],
+         "keep_registered": "{{user `keep_registered`}}",
+         "output_directory": "output-{{ user `vm_name` }}-virtualbox-iso",
+         "post_shutdown_delay": "1m",
+         "shutdown_command": "echo 'shutdown -P now' > shutdown.sh; echo {{user `ssh_pass`}} |sudo -S sh 'shutdown.sh'",
+         "skip_export": "{{user `skip_export`}}",
+         "ssh_password": "{{user `ssh_pass`}}",
+         "ssh_username": "{{user `ssh_name`}}",
+         "ssh_wait_timeout": "10000s",
+         "type": "virtualbox-iso",
+         "vboxmanage": [
+            [
+               "modifyvm",
+               "{{.Name}}",
+               "--memory",
+               "{{ user `memory` }}"
+            ],
+            [
+               "modifyvm",
+               "{{.Name}}",
+               "--cpus",
+               "{{ user `cpus` }}"
+            ]
+         ],
+         "virtualbox_version_file": ".vbox_version",
+         "vm_name": "{{ user `vm_name` }}"
+      },
+      {
+         "boot_command": [
+            "<esc><wait>",
+            "install",
+            " auto",
+            " net.ifnames=0",
+            " url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/{{ user `preseed` }}",
+            " debian-installer=en_US",
+            " locale=en_US",
+            " keymap=us",
+            " netcfg/get_hostname=subutai",
+            " netcfg/get_domain=vm ",
+            "<enter>"
+         ],
+         "boot_wait": "10s",
+         "disk_size": "{{user `disk_size`}}",
+         "guest_os_type": "debian",
+         "hard_drive_interface": "ide",
+         "http_directory": "preseeds",
+         "iso_checksum": "{{ user `iso_checksum` }}",
+         "iso_checksum_type": "{{ user `iso_checksum_type` }}",
+         "iso_urls": [
+            "{{ user `iso_path` }}/{{ user `iso_name` }}",
+            "{{ user `iso_url` }}"
+         ],
+         "output_directory": "output-{{ user `vm_name` }}-parallels-iso",
+         "parallels_tools_flavor": "lin",
+         "prlctl": [
+            [
+               "set",
+               "{{.Name}}",
+               "--memsize",
+               "{{user `memory`}}"
+            ],
+            [
+               "set",
+               "{{.Name}}",
+               "--cpus",
+               "{{user `cpus`}}"
+            ],
+            [
+               "set",
+               "{{.Name}}",
+               "--device-set",
+               "hdd0",
+               "--type",
+               "expand",
+               "--size",
+               "{{user `disk_size`}}"
+            ]
+         ],
+         "shutdown_command": "echo 'shutdown -P now' > shutdown.sh; echo {{user `ssh_pass`}} |sudo -S sh 'shutdown.sh'",
+         "ssh_password": "{{user `ssh_pass`}}",
+         "ssh_username": "{{user `ssh_name`}}",
+         "ssh_wait_timeout": "10000s",
+         "type": "parallels-iso",
+         "vm_name": "{{ user `vm_name` }}"
+      },
+      {
+         "boot_command": [
+            "<esc><wait>",
+            "install",
+            " auto",
+            " net.ifnames=0",
+            " url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/{{ user `preseed` }}",
+            " debian-installer=en_US",
+            " locale=en_US",
+            " keymap=us",
+            " netcfg/get_hostname=subutai",
+            " netcfg/get_domain=vm ",
+            "<enter>"
+         ],
+         "boot_wait": "10s",
+         "disk_size": "{{user `disk_size`}}",
+         "guest_os_type": "debian8-64",
+         "headless": "{{ user `headless` }}",
+         "http_directory": "preseeds",
+         "iso_checksum": "{{ user `iso_checksum` }}",
+         "iso_checksum_type": "{{ user `iso_checksum_type` }}",
+         "iso_urls": [
+            "{{ user `iso_path` }}/{{ user `iso_name` }}",
+            "{{ user `iso_url` }}"
+         ],
+         "keep_registered": "{{user `keep_registered`}}",
+         "output_directory": "output-{{ user `vm_name` }}-vmware-iso",
+         "shutdown_command": "echo 'shutdown -P now' > shutdown.sh; echo {{user `ssh_pass`}} |sudo -S sh 'shutdown.sh'",
+         "skip_export": "{{user `skip_export`}}",
+         "ssh_password": "{{user `ssh_pass`}}",
+         "ssh_username": "{{user `ssh_name`}}",
+         "ssh_wait_timeout": "10000s",
+         "tools_upload_flavor": "linux",
+         "type": "vmware-iso",
+         "vm_name": "{{ user `vm_name` }}",
+         "vmx_data": {
+            "memsize": "{{user `memory`}}",
+            "numvcpus": "{{user `cpus`}}"
+         }
+      }
+   ],
+   "post-processors": [
+      [
+         {
+            "compression_level": 9,
+            "keep_input_artifact": false,
+            "only": [
+               "virtualbox-iso",
+               "vmware-iso",
+               "parallels-iso"
+            ],
+            "override": {
+               "parallels": {
+                  "output": "{{user `vm_name`}}-{{user `version`}}-parallels.box"
+               },
+               "virtualbox": {
+                  "output": "{{user `vm_name`}}-{{user `version`}}-virtualbox.box",
+                  "vagrantfile_template": "Vagrantfile-virtualbox"
+               },
+               "vmware": {
+                  "output": "{{user `vm_name`}}-{{user `version`}}-vmware.box"
+               }
+            },
+            "type": "vagrant"
+         }
+      ]
+   ],
+   "provisioners": [
+      {
+         "destination": "/tmp/virtualbox-interfaces",
+         "source": "preseeds/virtualbox-interfaces",
+         "type": "file"
+      },
+      {
+         "destination": "/tmp/fix-vagrant.service",
+         "source": "preseeds/fix-vagrant.service",
+         "type": "file"
+      },
+      {
+         "destination": "/tmp/fix-vagrant",
+         "source": "preseeds/fix-vagrant",
+         "type": "file"
+      },
+      {
+         "override": {
+            "null": {
+               "execute_command": "export PROXY_ON='{{user `proxy_on`}}';export BRANCHTAG='{{user `branch_or_tag`}}';export DISTRIBUTION='{{user `distribution`}}';export DESKTOP='{{user `desktop`}}';export SSH_USERNAME='{{user `ssh_name`}}';export SSH_PASSWORD='{{user `ssh_pass`}}';echo {{user `ssh_pass`}} | sudo -E -S sh '{{ .Path }}'",
+               "scripts": [
+                  "scripts/sudo.sh",
+                  "scripts/build_time.sh",
+                  "scripts/authorized_keys.sh",
+                  "scripts/apt_proxy.sh",
+                  "scripts/apt.sh",
+                  "scripts/vbox.sh",
+                  "scripts/rc_local.sh",
+                  "scripts/cleanup.sh",
+                  "scripts/restart.sh"
+               ]
+            },
+            "parallels-iso": {
+               "execute_command": "export PROXY_ON='{{user `proxy_on`}}';export APT_PROXY_HOST='{{user `apt_proxy_host`}}';export APT_PROXY_URL='{{user `apt_proxy_url`}}';export BRANCHTAG='{{user `branch_or_tag`}}';export DISTRIBUTION='{{user `distribution`}}';export DESKTOP='{{user `desktop`}}';export SSH_USERNAME='{{user `ssh_name`}}';export SSH_PASSWORD='{{user `ssh_pass`}}';echo {{user `ssh_pass`}} | sudo -E -S sh '{{ .Path }}'",
+               "scripts": [
+                  "scripts/sudo.sh",
+                  "scripts/build_time.sh",
+                  "scripts/authorized_keys.sh",
+                  "scripts/apt_proxy.sh",
+                  "scripts/apt.sh",
+                  "scripts/parallels.sh",
+                  "scripts/rc_local.sh",
+                  "scripts/cleanup.sh",
+                  "scripts/restart.sh"
+               ]
+            },
+            "virtualbox-iso": {
+               "execute_command": "export PROXY_ON='{{user `proxy_on`}}';export APT_PROXY_HOST='{{user `apt_proxy_host`}}';export APT_PROXY_URL='{{user `apt_proxy_url`}}';export BRANCHTAG='{{user `branch_or_tag`}}';export DISTRIBUTION='{{user `distribution`}}';export DESKTOP='{{user `desktop`}}';export SSH_USERNAME='{{user `ssh_name`}}';export SSH_PASSWORD='{{user `ssh_pass`}}';echo {{user `ssh_pass`}} | sudo -E -S sh '{{ .Path }}'",
+               "scripts": [
+                  "scripts/sudo.sh",
+                  "scripts/build_time.sh",
+                  "scripts/authorized_keys.sh",
+                  "scripts/apt_proxy.sh",
+                  "scripts/apt.sh",
+                  "scripts/vbox.sh",
+                  "scripts/fix-vagrant.sh",
+                  "scripts/rc_local.sh",
+                  "scripts/grub.sh",
+                  "scripts/cleanup.sh"
+               ]
+            },
+            "vmware-iso": {
+               "execute_command": "export PROXY_ON='{{user `proxy_on`}}';export APT_PROXY_HOST='{{user `apt_proxy_host`}}';export APT_PROXY_URL='{{user `apt_proxy_url`}}';export BRANCHTAG='{{user `branch_or_tag`}}';export DISTRIBUTION='{{user `distribution`}}';export DESKTOP='{{user `desktop`}}';export SSH_USERNAME='{{user `ssh_name`}}';export SSH_PASSWORD='{{user `ssh_pass`}}';echo {{user `ssh_pass`}} | sudo -E -S sh '{{ .Path }}'",
+               "scripts": [
+                  "scripts/sudo.sh",
+                  "scripts/build_time.sh",
+                  "scripts/authorized_keys.sh",
+                  "scripts/apt_proxy.sh",
+                  "scripts/apt.sh",
+                  "scripts/vmware-boxcutter.sh",
+                  "scripts/rc_local.sh",
+                  "scripts/cleanup.sh",
+                  "scripts/restart.sh"
+               ]
+            }
+         },
+         "type": "shell"
+      }
+   ],
+   "variables": {
+      "apt_proxy_host": "{{env `APT_PROXY_HOST`}}",
+      "apt_proxy_url": "{{env `APT_PROXY_URL`}}",
+      "branch_or_tag": "1.0.5",
+      "cpus": "2",
+      "desktop": "false",
+      "disk_size": "131070",
+      "distribution": "debian",
+      "headless": "false",
+      "hostname": "subutai",
+      "iso_checksum": "ddd8f6542dae8baf410e90b9ae0fe986",
+      "iso_checksum_type": "md5",
+      "iso_name": "debian-9.1.0-amd64-netinst.iso",
+      "iso_url": "https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-9.1.0-amd64-netinst.iso",
+      "keep_registered": "false",
+      "memory": "4096",
+      "null_host": "192.168.81.129",
+      "preseed": "stretch.cfg",
+      "proxy_on": "{{env `PROXY_ON`}}",
+      "skip_export": "false",
+      "ssh_name": "subutai",
+      "ssh_pass": "ubuntai",
+      "version": "1.0.5",
+      "virtualbox_guest_os_type": "Debian_64",
+      "vm_name": "subutai-stretch"
+   }
+}
