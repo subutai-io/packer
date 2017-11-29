@@ -56,7 +56,7 @@
                   "output": "{{user `vm_name`}}-{{user `version`}}.box",
                   "vagrantfile_template": "virtualbox/Vagrantfile",
                   "include": [
-                    "../ruby/ports.rb",
+                    "../ruby/network.rb",
                     "../ruby/hooks.rb",
                     "../ruby/subconf.rb"
                   ]
