@@ -1,9 +1,7 @@
-Subutai Vagrant Boxes
----------------------
+Builds Subutai Vagrant Boxes
+----------------------------
 
 This repository holds packer builds for subutai Vagrant boxes for various
 hypervisors.
 
-- nobridge: default non-bridged NAT'd base box build
-- bridged:  uses vagrant hack to enable bridged boxes
-
+More information [here](https://github.com/subutai-io/packer/wiki/User-Guide)  .. work in progress.
