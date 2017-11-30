@@ -43,8 +43,6 @@ module SubConf
     end
 
     def self.load
-        print
-
         # Override smart defaults if extended yaml configuration exists
         if File.exist?(@conffile)
             temp = YAML.load_file(@conffile)
@@ -56,13 +54,9 @@ module SubConf
             end
         end
 
-        print
-
         ENV.each do |key, value|
             @conf.store(key, value)
         end
-
-        print
     end
   
     def self.print 

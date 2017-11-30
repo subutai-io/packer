@@ -36,7 +36,7 @@ elif [ -f "/home/subutai/subutai.snap" ]; then
   echo "Provisioning custom snap ..."
   snap install --dangerous /home/subutai/subutai.snap --devmode --beta
   if [ $? -ne 0 ]; then
-    >&2 echo "[ERROR] Exiting due to custom snap installation failure."
+    >&2 echo "[ERROR] Custom snap installation failure. Aborting!"
     exit 1
   elif [ -z "$(which $CMD)" ]; then
     installed_env="$(ls /snap | grep subutai | sed -e 's/subutai//g' -e 's/-//g')"
@@ -50,6 +50,8 @@ elif [ -f "/home/subutai/subutai.snap" ]; then
     >&2 echo "[ERROR] Exiting due to custom snap installation problems."
     exit 1
   fi
+
+  cmd_path="$(which $CMD)"
 else
   echo "Installing $CMD Snap ..."
   snap install $CMD --devmode --beta
