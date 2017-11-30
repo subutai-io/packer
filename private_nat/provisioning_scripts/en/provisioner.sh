@@ -41,14 +41,18 @@ elif [ -f "/home/subutai/subutai.snap" ]; then
   elif [ -z "$(which $CMD)" ]; then
     installed_env="$(ls /snap | grep subutai | sed -e 's/subutai//g' -e 's/-//g')"
     specified_env="$(echo $CMD | sed -e 's/subutai//g' -e 's/-//g')"
+    
     if [ "$installed_env" != "$specified_env" ]; then
       >&2 echo "[WARNING] The custom snap uses the $installed_env but the $specified_env was specified."
       >&2 echo "[WARNING] ADAPTING, BUT change your subutai.yaml settings or reprovisioning will fail."
       CMD="$(ls /snap | grep subutai)"
     fi
-    >&2 echo "[ERROR] Cannot find $CMD executable after snap installation."
-    >&2 echo "[ERROR] Exiting due to custom snap installation problems."
-    exit 1
+
+    if [ -z "$(which $CMD)" ]; then
+      >&2 echo "[ERROR] Cannot find $CMD executable after snap installation."
+      >&2 echo "[ERROR] Exiting due to custom snap installation problems."
+      exit 1
+    fi
   fi
 
   cmd_path="$(which $CMD)"
