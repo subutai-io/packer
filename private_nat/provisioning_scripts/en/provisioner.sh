@@ -43,8 +43,8 @@ elif [ -f "/home/subutai/subutai.snap" ]; then
     specified_env="$(echo $CMD | sed -e 's/subutai//g' -e 's/-//g')"
     
     if [ "$installed_env" != "$specified_env" ]; then
-      >&2 echo "[WARNING] The custom snap uses the $installed_env but the $specified_env was specified."
-      >&2 echo "[WARNING] ADAPTING, BUT change your subutai.yaml settings or reprovisioning will fail."
+      >&2 echo "[WARNING] The custom snap uses the $installed_env env but $specified_env was configured."
+      >&2 echo "[WARNING] ADAPTING, BUT change subutai.yaml configs or reprovisioning may fail."
       CMD="$(ls /snap | grep subutai)"
     fi
 

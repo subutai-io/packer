@@ -73,8 +73,8 @@ module SubConf
         puts "    SUBUTAI_SNAP:      => #{conf['SUBUTAI_SNAP']}"      
         puts "    SUBUTAI_DESKTOP:   => #{conf['SUBUTAI_DESKTOP']}"
         puts "    SUBUTAI_MAN_TMPL:  => #{conf['SUBUTAI_MAN_TMPL']}"
-        puts "    ALT_SNAP:          => #{conf['ALT_SNAP']}"      
-        puts "    ALT_MANAGEMENT:    => #{conf['ALT_MANAGEMENT']}"      
+        puts "    ALT_SNAP:          => \n\t#{conf['ALT_SNAP']}"      
+        puts "    ALT_MANAGEMENT:    => \n\t#{conf['ALT_MANAGEMENT']}"      
         puts "    APT_PROXY_URL:     => #{conf['APT_PROXY_URL']}"
         puts
     end
