@@ -1,4 +1,1 @@
-SUBUTAI_PEER: false
-SUBUTAI_ENV: master
-ALLOW_INSECURE: true
-DESIRED_PORT: 19999
+dev.yaml

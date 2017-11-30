@@ -1,7 +1,7 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-rrequire 'fileutils'
+require 'fileutils'
 
 require_relative 'hooks.rb'
 require_relative 'network.rb'
@@ -12,8 +12,12 @@ SubConf.load     # <<- loads from subutai.yaml, if it exists, then the env
 SubConf.put('ALT_SNAP', snap_handler(SubConf.get 'SUBUTAI_SNAP'))
                  # vv- set the alternative management template if available or via hook
 SubConf.put('ALT_MANAGEMENT', management_handler(SubConf.get 'SUBUTAI_MAN_TMPL'))
-                 # vv- set the console port
-SubConf.put('CONSOLE_PORT', find_port(SubConf.get('DESIRED_PORT'), 'console', 'virtualbox'))
+
+# set the console port if we're building a peer
+if SubConf.get('SUBUTAI_PEER') then
+  SubConf.put('CONSOLE_PORT', find_port(SubConf.get('DESIRED_PORT'), 'console', 'virtualbox'))
+end
+
 SubConf.print
 
 # everything blow here is the usual vagrant configurations
@@ -38,6 +42,8 @@ Vagrant.configure("2") do |config|
     vb.customize ["modifyvm", :id, "--uart3", "off"]
     vb.customize ["modifyvm", :id, "--uart4", "off"]
 
+    # This box is used for multi-vm configurations and to reduce disk usage 
+    # with possibly several virtual machines, we need to use linked clones. 
     vb.linked_clone = true
   end
 
