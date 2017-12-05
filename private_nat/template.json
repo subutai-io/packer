@@ -58,7 +58,8 @@
                   "include": [
                     "../ruby/network.rb",
                     "../ruby/hooks.rb",
-                    "../ruby/subconf.rb"
+                    "../ruby/subconf.rb",
+                    "../ruby/wormstore.rb"
                   ]
                }
             },

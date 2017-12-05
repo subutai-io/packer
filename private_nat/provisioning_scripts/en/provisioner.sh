@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# TODO add print out of all the parameters
+echo $SUBUTAI_PEER
+
+exit 0
 base="https://raw.githubusercontent.com/subutai-io/packer/master/private_nat/provisioning_scripts/en/"
 
 wget --no-cache -O peer_cmd.sh $base/peer_cmd.sh >/dev/null 2>&1
@@ -49,7 +53,7 @@ elif [ -n "$cmd_path" -a  -f "/home/subutai/subutai.snap" ]; then
     
     if [ "$installed_env" != "$specified_env" ]; then
       >&2 echo "[WARNING] The custom snap uses the $installed_env env but $specified_env was configured."
-      >&2 echo "[WARNING] ADAPTING, BUT change subutai.yaml configs or reprovisioning may fail."
+      >&2 echo "[WARNING] ADAPTING, BUT change subutai.yaml configs or reprovisioning will fail."
       CMD="$(ls /snap | grep subutai)"
     fi
 

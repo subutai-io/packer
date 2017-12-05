@@ -1,3 +1,7 @@
 .vagrant
+.vscode
+.idea
+*.snap
+*.deb
 *.log
 *.box
