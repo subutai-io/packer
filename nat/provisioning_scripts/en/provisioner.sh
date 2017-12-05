@@ -3,8 +3,8 @@
 # TODO add print out of all the parameters
 echo $SUBUTAI_PEER
 
-exit 0
-base="https://raw.githubusercontent.com/subutai-io/packer/master/private_nat/provisioning_scripts/en/"
+#exit 0
+base="https://raw.githubusercontent.com/subutai-io/packer/master/nat/provisioning_scripts/en/"
 
 wget --no-cache -O peer_cmd.sh $base/peer_cmd.sh >/dev/null 2>&1
 wget --no-cache -O final_message.sh $base/final_message.sh >/dev/null 2>&1
