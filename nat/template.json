@@ -56,10 +56,8 @@
                   "output": "{{user `vm_name`}}-{{user `version`}}.box",
                   "vagrantfile_template": "virtualbox/Vagrantfile",
                   "include": [
-                    "../ruby/network.rb",
-                    "../ruby/hooks.rb",
-                    "../ruby/subconf.rb",
-                    "../ruby/wormstore.rb"
+                    "./ruby/subutai_net.rb",
+                    "./ruby/subutai_config.rb",
                   ]
                }
             },

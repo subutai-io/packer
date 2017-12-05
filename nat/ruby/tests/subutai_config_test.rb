@@ -281,22 +281,22 @@ class SubutaiConfigTest < Test::Unit::TestCase
     end
   end
 
-  def test_bad_env_value_subutai_0
-    SubutaiConfig.override_conf_file('./tests/subutai0.yaml')
+  def test_bad_env_value_subutai_yaml_0
+    SubutaiConfig.override_conf_file('./nat/ruby/tests/subutai0.yaml')
     assert_raise do
       SubutaiConfig.load_config 'up'
     end
   end
 
-  def test_bad_key_subutai_1
-    SubutaiConfig.override_conf_file('./tests/subutai1.yaml')
+  def test_bad_key_subutai_yaml_1
+    SubutaiConfig.override_conf_file('./nat/ruby/tests/subutai1.yaml')
     assert_raise do
       SubutaiConfig.load_config 'up'
     end
   end
 
   def test_subutai_yaml_2
-    SubutaiConfig.override_conf_file('./tests/subutai2.yaml')
+    SubutaiConfig.override_conf_file('./nat/ruby/tests/subutai2.yaml')
     SubutaiConfig.load_config 'up'
     assert_equal(:master, SubutaiConfig.get(:SUBUTAI_ENV))
     assert_equal(9191, SubutaiConfig.get(:DESIRED_PORT))
