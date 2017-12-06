@@ -22,9 +22,9 @@ class SubutaiNetTest < Test::Unit::TestCase
   end
 
   def test_failure
-    assert_false(port_open?('127.0.0.1', 1))
+    assert_false(port_bound?('127.0.0.1', 1))
     assert_raise do
-      port_open?('abc', 0)
+      port_bound?('abc', 0)
     end
   end
 end

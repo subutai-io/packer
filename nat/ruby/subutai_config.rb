@@ -1,4 +1,7 @@
 require 'yaml'
+require 'digest'
+require_relative 'subutai_net'
+require_relative 'subutai_hooks'
 
 # Vagrant Driven Subutai Configuration
 module SubutaiConfig
@@ -11,9 +14,12 @@ module SubutaiConfig
     DESIRED_PORT ALLOW_INSECURE SUBUTAI_ENV
     SUBUTAI_CPU SUBUTAI_RAM SUBUTAI_PEER SUBUTAI_SNAP
     SUBUTAI_DESKTOP SUBUTAI_MAN_TMPL APT_PROXY_URL
+    PROVISION
   ].freeze
   GENERATED_PARAMETERS = %i[
-    _CONSOLE_PORT _ALT_SNAP _ALT_MANAGEMENT
+    _CONSOLE_PORT
+    _ALT_SNAP _ALT_SNAP_MD5 _ALT_SNAP_MD5_LAST
+    _ALT_MANAGEMENT _ALT_MANAGEMENT_MD5 _ALT_MANAGEMENT_MD5_LAST
   ].freeze
 
   # Used for testing
@@ -39,7 +45,8 @@ module SubutaiConfig
     SUBUTAI_SNAP: nil,       # alternative snap to provision
     SUBUTAI_DESKTOP: false,  # installs a desktop with tray and p2p client
     SUBUTAI_MAN_TMPL: nil,   # alternative management template to provision
-    APT_PROXY_URL: nil       # configure apt proxy URL
+    APT_PROXY_URL: nil,      # configure apt proxy URL
+    PROVISION: true          # to provision or not to
   }
 
   # User provided configuration settings
@@ -62,6 +69,28 @@ module SubutaiConfig
 
   def self.generated?(key)
     GENERATED_PARAMETERS.include? key
+  end
+
+  def self.provision_snap?
+    return false if get(:_ALT_SNAP).nil?
+    return false unless get(:PROVISION)
+    return false if get(:_ALT_SNAP_MD5_LAST) == get(:_ALT_SNAP_MD5)
+    true
+  end
+
+  def self.snap_provisioned!
+    put(:_ALT_SNAP_MD5_LAST, get(:_ALT_SNAP_MD5))
+  end
+
+  def self.provision_management?
+    return false if get(:_ALT_MANAGEMENT).nil?
+    return false unless get(:PROVISION)
+    return false if get(:_ALT_MANAGEMENT_MD5_LAST) == get(:_ALT_MANAGEMENT_MD5)
+    true
+  end
+
+  def self.management_provisioned!
+    put(:_ALT_MANAGEMENT_MD5_LAST, get(:_ALT_MANAGEMENT_MD5))
   end
 
   def self.cmd
@@ -107,7 +136,7 @@ module SubutaiConfig
 
   # Load generated values preserved across vagrant commands
   def self.load_generated
-    return false unless read? && File.exist?(GENERATED_FILE)
+    return false unless File.exist?(GENERATED_FILE)
     temp = YAML.load_file(GENERATED_FILE)
     temp.each do |key, value|
       @generated.store(key.to_sym, value)
@@ -117,10 +146,10 @@ module SubutaiConfig
 
   # Stores ONLY generated configuration from YAML files
   def self.store
-    return false unless write?
-    FileUtils.mkdir_p(PARENT_DIR) if write? && !Dir.exist?(PARENT_DIR)
+    FileUtils.mkdir_p(PARENT_DIR) unless Dir.exist?(PARENT_DIR)
     stringified = Hash[@generated.map { |k, v| [k.to_s, v.to_s] }]
     File.open(GENERATED_FILE, 'w') { |f| f.write stringified.to_yaml }
+    true
   end
 
   def self.set_env(key, value)
@@ -143,6 +172,25 @@ module SubutaiConfig
     end
   end
 
+  def self.do_handlers
+    file = snap_handler(get(:SUBUTAI_SNAP))
+    unless file.nil?
+      put(:_ALT_SNAP, file)
+      put(:_ALT_SNAP_MD5, Digest::MD5.file(file).to_s)
+    end
+
+    file = management_handler(get(:SUBUTAI_MAN_TMPL))
+    unless file.nil?
+      put(:_ALT_MANAGEMENT, file)
+      put(:_ALT_MANAGEMENT_MD5, Digest::MD5.file(file).to_s)
+    end
+  end
+
+  def self.do_ports
+    put(:_CONSOLE_PORT, find_port(get(:DESIRED_PORT))) \
+      if get(:SUBUTAI_PEER) && get(:_CONSOLE_PORT).nil? && write?
+  end
+
   # Loads the generated and user configuration from YAML files
   def self.load_config(cmd)
     raise 'SubutaiConfig.cmd not set' if cmd.nil?
@@ -151,18 +199,14 @@ module SubutaiConfig
     # Load YAML based user and local configuration if they exist
     load_config_file(USER_CONF_FILE) if File.exist?(USER_CONF_FILE)
     load_config_file(conf_file) if File.exist?(conf_file)
+    load_generated
 
     # Load overrides from the environment, and generated configurations
     ENV.each do |key, value|
-      @config.store(key, value) if USER_PARAMETERS.include? key
+      put(key.to_sym, value) if USER_PARAMETERS.include? key.to_sym
     end
-    load_generated
-
-    put(:_ALT_SNAP, snap_handler(get(:SUBUTAI_SNAP))) \
-      unless get(:SUBUTAI_SNAP).nil?
-    put(:_ALT_MANAGEMENT, snap_handler(get(:SUBUTAI_MAN_TMPL))) \
-      unless get(:SUBUTAI_MAN_TMPL).nil?
-    put(:_CONSOLE_PORT, find_port(get(:DESIRED_PORT))) if get(:SUBUTAI_PEER)
+    do_handlers
+    do_ports
   end
 
   def self.reset

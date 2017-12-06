@@ -1,9 +1,27 @@
 #!/bin/bash
 
 # TODO add print out of all the parameters
-echo $SUBUTAI_PEER
+echo 'PROVISION        = '$PROVISION
+echo 'SUBUTAI_PEER     = '$SUBUTAI_PEER
+echo 'DESIRED_PORT     = '$DESIRED_PORT
+echo 'SUBUTAI_ENV      = '$SUBUTAI_ENV
+echo 'SUBUTAI_RAM      = '$SUBUTAI_RAM
+echo 'SUBUTAI_CPU      = '$SUBUTAI_CPU
+echo 'SUBUTAI_SNAP     = '$SUBUTAI_SNAP
+echo 'SUBUTAI_DESKTOP  = '$SUBUTAI_DESKTOP
+echo 'SUBUTAI_MAN_TMPL = '$SUBUTAI_MAN_TMPL
+echo 'APT_PROXY_URL    = '$APT_PROXY_URL
+echo
+echo '_CONSOLE_PORT      = '$_CONSOLE_PORT
+echo '_ALT_SNAP          = '$_ALT_SNAP
+echo '_ALT_SNAP_MD5      = '$_ALT_SNAP_MD5
+echo '_ALT_SNAP_MD5_LAST = '$_ALT_SNAP_MD5_LAST
+echo '_ALT_MANAGEMENT    = '$_ALT_MANAGEMENT
 
-#exit 0
+if [ "$PROVISION" = "false" ]; then
+    exit 0;
+fi
+
 base="https://raw.githubusercontent.com/subutai-io/packer/master/nat/provisioning_scripts/en/"
 
 wget --no-cache -O peer_cmd.sh $base/peer_cmd.sh >/dev/null 2>&1

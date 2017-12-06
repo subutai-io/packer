@@ -182,7 +182,6 @@ class SubutaiConfigTest < Test::Unit::TestCase
     SubutaiConfig.load_config 'up'
 
     # _CONSOLE_PORT
-    assert_nil(SubutaiConfig.get(:_CONSOLE_PORT))
     assert_equal(1234, SubutaiConfig.put(:_CONSOLE_PORT, 1234))
     assert_equal(1234, SubutaiConfig.get(:_CONSOLE_PORT))
     assert_equal(1234, SubutaiConfig.get('_CONSOLE_PORT'))
@@ -263,7 +262,6 @@ class SubutaiConfigTest < Test::Unit::TestCase
     # these should not be cleared out by the reset
     assert_equal(snap, SubutaiConfig.get(:_ALT_SNAP))
     assert_equal(pkg, SubutaiConfig.get(:_ALT_MANAGEMENT))
-    assert_equal('1234', SubutaiConfig.get(:_CONSOLE_PORT))
 
     cmd = 'suspend'
     SubutaiConfig.load_config(cmd)

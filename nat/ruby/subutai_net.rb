@@ -3,9 +3,9 @@ require 'timeout'
 
 # methods dealing with port management
 
-# Finds an available port
-# -----------------------
-def port_open?(host, port)
+# Checks if a port is not available
+# ---------------------------------
+def port_bound?(host, port)
   Timeout.timeout(1) do
     s = TCPSocket.new(host, port)
     s.close rescue nil
@@ -20,6 +20,6 @@ end
 # Finds free port for console and puts in wormstore
 # -------------------------------------------------
 def find_port(port)
-  port += 1 while port_open?('127.0.0.1', port)
+  port += 1 while port_bound?('127.0.0.1', port)
   port
 end
