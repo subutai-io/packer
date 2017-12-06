@@ -157,6 +157,12 @@ module SubutaiConfig
       @config.store(key, value) if USER_PARAMETERS.include? key
     end
     load_generated
+
+    put(:_ALT_SNAP, snap_handler(get(:SUBUTAI_SNAP))) \
+      unless get(:SUBUTAI_SNAP).nil?
+    put(:_ALT_MANAGEMENT, snap_handler(get(:SUBUTAI_MAN_TMPL))) \
+      unless get(:SUBUTAI_MAN_TMPL).nil?
+    put(:_CONSOLE_PORT, find_port(get(:DESIRED_PORT))) if get(:SUBUTAI_PEER)
   end
 
   def self.reset
