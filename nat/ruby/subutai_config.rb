@@ -74,7 +74,7 @@ module SubutaiConfig
   def self.provision_snap?
     return false if get(:_ALT_SNAP).nil?
     return false unless get(:PROVISION)
-    return false if get(:_ALT_SNAP_MD5_LAST) == get(:_ALT_SNAP_MD5)
+    return false if get(:_ALT_SNAP_MD5) == get(:_ALT_SNAP_MD5_LAST)
     true
   end
 
@@ -85,7 +85,7 @@ module SubutaiConfig
   def self.provision_management?
     return false if get(:_ALT_MANAGEMENT).nil?
     return false unless get(:PROVISION)
-    return false if get(:_ALT_MANAGEMENT_MD5_LAST) == get(:_ALT_MANAGEMENT_MD5)
+    return false if get(:_ALT_MANAGEMENT_MD5) == get(:_ALT_MANAGEMENT_MD5_LAST)
     true
   end
 

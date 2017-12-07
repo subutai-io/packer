@@ -1,24 +1,31 @@
 #!/bin/bash
 
-# TODO add print out of all the parameters
-echo 'PROVISION        = '$PROVISION
-echo 'SUBUTAI_PEER     = '$SUBUTAI_PEER
-echo 'DESIRED_PORT     = '$DESIRED_PORT
-echo 'SUBUTAI_ENV      = '$SUBUTAI_ENV
-echo 'SUBUTAI_RAM      = '$SUBUTAI_RAM
-echo 'SUBUTAI_CPU      = '$SUBUTAI_CPU
-echo 'SUBUTAI_SNAP     = '$SUBUTAI_SNAP
-echo 'SUBUTAI_DESKTOP  = '$SUBUTAI_DESKTOP
-echo 'SUBUTAI_MAN_TMPL = '$SUBUTAI_MAN_TMPL
-echo 'APT_PROXY_URL    = '$APT_PROXY_URL
-echo
-echo '_CONSOLE_PORT      = '$_CONSOLE_PORT
-echo '_ALT_SNAP          = '$_ALT_SNAP
-echo '_ALT_SNAP_MD5      = '$_ALT_SNAP_MD5
-echo '_ALT_SNAP_MD5_LAST = '$_ALT_SNAP_MD5_LAST
-echo '_ALT_MANAGEMENT    = '$_ALT_MANAGEMENT
+echo '------------------------------------------------------------------'
+echo 'User Specified Parameters:'
+echo '------------------------------------------------------------------'
+echo 'PROVISION                = '$PROVISION
+echo 'SUBUTAI_PEER             = '$SUBUTAI_PEER
+echo 'DESIRED_PORT             = '$DESIRED_PORT
+echo 'SUBUTAI_ENV              = '$SUBUTAI_ENV
+echo 'SUBUTAI_RAM              = '$SUBUTAI_RAM
+echo 'SUBUTAI_CPU              = '$SUBUTAI_CPU
+echo 'SUBUTAI_SNAP             = '$SUBUTAI_SNAP
+echo 'SUBUTAI_DESKTOP          = '$SUBUTAI_DESKTOP
+echo 'SUBUTAI_MAN_TMPL         = '$SUBUTAI_MAN_TMPL
+echo 'APT_PROXY_URL            = '$APT_PROXY_URL
+echo '------------------------------------------------------------------'
+echo 'Run Generated Parameters:'
+echo '------------------------------------------------------------------'
+echo '_CONSOLE_PORT            = '$_CONSOLE_PORT
+echo '_ALT_SNAP                = '$_ALT_SNAP
+echo '_ALT_SNAP_MD5            = '$_ALT_SNAP_MD5
+echo '_ALT_SNAP_MD5_LAST       = '$_ALT_SNAP_MD5_LAST
+echo '_ALT_MANAGEMENT_MD5      = '$_ALT_MANAGEMENT_MD5
+echo '_ALT_MANAGEMENT_MD5_LAST = '$_ALT_MANAGEMENT_MD5_LAST
+echo '_ALT_MANAGEMENT          = '$_ALT_MANAGEMENT
 
 if [ "$PROVISION" = "false" ]; then
+    echo Provisioning has been disabled, existing with SUCCESS
     exit 0;
 fi
 

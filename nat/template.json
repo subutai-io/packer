@@ -77,6 +77,7 @@
                   "scripts/authorized_keys.sh",
                   "scripts/apt_proxy.sh",
                   "scripts/apt.sh",
+                  "scripts/snap.sh",
                   "scripts/vbox.sh",
                   "scripts/rc_local.sh",
                   "scripts/grub.sh",
