@@ -1,7 +1,7 @@
-Base Box `private_nat`
+Base Box `nat-xenial`
 ======================
 
-This box builds a NAT'd RH or Peer based on configuration settings.
+This box builds a NAT'd Ubuntu Xenial RH or Peer based on configuration settings.
 
 Unless stated otherwise all machine architectures are amd64.
 

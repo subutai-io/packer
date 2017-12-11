@@ -18,7 +18,7 @@
          "guest_additions_path": "VBoxGuestAdditions_{{.Version}}.iso",
          "headless": "{{ user `headless` }}",
          "hard_drive_interface": "sata",
-         "http_directory": "http",
+         "http_directory": "../http",
          "iso_checksum": "{{ user `iso_checksum` }}",
          "iso_checksum_type": "{{ user `iso_checksum_type` }}",
          "iso_urls": [
@@ -72,16 +72,16 @@
             "virtualbox-iso": {
                "execute_command": "export PROXY_ON='{{user `proxy_on`}}';export APT_PROXY_HOST='{{user `apt_proxy_host`}}';export APT_PROXY_URL='{{user `apt_proxy_url`}}';export BRANCHTAG='{{user `branch_or_tag`}}';export DISTRIBUTION='{{user `distribution`}}';export DESKTOP='{{user `desktop`}}';export SSH_USERNAME='{{user `ssh_username`}}';export SSH_PASSWORD='{{user `ssh_password`}}';echo {{user `ssh_password`}} | sudo -E -S sh '{{ .Path }}'",
                "scripts": [
-                  "scripts/sudo.sh",
-                  "scripts/build_time.sh",
-                  "scripts/authorized_keys.sh",
-                  "scripts/apt_proxy.sh",
-                  "scripts/apt.sh",
-                  "scripts/snap.sh",
-                  "scripts/vbox.sh",
-                  "scripts/rc_local.sh",
-                  "scripts/grub.sh",
-                  "scripts/cleanup.sh"
+                  "../scripts/sudo.sh",
+                  "../scripts/build_time.sh",
+                  "../scripts/authorized_keys.sh",
+                  "../scripts/apt_proxy.sh",
+                  "../scripts/apt.sh",
+                  "../scripts/snap.sh",
+                  "../scripts/vbox.sh",
+                  "../scripts/rc_local.sh",
+                  "../scripts/grub.sh",
+                  "../scripts/cleanup.sh"
                ]
             }
          },
@@ -97,7 +97,7 @@
         "desktop": "false",
         "disk_size": "131070",
         "distribution": "ubuntu",
-        "headless": "false",
+        "headless": "true",
         "hostname": "subutai",
         "iso_checksum": "10fcd20619dce11fe094e960c85ba4a9",
         "iso_checksum_type": "md5",
