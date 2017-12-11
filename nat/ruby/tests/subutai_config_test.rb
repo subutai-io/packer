@@ -308,6 +308,16 @@ class SubutaiConfigTest < Test::Unit::TestCase
     assert_equal('http://some_server:4444', SubutaiConfig.get(:APT_PROXY_URL))
   end
 
+  def test_boolean?
+    SubutaiConfig.load_config 'up'
+    assert_true(SubutaiConfig.boolean?(:SUBUTAI_PEER))
+    assert_false(SubutaiConfig.boolean?(:SUBUTAI_DESKTOP))
+    assert_false(SubutaiConfig.boolean?(:SUBUTAI_SNAP))
+    assert_raise do
+      SubutaiConfig.boolean?(:SUBUTAI_CPU)
+    end
+  end
+
   def test_raises
     assert_raise do
       SubutaiConfig.write?
@@ -320,5 +330,103 @@ class SubutaiConfigTest < Test::Unit::TestCase
     end
 
     assert_not_nil(SubutaiConfig.config)
+
+    SubutaiConfig.load_config 'ssh'
+    assert_true(SubutaiConfig.read?)
+  end
+
+  def test_provision_snap?
+    SubutaiConfig.load_config 'ssh'
+    configs = SubutaiConfig.config
+
+    # Make it all negative for provisioning conditions
+    configs.store(:PROVISION, false)
+    configs.store(:_ALT_SNAP, nil)
+    configs.store(:_ALT_SNAP_MD5, '6fc87ffd922973f8c88fd939fc091885')
+    configs.store(:_ALT_SNAP_MD5_LAST, '6fc87ffd922973f8c88fd939fc091885')
+    assert_false(SubutaiConfig.provision_snap?)
+
+    configs.store(:PROVISION, true)
+    configs.store(:_ALT_SNAP, nil)
+    configs.store(:_ALT_SNAP_MD5, '6fc87ffd922973f8c88fd939fc091885')
+    configs.store(:_ALT_SNAP_MD5_LAST, '6fc87ffd922973f8c88fd939fc091885')
+    assert_false(SubutaiConfig.provision_snap?)
+
+    configs.store(:PROVISION, true)
+    configs.store(:_ALT_SNAP, './ruby/tests/snap_script.sh')
+    configs.store(:_ALT_SNAP_MD5, '6fc87ffd922973f8c88fd939fc091885')
+    configs.store(:_ALT_SNAP_MD5_LAST, '6fc87ffd922973f8c88fd939fc091885')
+    assert_false(SubutaiConfig.provision_snap?)
+
+    configs.store(:PROVISION, true)
+    configs.store(:_ALT_SNAP, './ruby/tests/snap_script.sh')
+    configs.store(:_ALT_SNAP_MD5, '6fc87ffd922973f8c88fd939fc091885')
+    configs.store(:_ALT_SNAP_MD5_LAST, nil)
+    assert_false(SubutaiConfig.provision_snap?)
+
+    SubutaiConfig.load_config 'provision'
+    configs.store(:PROVISION, true)
+    configs.store(:_ALT_SNAP, './ruby/tests/snap_script.sh')
+    configs.store(:_ALT_SNAP_MD5, '6fc87ffd922973f8c88fd939fc091885')
+    configs.store(:_ALT_SNAP_MD5_LAST, nil)
+    assert_true(SubutaiConfig.provision_snap?)
+
+    SubutaiConfig.snap_provisioned!
+  end
+
+  def test_provision_management?
+    SubutaiConfig.load_config 'ssh'
+    configs = SubutaiConfig.config
+
+    # Make it all negative for provisioning conditions
+    configs.store(:PROVISION, false)
+    configs.store(:_ALT_MANAGEMENT, nil)
+    configs.store(:_ALT_MANAGEMENT_MD5, '6fc87ffd922973f8c88fd939fc091885')
+    configs.store(:_ALT_MANAGEMENT_MD5_LAST, '6fc87ffd922973f8c88fd939fc091885')
+    assert_false(SubutaiConfig.provision_management?)
+
+    configs.store(:PROVISION, true)
+    configs.store(:_ALT_MANAGEMENT, nil)
+    configs.store(:_ALT_MANAGEMENT_MD5, '6fc87ffd922973f8c88fd939fc091885')
+    configs.store(:_ALT_MANAGEMENT_MD5_LAST, '6fc87ffd922973f8c88fd939fc091885')
+    assert_false(SubutaiConfig.provision_management?)
+
+    configs.store(:PROVISION, true)
+    configs.store(:_ALT_MANAGEMENT, './ruby/tests/snap_script.sh')
+    configs.store(:_ALT_MANAGEMENT_MD5, '6fc87ffd922973f8c88fd939fc091885')
+    configs.store(:_ALT_MANAGEMENT_MD5_LAST, '6fc87ffd922973f8c88fd939fc091885')
+    assert_false(SubutaiConfig.provision_management?)
+
+    configs.store(:PROVISION, true)
+    configs.store(:_ALT_MANAGEMENT, './ruby/tests/snap_script.sh')
+    configs.store(:_ALT_MANAGEMENT_MD5, '6fc87ffd922973f8c88fd939fc091885')
+    configs.store(:_ALT_MANAGEMENT_MD5_LAST, nil)
+    assert_false(SubutaiConfig.provision_management?)
+
+    SubutaiConfig.load_config 'provision'
+    configs.store(:PROVISION, true)
+    configs.store(:_ALT_MANAGEMENT, './ruby/tests/snap_script.sh')
+    configs.store(:_ALT_MANAGEMENT_MD5, '6fc87ffd922973f8c88fd939fc091885')
+    configs.store(:_ALT_MANAGEMENT_MD5_LAST, nil)
+    assert_true(SubutaiConfig.provision_management?)
+
+    SubutaiConfig.management_provisioned!
+  end
+
+  def test_do_handlers
+    SubutaiConfig.load_config 'ssh'
+    configs = SubutaiConfig.config
+    assert_false(SubutaiConfig.do_handlers)
+
+    SubutaiConfig.load_config 'up'
+    configs.store(:SUBUTAI_SNAP, './nat/ruby/tests/snap_script.sh')
+    configs.store(:SUBUTAI_MAN_TMPL, './nat/ruby/tests/snap_script.sh')
+    assert_true(SubutaiConfig.do_handlers)
+
+    configs.store(:SUBUTAI_SNAP, './nat/ruby/tests/bad_snap_script.sh')
+    configs.store(:SUBUTAI_MAN_TMPL, './nat/ruby/tests/bad_snap_script.sh')
+    assert_raise do
+      SubutaiConfig.do_handlers
+    end
   end
 end

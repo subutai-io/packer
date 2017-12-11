@@ -2,6 +2,9 @@
 Metrics/MethodLength:
   Max: 20
 
+Metrics/MethodCount:
+  Max: 20
+
 Metrics/AbcSize:
   Max: 30
 
@@ -12,7 +15,7 @@ Metrics/CyclomaticComplexity:
   Max: 10
 
 Metrics/ModuleLength:
-  Max: 200
+  Max: 250
 
 Style/RescueModifier:
   Enabled: false

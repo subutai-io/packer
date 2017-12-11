@@ -8,6 +8,7 @@ require_relative 'subutai_net.rb'
 require_relative 'subutai_config.rb'
 
 SubutaiConfig.load_config(ARGV[0])
+SubutaiConfig.logging!(:debug)
 SubutaiConfig.print
 
 Vagrant.require_version '>= 2.0.1'
@@ -52,5 +53,5 @@ Vagrant.configure('2') do |config|
 
   config.vm.provision 'shell',
                       env: SubutaiConfig.config,
-                      path: 'https://raw.githubusercontent.com/subutai-io/packer/master/private_nat/provisioning_scripts/en/provisioner.sh'
+                      path: 'https://raw.githubusercontent.com/subutai-io/packer/master/nat/provisioning_scripts/en/provisioner.sh'
 end

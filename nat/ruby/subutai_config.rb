@@ -5,6 +5,7 @@ require_relative 'subutai_hooks'
 
 # Vagrant Driven Subutai Configuration
 module SubutaiConfig
+  LOG_MODES = %i[debug info warn error].freeze
   PARENT_DIR = './.vagrant'.freeze
   GENERATED_FILE = PARENT_DIR + '/generated.yaml'.freeze
   CONF_FILE = './subutai.yaml'.freeze
@@ -18,6 +19,7 @@ module SubutaiConfig
   ].freeze
   GENERATED_PARAMETERS = %i[
     _CONSOLE_PORT
+    _LOG_MODE
     _ALT_SNAP _ALT_SNAP_MD5 _ALT_SNAP_MD5_LAST
     _ALT_MANAGEMENT _ALT_MANAGEMENT_MD5 _ALT_MANAGEMENT_MD5_LAST
   ].freeze
@@ -52,6 +54,8 @@ module SubutaiConfig
   # User provided configuration settings
   @config = @defaults.clone
 
+  @logging = nil
+
   def self.write?
     raise 'SubutaiConfig.cmd not set' if @cmd.nil?
     @cmd == 'up'
@@ -71,26 +75,41 @@ module SubutaiConfig
     GENERATED_PARAMETERS.include? key
   end
 
+  def self.boolean?(key)
+    if get(key.to_sym) == 'true' || get(key.to_sym) == true
+      true
+    elsif get(key.to_sym) == 'false' || get(key.to_sym) == false
+      false
+    elsif get(key.to_sym).nil?
+      false
+    else
+      raise "#{key} value #{get(key.to_sym)} is not a boolean"
+    end
+  end
+
   def self.provision_snap?
+    return false unless boolean?(:PROVISION)
     return false if get(:_ALT_SNAP).nil?
-    return false unless get(:PROVISION)
     return false if get(:_ALT_SNAP_MD5) == get(:_ALT_SNAP_MD5_LAST)
+    return false unless %w[up provision].include?(@cmd)
     true
   end
 
   def self.snap_provisioned!
-    put(:_ALT_SNAP_MD5_LAST, get(:_ALT_SNAP_MD5))
+    put(:_ALT_SNAP_MD5_LAST, get(:_ALT_SNAP_MD5), true) if provision_snap?
   end
 
   def self.provision_management?
+    return false unless boolean?(:PROVISION)
     return false if get(:_ALT_MANAGEMENT).nil?
-    return false unless get(:PROVISION)
     return false if get(:_ALT_MANAGEMENT_MD5) == get(:_ALT_MANAGEMENT_MD5_LAST)
+    return false unless %w[up provision].include?(@cmd)
     true
   end
 
   def self.management_provisioned!
-    put(:_ALT_MANAGEMENT_MD5_LAST, get(:_ALT_MANAGEMENT_MD5))
+    put(:_ALT_MANAGEMENT_MD5_LAST, get(:_ALT_MANAGEMENT_MD5), true)\
+      if provision_management?
   end
 
   def self.cmd
@@ -123,14 +142,14 @@ module SubutaiConfig
   end
 
   # Write through to save configuration values
-  def self.put(key, value)
+  def self.put(key, value, do_store)
     raise "Undefined configuration parameter: #{key}" \
       unless USER_PARAMETERS.include?(key.to_sym)     \
       || GENERATED_PARAMETERS.include?(key.to_sym)
     @config.store(key.to_sym, value)
     @generated.store(key.to_sym, value) if generated? key
 
-    store
+    store if do_store
     value
   end
 
@@ -173,21 +192,24 @@ module SubutaiConfig
   end
 
   def self.do_handlers
+    return false unless %w[up provision].include? @cmd
     file = snap_handler(get(:SUBUTAI_SNAP))
     unless file.nil?
-      put(:_ALT_SNAP, file)
-      put(:_ALT_SNAP_MD5, Digest::MD5.file(file).to_s)
+      put(:_ALT_SNAP, file, true) if provision_snap?
+      put(:_ALT_SNAP_MD5, Digest::MD5.file(file).to_s, true) if provision_snap?
     end
 
     file = management_handler(get(:SUBUTAI_MAN_TMPL))
     unless file.nil?
-      put(:_ALT_MANAGEMENT, file)
-      put(:_ALT_MANAGEMENT_MD5, Digest::MD5.file(file).to_s)
+      put(:_ALT_MANAGEMENT, file, true) if provision_management?
+      put(:_ALT_MANAGEMENT_MD5, Digest::MD5.file(file).to_s, true) \
+        if provision_management?
     end
+    true
   end
 
   def self.do_ports
-    put(:_CONSOLE_PORT, find_port(get(:DESIRED_PORT))) \
+    put(:_CONSOLE_PORT, find_port(get(:DESIRED_PORT)), true) \
       if get(:SUBUTAI_PEER) && get(:_CONSOLE_PORT).nil? && write?
   end
 
@@ -203,7 +225,7 @@ module SubutaiConfig
 
     # Load overrides from the environment, and generated configurations
     ENV.each do |key, value|
-      put(key.to_sym, value) if USER_PARAMETERS.include? key.to_sym
+      put(key.to_sym, value, false) if USER_PARAMETERS.include? key.to_sym
     end
     do_handlers
     do_ports
@@ -226,7 +248,25 @@ module SubutaiConfig
     File.delete GENERATED_FILE if File.exist?(GENERATED_FILE)
   end
 
+  def self.logging!(mode)
+    return (@logging = nil) if mode.nil?
+    raise "Invalid logging mode #{mode}" unless LOG_MODES.include?(mode)
+    @logging = mode
+    puts "Logging mode set to #{mode}"
+  end
+
+  def self.log(cmds, message)
+    return if @logging.nil?
+    puts message if !cmds.nil? && cmds.include?(@cmd)
+  end
+
+  def self.log_mode(modes, cmds, message)
+    return if @logging.nil?
+    puts message if cmds.include?(@cmd) && modes.include?(@logging)
+  end
+
   def self.print
+    return if @logging.nil?
     puts
     puts ' ==> User provided configuration: '
     puts ' --------------------------------------------------------------------'

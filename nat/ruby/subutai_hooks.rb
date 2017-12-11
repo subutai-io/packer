@@ -6,7 +6,8 @@ def shebang?(bash_hook)
   text = File.open(bash_hook).read
   text.gsub!(/\r\n?/, "\n")
   line = text.next
-  line.start_with? '#!/bin/bash'
+  return true if line.start_with? '#!/bin/bash'
+  true if line.start_with? '#!/usr/bin/env bash'
 end
 
 # Handle hook scripts or normal files: returns path to file to provision
@@ -23,10 +24,11 @@ def hook_handler(hook)
   fext = File.extname(hook)
   if fext == '.sh' && shebang?(hook)
     `#{hook}`.strip # executes and returns output (should be file)
-  elsif fext == '.bat'
-    return `#{hook}`.strip # executes and returns output (should be file)
+  # elsif fext == '.bat'
+  #   return `#{hook}`.strip # executes and returns output (should be file)
   else
-    puts '[WARNING] hook script not valid bash .sh or .bat. Abandoning launch.'
+    # raise '[WARNING] hook script not valid bash .sh or .bat. Abandoning launch.'
+    raise '[WARNING] hook script not valid bash file with .sh extension. Abandoning launch.'
   end
 end
 
