@@ -1,1 +1,1 @@
-../ruby/subutai_hooks.rb
+../../../ruby/subutai_hooks.rb

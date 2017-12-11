@@ -1,1 +1,1 @@
-../ruby/subutai_config.rb
+../../../ruby/subutai_config.rb

@@ -10,7 +10,7 @@ module SubutaiConfig
   GENERATED_FILE = PARENT_DIR + '/generated.yaml'.freeze
   CONF_FILE = './subutai.yaml'.freeze
   USER_CONF_FILE = File.expand_path('~/.subutai.yaml').freeze
-  SUBUTAI_ENVIRONMENTS = %i[prod master dev].freeze
+  SUBUTAI_ENVIRONMENTS = %i[prod master dev sysnet].freeze
   USER_PARAMETERS = %i[
     DESIRED_PORT ALLOW_INSECURE SUBUTAI_ENV
     SUBUTAI_CPU SUBUTAI_RAM SUBUTAI_PEER SUBUTAI_SNAP

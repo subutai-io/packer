@@ -56,9 +56,9 @@
                   "output": "{{user `vm_name`}}-{{user `version`}}.box",
                   "vagrantfile_template": "virtualbox/Vagrantfile",
                   "include": [
-                    "./ruby/subutai_net.rb",
-                    "./ruby/subutai_hooks.rb",
-                    "./ruby/subutai_config.rb"
+                    "../../ruby/subutai_net.rb",
+                    "../../ruby/subutai_hooks.rb",
+                    "../../ruby/subutai_config.rb"
                   ]
                }
             },
@@ -114,6 +114,6 @@
         "ssh_password": "ubuntai",
         "version": "2.0.0",
         "virtualbox_guest_os_type": "Ubuntu_64",
-        "vm_name": "subutai-nat"
+        "vm_name": "nat-xenial"
    }
 }

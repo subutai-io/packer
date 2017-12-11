@@ -40,11 +40,11 @@ wget --no-cache -O insecure.sh $base/insecure.sh >/dev/null 2>&1
 chmod +x *.sh
 
 case $SUBUTAI_ENV in
+  sysnet)
+    CMD="subutai-sysnet"
+    ;;
   dev*)
     CMD="subutai-dev"
-    ;;
-  stage)
-    CMD="subutai-master"
     ;;
   master)
     CMD="subutai-master"
