@@ -4,7 +4,7 @@ if [ -z "$PASSWORD" ]; then
   PASSWORD="ubuntai"
 fi
 
-cat > ../http/xenial.cfg <<-EOF
+cat > $BASE_DIR/http/xenial.cfg <<-EOF
 # Account setup
 #d-i passwd/root-password password $PASSWORD
 #d-i passwd/root-password-again password $PASSWORD
@@ -74,9 +74,9 @@ d-i   partman-lvm/confirm_nooverwrite    boolean  true
 d-i   partman-auto/confirm               boolean  true
 EOF
 
-cat ../http/partition.cfg >> ../http/xenial.cfg
+cat $BASE_DIR/http/partition.cfg >> $BASE_DIR/http/xenial.cfg
 
-cat >> ../http/xenial.cfg <<-EOF
+cat >> $BASE_DIR/http/xenial.cfg <<-EOF
 d-i   partman/confirm_write_new_label  boolean true
 d-i   partman-partitioning/confirm_write_new_label boolean true
 d-i   partman/choose_partition select finish
@@ -96,7 +96,7 @@ apt-cdrom-setup apt-setup/cdrom/set-first boolean false
 EOF
 
 if [ -n "$PROXY_ON" ]; then
-cat >> ../http/xenial.cfg <<-EOF
+cat >> $BASE_DIR/http/xenial.cfg <<-EOF
 # Detected proxy live repo proxy so using apt-cache-ng
 d-i mirror/country string manual
 d-i mirror/http/hostname string $APT_PROXY_HOST
@@ -106,7 +106,7 @@ d-i mirror/http/mirror select $APT_PROXY_URL
 
 EOF
 else
-cat >> ../http/xenial.cfg <<-EOF
+cat >> $BASE_DIR/http/xenial.cfg <<-EOF
 # No live proxy, using normal package mirrors
 d-i     mirror/country          string enter information manually
 d-i     mirror/http/hostname    string archive.ubuntu.org
@@ -117,7 +117,7 @@ d-i     mirror/http/proxy       string
 EOF
 fi
 
-cat >> ../http/xenial.cfg <<-EOF
+cat >> $BASE_DIR/http/xenial.cfg <<-EOF
 # Don't send reports back to the project
 popularity-contest popularity-contest/participate boolean false
 # Package selection
@@ -130,4 +130,4 @@ d-i finish-install/reboot_in_progress note
 
 EOF
 
-cat ../http/packages.cfg >> ../http/xenial.cfg
+cat $BASE_DIR/http/packages.cfg >> $BASE_DIR/http/xenial.cfg

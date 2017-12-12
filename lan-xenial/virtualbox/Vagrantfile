@@ -53,5 +53,5 @@ Vagrant.configure('2') do |config|
 
   config.vm.provision 'shell',
                       env: SubutaiConfig.config,
-                      path: 'https://raw.githubusercontent.com/subutai-io/packer/master/nat/provisioning_scripts/en/provisioner.sh'
+                      path: 'https://raw.githubusercontent.com/subutai-io/packer/master/provisioning/en/provisioner.sh'
 end

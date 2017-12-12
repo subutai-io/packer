@@ -1,5 +1,8 @@
 #!/bin/bash
 
+BASE_DIR="`dirname \"$0\"`"
+BASE_DIR="`( cd \"$BASE_DIR\" && pwd )`"
+
 # cleanup and set apt proxy port if not configured
 rm -rf *.box; rm -rf *.log;
 if [ -z "$APT_PROXY_PORT" ]; then
@@ -41,9 +44,9 @@ do_local_proxy() {
   if [ "$answer" = "y" ]; then
     do_vbguest_plugin >&2
 
-    cd ../cache
+    cd $BASE_DIR/cache
     vagrant up >&2
-    cd ../lan-stretch
+    cd $BASE_DIR
 
     while [ -z "$(check_proxy $local_proxy)" ]; do
       echo "Local proxy $local_proxy is not up. Waiting 10s ..." >&2
@@ -96,19 +99,41 @@ else
 fi
 
 # TODO: export password from variables in json file
-PROXY_ON=$PROXY_ON PASSWORD=$PASSWORD APT_PROXY_PORT=$APT_PROXY_PORT \
-   APT_PROXY_URL=$APT_PROXY_URL APT_PROXY_HOST=$APT_PROXY_HOST ../http/stretch.sh
+BASE_DIR=$BASE_DIR                  \
+  PROXY_ON=$PROXY_ON                \
+  PASSWORD=$PASSWORD                \
+  APT_PROXY_PORT=$APT_PROXY_PORT    \
+  APT_PROXY_URL=$APT_PROXY_URL      \
+  APT_PROXY_HOST=$APT_PROXY_HOST    \
+  $BASE_DIR/http/stretch.sh
 
-echo "==> Validating template.json ..."
-packer validate template.json
+BASE_DIR=$BASE_DIR                  \
+  PROXY_ON=$PROXY_ON                \
+  PASSWORD=$PASSWORD                \
+  APT_PROXY_PORT=$APT_PROXY_PORT    \
+  APT_PROXY_URL=$APT_PROXY_URL      \
+  APT_PROXY_HOST=$APT_PROXY_HOST    \
+  $BASE_DIR/http/xenial.sh
 
-if [ "$?" -ne 0 ]; then
-  exit 1
-fi
+for box in nat-xenial lan-xenial nat-stretch lan-stretch; do
+    echo "==> [$box] Validating $box/template.json ..."
+    jsonnet $box/template.jsonnet >> $box/template.json
+    packer validate $box/template.json
+    if [ "$?" -ne 0 ]; then
+      echo "[$box][ERROR] Aborting builds due to $box template validation failure."
+      exit 1
+    fi
+done
 
-echo "==> Running packer build on template.json ..."
-date
-PROXY_ON=$PROXY_ON PASSWORD=$PASSWORD APT_PROXY_PORT=$APT_PROXY_PORT \
-   APT_PROXY_URL=$APT_PROXY_URL APT_PROXY_HOST=$APT_PROXY_HOST       \
-   time packer build -on-error=ask -only=virtualbox-iso -except=null template.json
-date
+for box in nat-xenial lan-xenial nat-stretch lan-stretch; do
+    echo "==> [$box] Running packer build on $box/template.json ..."
+
+    PROXY_ON=$PROXY_ON PASSWORD=$PASSWORD APT_PROXY_PORT=$APT_PROXY_PORT      \
+    APT_PROXY_URL=$APT_PROXY_URL APT_PROXY_HOST=$APT_PROXY_HOST               \
+    time packer build -on-error=ask -only=virtualbox-iso -except=null $box/template.json
+
+    if [ "$?" -ne 0 ]; then
+      echo "[$box][ERROR] Aborting builds due to $box build failure."
+      exit 1
+    fi
+done
