@@ -5,7 +5,7 @@ echo 'User Specified Parameters:'
 echo '------------------------------------------------------------------'
 echo 'PROVISION                = '$PROVISION
 echo 'SUBUTAI_PEER             = '$SUBUTAI_PEER
-echo 'DESIRED_PORT             = '$DESIRED_PORT
+echo 'DESIRED_CONSOLE_PORT             = '$DESIRED_CONSOLE_PORT
 echo 'SUBUTAI_ENV              = '$SUBUTAI_ENV
 echo 'SUBUTAI_RAM              = '$SUBUTAI_RAM
 echo 'SUBUTAI_CPU              = '$SUBUTAI_CPU

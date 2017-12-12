@@ -68,6 +68,21 @@
    ],
    "provisioners": [
       {
+       "type": "file",
+       "source": "../http/virtualbox-interfaces",
+       "destination": "/tmp/virtualbox-interfaces"
+      },
+      {
+       "type": "file",
+       "source": "../http/fix-vagrant.service",
+       "destination": "/tmp/fix-vagrant.service"
+      },
+      {
+       "type": "file",
+       "source": "../http/fix-vagrant",
+       "destination": "/tmp/fix-vagrant"
+      },
+      {
          "override": {
             "virtualbox-iso": {
                "execute_command": "export PROXY_ON='{{user `proxy_on`}}';export APT_PROXY_HOST='{{user `apt_proxy_host`}}';export APT_PROXY_URL='{{user `apt_proxy_url`}}';export BRANCHTAG='{{user `branch_or_tag`}}';export DISTRIBUTION='{{user `distribution`}}';export DESKTOP='{{user `desktop`}}';export SSH_USERNAME='{{user `ssh_username`}}';export SSH_PASSWORD='{{user `ssh_password`}}';echo {{user `ssh_password`}} | sudo -E -S sh '{{ .Path }}'",
@@ -79,6 +94,7 @@
                   "../scripts/apt.sh",
                   "../scripts/snap.sh",
                   "../scripts/vbox.sh",
+                  "../scripts/fix_vagrant.sh",
                   "../scripts/rc_local.sh",
                   "../scripts/grub.sh",
                   "../scripts/cleanup.sh"

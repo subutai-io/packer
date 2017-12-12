@@ -12,7 +12,7 @@ module SubutaiConfig
   USER_CONF_FILE = File.expand_path('~/.subutai.yaml').freeze
   SUBUTAI_ENVIRONMENTS = %i[prod master dev sysnet].freeze
   USER_PARAMETERS = %i[
-    DESIRED_PORT ALLOW_INSECURE SUBUTAI_ENV
+    DESIRED_CONSOLE_PORT ALLOW_INSECURE SUBUTAI_ENV
     SUBUTAI_CPU SUBUTAI_RAM SUBUTAI_PEER SUBUTAI_SNAP
     SUBUTAI_DESKTOP SUBUTAI_MAN_TMPL APT_PROXY_URL
     PROVISION
@@ -36,7 +36,7 @@ module SubutaiConfig
   # Smart defaults to use for configuration settings
   @defaults = {
     # Implemented configuration parameters
-    DESIRED_PORT: 9999,      # integer for console port
+    DESIRED_CONSOLE_PORT: 9999,      # integer for console port
     ALLOW_INSECURE: false,   # boolean to enable insecure CDN and snap
     SUBUTAI_ENV: :prod,      # subutai environment to use
     SUBUTAI_PEER: true,      # to provision or not console (peer)
@@ -209,7 +209,7 @@ module SubutaiConfig
   end
 
   def self.do_ports
-    put(:_CONSOLE_PORT, find_port(get(:DESIRED_PORT)), true) \
+    put(:_CONSOLE_PORT, find_port(get(:DESIRED_CONSOLE_PORT)), true) \
       if get(:SUBUTAI_PEER) && get(:_CONSOLE_PORT).nil? && write?
   end
 

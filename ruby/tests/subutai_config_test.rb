@@ -31,7 +31,7 @@ class SubutaiConfigTest < Test::Unit::TestCase
     assert_false(SubutaiConfig.get(:ALLOW_INSECURE))
     assert_false(SubutaiConfig.get(:SUBUTAI_DESKTOP))
 
-    assert_equal(SubutaiConfig.get(:DESIRED_PORT), 9999)
+    assert_equal(SubutaiConfig.get(:DESIRED_CONSOLE_PORT), 9999)
     assert_equal(SubutaiConfig.get(:SUBUTAI_ENV), :prod)
     assert_equal(SubutaiConfig.get(:SUBUTAI_RAM), 4096)
     assert_equal(SubutaiConfig.get(:SUBUTAI_CPU), 2)
@@ -116,15 +116,15 @@ class SubutaiConfigTest < Test::Unit::TestCase
     assert_true(SubutaiConfig.get(:SUBUTAI_PEER))
     assert_true(SubutaiConfig.get('SUBUTAI_PEER'))
 
-    # DESIRED_PORT
-    assert_equal(SubutaiConfig.get(:DESIRED_PORT), 9999)
-    assert_equal(7777, SubutaiConfig.put(:DESIRED_PORT, 7777, true))
-    assert_equal(SubutaiConfig.get(:DESIRED_PORT), 7777)
-    assert_equal(SubutaiConfig.get('DESIRED_PORT'), 7777)
+    # DESIRED_CONSOLE_PORT
+    assert_equal(SubutaiConfig.get(:DESIRED_CONSOLE_PORT), 9999)
+    assert_equal(7777, SubutaiConfig.put(:DESIRED_CONSOLE_PORT, 7777, true))
+    assert_equal(SubutaiConfig.get(:DESIRED_CONSOLE_PORT), 7777)
+    assert_equal(SubutaiConfig.get('DESIRED_CONSOLE_PORT'), 7777)
 
-    assert_equal(SubutaiConfig.put('DESIRED_PORT', 6666, true), 6666)
-    assert_equal(SubutaiConfig.get(:DESIRED_PORT), 6666)
-    assert_equal(SubutaiConfig.get('DESIRED_PORT'), 6666)
+    assert_equal(SubutaiConfig.put('DESIRED_CONSOLE_PORT', 6666, true), 6666)
+    assert_equal(SubutaiConfig.get(:DESIRED_CONSOLE_PORT), 6666)
+    assert_equal(SubutaiConfig.get('DESIRED_CONSOLE_PORT'), 6666)
 
     # SUBUTAI_RAM
     assert_equal(SubutaiConfig.get(:SUBUTAI_RAM), 4096)
@@ -239,7 +239,7 @@ class SubutaiConfigTest < Test::Unit::TestCase
     assert_true(SubutaiConfig.put(:ALLOW_INSECURE, true, true))
     assert_true(SubutaiConfig.put(:SUBUTAI_DESKTOP, true, true))
     assert_false(SubutaiConfig.put(:SUBUTAI_PEER, false, true))
-    assert_equal(7777, SubutaiConfig.put(:DESIRED_PORT, 7777, true))
+    assert_equal(7777, SubutaiConfig.put(:DESIRED_CONSOLE_PORT, 7777, true))
     assert_equal(8192, SubutaiConfig.put(:SUBUTAI_RAM, 8192, true))
     assert_equal(4, SubutaiConfig.put(:SUBUTAI_CPU, 4, true))
     assert_equal(:dev, SubutaiConfig.put(:SUBUTAI_ENV, :dev, true))
@@ -254,7 +254,7 @@ class SubutaiConfigTest < Test::Unit::TestCase
     assert_false(SubutaiConfig.get(:ALLOW_INSECURE))
     assert_false(SubutaiConfig.get(:SUBUTAI_DESKTOP))
     assert_true(SubutaiConfig.get(:SUBUTAI_PEER))
-    assert_equal(9999, SubutaiConfig.get(:DESIRED_PORT))
+    assert_equal(9999, SubutaiConfig.get(:DESIRED_CONSOLE_PORT))
     assert_equal(4096, SubutaiConfig.get(:SUBUTAI_RAM))
     assert_equal(2, SubutaiConfig.get(:SUBUTAI_CPU))
     assert_equal(:prod, SubutaiConfig.get(:SUBUTAI_ENV))
@@ -301,7 +301,7 @@ class SubutaiConfigTest < Test::Unit::TestCase
     SubutaiConfig.log('up', 'dummy message')
     SubutaiConfig.log_mode([:debug], ['up'], 'dummy message')
     assert_equal(:master, SubutaiConfig.get(:SUBUTAI_ENV))
-    assert_equal(9191, SubutaiConfig.get(:DESIRED_PORT))
+    assert_equal(9191, SubutaiConfig.get(:DESIRED_CONSOLE_PORT))
     assert_equal(2000, SubutaiConfig.get(:SUBUTAI_RAM))
     assert_equal(6, SubutaiConfig.get(:SUBUTAI_CPU))
     assert_false(SubutaiConfig.get(:SUBUTAI_PEER))
