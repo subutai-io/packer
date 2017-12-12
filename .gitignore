@@ -1,4 +1,5 @@
 coverage
+packer_cache
 .vagrant
 .vscode
 .idea
