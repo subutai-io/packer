@@ -12,7 +12,7 @@
             "keyboard-configuration/modelcode=SKIP keyboard-configuration/layout=USA ",
             "initrd=/install/initrd.gz -- <enter>"
           ],
-         "boot_wait": "3s",
+         "boot_wait": "10s",
          "disk_size": "{{user `disk_size`}}",
          "guest_os_type": "{{ user `virtualbox_guest_os_type` }}",
          "guest_additions_path": "VBoxGuestAdditions_{{.Version}}.iso",
