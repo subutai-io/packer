@@ -1,4 +1,8 @@
 { 
+    "base_dir": "{{env `BASE_DIR`}}",
+    "scripts": "{{env `BASE_DIR`}}/scripts",
+    "ruby": "{{env `BASE_DIR`}}/ruby",
+    "http": "{{env `BASE_DIR`}}/http",
     "apt_proxy_host": "{{env `APT_PROXY_HOST`}}",
     "apt_proxy_url": "{{env `APT_PROXY_URL`}}",
     "boot_command_prefix": "<enter><wait><f6><esc><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",

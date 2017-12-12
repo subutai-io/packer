@@ -1,6 +1,6 @@
 {
   "output": "{{user `vm_name`}}-{{user `version`}}.box",
-  "vagrantfile_template": "{{env `BASE_DIR`}}/{{env `box`}}/virtualbox/Vagrantfile",
+  "vagrantfile_template": "{{user `base_dir`}}/lan-xenial/virtualbox/Vagrantfile",
   "include": [
     "{{user `ruby`}}/subutai_net.rb",
     "{{user `ruby`}}/subutai_hooks.rb",

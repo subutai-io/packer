@@ -25,5 +25,5 @@
          "type": "shell"
       }
    ],
-   "variables": import "variables.jsonnet"
+   "variables": import "variables.jsonnet",
 }

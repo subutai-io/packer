@@ -99,7 +99,7 @@ else
 fi
 
 # TODO: export password from variables in json file
-BASE_DIR=$BASE_DIR                  \
+box=$box BASE_DIR=$BASE_DIR         \
   PROXY_ON=$PROXY_ON                \
   PASSWORD=$PASSWORD                \
   APT_PROXY_PORT=$APT_PROXY_PORT    \
@@ -107,7 +107,7 @@ BASE_DIR=$BASE_DIR                  \
   APT_PROXY_HOST=$APT_PROXY_HOST    \
   $BASE_DIR/http/stretch.sh
 
-BASE_DIR=$BASE_DIR                  \
+box=$box BASE_DIR=$BASE_DIR         \
   PROXY_ON=$PROXY_ON                \
   PASSWORD=$PASSWORD                \
   APT_PROXY_PORT=$APT_PROXY_PORT    \
@@ -117,8 +117,16 @@ BASE_DIR=$BASE_DIR                  \
 
 for box in nat-xenial lan-xenial nat-stretch lan-stretch; do
     echo "==> [$box] Validating $box/template.json ..."
-    jsonnet $box/template.jsonnet >> $box/template.json
+    jsonnet $box/template.jsonnet > $box/template.json
+
+    box=$box BASE_DIR=$BASE_DIR         \
+      PROXY_ON=$PROXY_ON                \
+      PASSWORD=$PASSWORD                \
+      APT_PROXY_PORT=$APT_PROXY_PORT    \
+      APT_PROXY_URL=$APT_PROXY_URL      \
+      APT_PROXY_HOST=$APT_PROXY_HOST    \
     packer validate $box/template.json
+
     if [ "$?" -ne 0 ]; then
       echo "[$box][ERROR] Aborting builds due to $box template validation failure."
       exit 1
@@ -128,8 +136,12 @@ done
 for box in nat-xenial lan-xenial nat-stretch lan-stretch; do
     echo "==> [$box] Running packer build on $box/template.json ..."
 
-    PROXY_ON=$PROXY_ON PASSWORD=$PASSWORD APT_PROXY_PORT=$APT_PROXY_PORT      \
-    APT_PROXY_URL=$APT_PROXY_URL APT_PROXY_HOST=$APT_PROXY_HOST               \
+    box=$box BASE_DIR=$BASE_DIR         \
+      PROXY_ON=$PROXY_ON                \
+      PASSWORD=$PASSWORD                \
+      APT_PROXY_PORT=$APT_PROXY_PORT    \
+      APT_PROXY_URL=$APT_PROXY_URL      \
+      APT_PROXY_HOST=$APT_PROXY_HOST    \
     time packer build -on-error=ask -only=virtualbox-iso -except=null $box/template.json
 
     if [ "$?" -ne 0 ]; then
