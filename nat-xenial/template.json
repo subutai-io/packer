@@ -1,0 +1,119 @@
+{
+   "builders": [
+      {
+        "boot_command": [
+            "{{ user `boot_command_prefix` }}",
+            "/install/vmlinuz noapic ",
+            "url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/{{ user `preseed` }} ",
+            "debian-installer={{ user `locale` }} auto locale={{ user `locale` }} kbd-chooser/method=us ",
+            "grub-installer/bootdev=/dev/sda<wait> ",
+            "hostname={{ user `hostname` }} ",
+            "fb=false debconf/frontend=noninteractive ",
+            "keyboard-configuration/modelcode=SKIP keyboard-configuration/layout=USA ",
+            "initrd=/install/initrd.gz -- <enter>"
+          ],
+         "boot_wait": "10s",
+         "disk_size": "{{user `disk_size`}}",
+         "guest_os_type": "{{ user `virtualbox_guest_os_type` }}",
+         "guest_additions_path": "VBoxGuestAdditions_{{.Version}}.iso",
+         "headless": "{{ user `headless` }}",
+         "hard_drive_interface": "sata",
+         "http_directory": "../http",
+         "iso_checksum": "{{ user `iso_checksum` }}",
+         "iso_checksum_type": "{{ user `iso_checksum_type` }}",
+         "iso_urls": [
+            "{{ user `iso_path` }}/{{ user `iso_name` }}",
+            "{{ user `iso_url` }}"
+         ],
+         "keep_registered": "{{user `keep_registered`}}",
+         "output_directory": "output-{{ user `vm_name` }}",
+         "post_shutdown_delay": "1m",
+         "shutdown_command": "echo '{{ user `ssh_password` }}'|sudo -S shutdown -P now",
+         "skip_export": "{{user `skip_export`}}",
+         "ssh_password": "{{user `ssh_password`}}",
+         "ssh_username": "{{user `ssh_username`}}",
+         "ssh_wait_timeout": "10000s",
+         "type": "virtualbox-iso",
+         "vboxmanage": [
+           [ "modifyvm", "{{.Name}}", "--nictype1", "virtio" ],
+           [ "modifyvm", "{{.Name}}", "--memory", "{{ user `memory` }}" ],
+           [ "modifyvm", "{{.Name}}", "--cpus", "{{ user `cpus` }}" ]
+         ],
+         "virtualbox_version_file": ".vbox_version",
+         "vm_name": "{{ user `vm_name` }}"
+      }
+   ],
+   "post-processors": [
+      [
+         {
+            "compression_level": 9,
+            "keep_input_artifact": false,
+            "only": [
+               "virtualbox-iso"
+            ],
+            "override": {
+               "virtualbox": {
+                  "output": "{{user `vm_name`}}-{{user `version`}}.box",
+                  "vagrantfile_template": "virtualbox/Vagrantfile",
+                  "include": [
+                    "../ruby/subutai_net.rb",
+                    "../ruby/subutai_hooks.rb",
+                    "../ruby/subutai_config.rb"
+                  ]
+               }
+            },
+            "type": "vagrant"
+         }
+      ]
+   ],
+   "provisioners": [
+      {
+         "override": {
+            "virtualbox-iso": {
+               "execute_command": "export PROXY_ON='{{user `proxy_on`}}';export APT_PROXY_HOST='{{user `apt_proxy_host`}}';export APT_PROXY_URL='{{user `apt_proxy_url`}}';export BRANCHTAG='{{user `branch_or_tag`}}';export DISTRIBUTION='{{user `distribution`}}';export DESKTOP='{{user `desktop`}}';export SSH_USERNAME='{{user `ssh_username`}}';export SSH_PASSWORD='{{user `ssh_password`}}';echo {{user `ssh_password`}} | sudo -E -S sh '{{ .Path }}'",
+               "scripts": [
+                  "../scripts/sudo.sh",
+                  "../scripts/build_time.sh",
+                  "../scripts/authorized_keys.sh",
+                  "../scripts/apt_proxy.sh",
+                  "../scripts/apt.sh",
+                  "../scripts/snap.sh",
+                  "../scripts/vbox.sh",
+                  "../scripts/rc_local.sh",
+                  "../scripts/grub.sh",
+                  "../scripts/cleanup.sh"
+               ]
+            }
+         },
+         "type": "shell"
+      }
+   ],
+   "variables": { 
+        "apt_proxy_host": "{{env `APT_PROXY_HOST`}}",
+        "apt_proxy_url": "{{env `APT_PROXY_URL`}}",
+        "boot_command_prefix": "<enter><wait><f6><esc><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "branch_or_tag": "2.0.0",
+        "cpus": "2",
+        "desktop": "false",
+        "disk_size": "131070",
+        "distribution": "ubuntu",
+        "headless": "true",
+        "hostname": "subutai",
+        "iso_checksum": "10fcd20619dce11fe094e960c85ba4a9",
+        "iso_checksum_type": "md5",
+        "iso_name": "ubuntu-16.04.3-server-amd64.iso",
+        "iso_url": "http://releases.ubuntu.com/16.04.3/ubuntu-16.04.3-server-amd64.iso",
+        "keep_registered": "false",
+        "locale": "en_US.UTF8",
+        "memory": "4096",
+        "null_host": "192.168.81.129",
+        "preseed": "xenial.cfg",
+        "proxy_on": "{{env `PROXY_ON`}}",
+        "skip_export": "false",
+        "ssh_username": "subutai",
+        "ssh_password": "ubuntai",
+        "version": "2.0.0",
+        "virtualbox_guest_os_type": "Ubuntu_64",
+        "vm_name": "nat-xenial"
+   }
+}

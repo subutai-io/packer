@@ -56,9 +56,9 @@
                   "output": "{{user `vm_name`}}-{{user `version`}}.box",
                   "vagrantfile_template": "virtualbox/Vagrantfile",
                   "include": [
-                    "../../ruby/subutai_net.rb",
-                    "../../ruby/subutai_hooks.rb",
-                    "../../ruby/subutai_config.rb"
+                    "../ruby/subutai_net.rb",
+                    "../ruby/subutai_hooks.rb",
+                    "../ruby/subutai_config.rb"
                   ]
                }
             },
@@ -67,6 +67,21 @@
       ]
    ],
    "provisioners": [
+      {
+       "type": "file",
+       "source": "../http/virtualbox-interfaces",
+       "destination": "/tmp/virtualbox-interfaces"
+      },
+      {
+       "type": "file",
+       "source": "../http/fix-vagrant.service",
+       "destination": "/tmp/fix-vagrant.service"
+      },
+      {
+       "type": "file",
+       "source": "../http/fix-vagrant",
+       "destination": "/tmp/fix-vagrant"
+      },
       {
          "override": {
             "virtualbox-iso": {
@@ -79,6 +94,7 @@
                   "../scripts/apt.sh",
                   "../scripts/snap.sh",
                   "../scripts/vbox.sh",
+                  "../scripts/fix_vagrant.sh",
                   "../scripts/rc_local.sh",
                   "../scripts/grub.sh",
                   "../scripts/cleanup.sh"
@@ -114,6 +130,6 @@
         "ssh_password": "ubuntai",
         "version": "2.0.0",
         "virtualbox_guest_os_type": "Ubuntu_64",
-        "vm_name": "nat-xenial"
+        "vm_name": "lan-xenial"
    }
 }

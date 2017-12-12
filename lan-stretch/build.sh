@@ -41,9 +41,9 @@ do_local_proxy() {
   if [ "$answer" = "y" ]; then
     do_vbguest_plugin >&2
 
-    cd ../../cache
+    cd ../cache
     vagrant up >&2
-    cd ../ubuntu/nat
+    cd ../lan-stretch
 
     while [ -z "$(check_proxy $local_proxy)" ]; do
       echo "Local proxy $local_proxy is not up. Waiting 10s ..." >&2
@@ -97,7 +97,7 @@ fi
 
 # TODO: export password from variables in json file
 PROXY_ON=$PROXY_ON PASSWORD=$PASSWORD APT_PROXY_PORT=$APT_PROXY_PORT \
-   APT_PROXY_URL=$APT_PROXY_URL APT_PROXY_HOST=$APT_PROXY_HOST ../http/xenial.sh
+   APT_PROXY_URL=$APT_PROXY_URL APT_PROXY_HOST=$APT_PROXY_HOST ../http/stretch.sh
 
 echo "==> Validating template.json ..."
 packer validate template.json

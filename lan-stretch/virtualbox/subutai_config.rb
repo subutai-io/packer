@@ -12,13 +12,15 @@ module SubutaiConfig
   USER_CONF_FILE = File.expand_path('~/.subutai.yaml').freeze
   SUBUTAI_ENVIRONMENTS = %i[prod master dev sysnet].freeze
   USER_PARAMETERS = %i[
-    DESIRED_CONSOLE_PORT ALLOW_INSECURE SUBUTAI_ENV
+    DESIRED_CONSOLE_PORT DESIRED_SSH_PORT
+    ALLOW_INSECURE SUBUTAI_ENV
     SUBUTAI_CPU SUBUTAI_RAM SUBUTAI_PEER SUBUTAI_SNAP
     SUBUTAI_DESKTOP SUBUTAI_MAN_TMPL APT_PROXY_URL
-    PROVISION
+    PROVISION BRIDGE
   ].freeze
   GENERATED_PARAMETERS = %i[
     _CONSOLE_PORT
+    _SSH_PORT
     _LOG_MODE
     _ALT_SNAP _ALT_SNAP_MD5 _ALT_SNAP_MD5_LAST
     _ALT_MANAGEMENT _ALT_MANAGEMENT_MD5 _ALT_MANAGEMENT_MD5_LAST
@@ -37,24 +39,27 @@ module SubutaiConfig
   @defaults = {
     # Implemented configuration parameters
     DESIRED_CONSOLE_PORT: 9999,      # integer for console port
-    ALLOW_INSECURE: false,   # boolean to enable insecure CDN and snap
-    SUBUTAI_ENV: :prod,      # subutai environment to use
-    SUBUTAI_PEER: true,      # to provision or not console (peer)
-    SUBUTAI_RAM: 4096,       # RAM memory assigned to the vm
-    SUBUTAI_CPU: 2,          # virtual CPU's assign to the vm
+    DESIRED_SSH_PORT: 4567,          # integer for console port
+    ALLOW_INSECURE: false,           # boolean to enable insecure CDN and snap
+    SUBUTAI_ENV: :prod,              # subutai environment to use
+    SUBUTAI_PEER: true,              # to provision or not console (peer)
+    SUBUTAI_RAM: 4096,               # RAM memory assigned to the vm
+    SUBUTAI_CPU: 2,                  # virtual CPU's assign to the vm
 
     # Configuration parameters below have not been implemented
-    SUBUTAI_SNAP: nil,       # alternative snap to provision
-    SUBUTAI_DESKTOP: false,  # installs a desktop with tray and p2p client
-    SUBUTAI_MAN_TMPL: nil,   # alternative management template to provision
-    APT_PROXY_URL: nil,      # configure apt proxy URL
-    PROVISION: true          # to provision or not to
+    SUBUTAI_SNAP: nil,               # alternative snap to provision
+    SUBUTAI_DESKTOP: false,          # installs a desktop with tray and p2p client
+    SUBUTAI_MAN_TMPL: nil,           # alternative management template to provision
+    APT_PROXY_URL: nil,              # configure apt proxy URL
+    PROVISION: true                  # to provision or not to
   }
 
   # User provided configuration settings
   @config = @defaults.clone
 
   @logging = nil
+
+  @bridged = false
 
   def self.write?
     raise 'SubutaiConfig.cmd not set' if @cmd.nil?
@@ -97,6 +102,10 @@ module SubutaiConfig
 
   def self.snap_provisioned!
     put(:_ALT_SNAP_MD5_LAST, get(:_ALT_SNAP_MD5), true) if provision_snap?
+  end
+
+  def self.bridged!
+    @bridged = true
   end
 
   def self.provision_management?
@@ -208,9 +217,16 @@ module SubutaiConfig
     true
   end
 
+  # NOTE: Console port ONLY needed in nat mode
+  # NOTE: SSH port only needed in bridged mode
   def self.do_ports
+    # set the next available console port if provisioning a peer in nat mode
     put(:_CONSOLE_PORT, find_port(get(:DESIRED_CONSOLE_PORT)), true) \
-      if get(:SUBUTAI_PEER) && get(:_CONSOLE_PORT).nil? && write?
+      if !@bridged && boolean?(:SUBUTAI_PEER) && get(:_CONSOLE_PORT).nil? && write?
+
+    # set the SSH port if we are using bridged mode
+    put(:_SSH_PORT, find_port(get(:DESIRED_SSH_PORT)), true) \
+      if @bridged && get(:_SSH_PORT).nil? && write?
   end
 
   # Loads the generated and user configuration from YAML files
