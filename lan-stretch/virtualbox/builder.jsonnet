@@ -18,7 +18,7 @@
     "guest_additions_path": "VBoxGuestAdditions_{{.Version}}.iso",
     "headless": "{{ user `headless` }}",
     "hard_drive_interface": "sata",
-    "http_directory": "../http",
+    "http_directory": "{{user `http`}}",
     "iso_checksum": "{{ user `iso_checksum` }}",
     "iso_checksum_type": "{{ user `iso_checksum_type` }}",
     "iso_urls": [

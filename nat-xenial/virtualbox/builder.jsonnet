@@ -1,14 +1,14 @@
 {
-"boot_command": [
-    "{{ user `boot_command_prefix` }}",
-    "/install/vmlinuz noapic ",
-    "url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/{{ user `preseed` }} ",
-    "debian-installer={{ user `locale` }} auto locale={{ user `locale` }} kbd-chooser/method=us ",
-    "grub-installer/bootdev=/dev/sda<wait> ",
-    "hostname={{ user `hostname` }} ",
-    "fb=false debconf/frontend=noninteractive ",
-    "keyboard-configuration/modelcode=SKIP keyboard-configuration/layout=USA ",
-    "initrd=/install/initrd.gz -- <enter>"
+    "boot_command": [
+        "{{ user `boot_command_prefix` }}",
+        "/install/vmlinuz noapic ",
+        "url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/{{ user `preseed` }} ",
+        "debian-installer={{ user `locale` }} auto locale={{ user `locale` }} kbd-chooser/method=us ",
+        "grub-installer/bootdev=/dev/sda<wait> ",
+        "hostname={{ user `hostname` }} ",
+        "fb=false debconf/frontend=noninteractive ",
+        "keyboard-configuration/modelcode=SKIP keyboard-configuration/layout=USA ",
+        "initrd=/install/initrd.gz -- <enter>"
     ],
     "boot_wait": "10s",
     "disk_size": "{{user `disk_size`}}",
@@ -16,7 +16,7 @@
     "guest_additions_path": "VBoxGuestAdditions_{{.Version}}.iso",
     "headless": "{{ user `headless` }}",
     "hard_drive_interface": "sata",
-    "http_directory": "../http",
+    "http_directory": "{{user `http`}}",
     "iso_checksum": "{{ user `iso_checksum` }}",
     "iso_checksum_type": "{{ user `iso_checksum_type` }}",
     "iso_urls": [
