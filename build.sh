@@ -65,6 +65,53 @@ do_local_proxy() {
 # TODO: extract from variables
 PASSWORD="ubuntai"
 
+
+# check for packer
+packer=`which packer`
+if [ -z "$packer" ]; then 
+  echo ' ==> [ERROR] Packer not found'
+  exit 1
+else 
+  echo ' ==> [OK] Packer executable found at '$packer
+fi
+
+# check for vagrant
+vagrant=`which vagrant`
+if [ -z "$vagrant" ]; then 
+  echo ' ==> [ERROR] Vagrant not found'
+  exit 1
+else 
+  echo ' ==> [OK] Vagrant executable found at '$vagrant
+fi
+
+# check for jsonnet
+jsonnet=`which jsonnet`
+if [ -z "$jsonnet" ]; then 
+  echo ' ==> [ERROR] Jsonnet not found'
+  exit 1
+else 
+  echo ' ==> [OK] Jsonnet executable found at '$jsonnet
+fi
+
+# check for vbox
+vbox=`which VirtualBox`
+if [ -z "$vbox" ]; then 
+  echo ' ==> [ERROR] Virtualbox not found'
+  exit 1
+else 
+  echo ' ==> [OK] VirtualBox executable found at '$vbox
+fi
+
+echo Clean up output directories and boxes
+rm -rf *.box;
+rm -rf *.log;
+for bt in virtualbox-iso parallels-iso vmware-iso; do
+  echo box output directory = "output-$BOXNAME-$bt";
+  if [ -d "output-$BOXNAME-$bt" ]; then
+    rm -rf "output-$BOXNAME-$bt";
+  fi
+done
+
 # check to see if a proxy is configured
 if [ -n "$APT_PROXY_URL" ]; then
   echo Proxy configured: APT_PROXY_URL = $APT_PROXY_URL
