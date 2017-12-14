@@ -1,4 +1,7 @@
 coverage
+template.json
+packer_cache
+output-*
 .vagrant
 .vscode
 .idea
