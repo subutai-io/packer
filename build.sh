@@ -5,8 +5,25 @@ BASE_DIR="`( cd \"$BASE_DIR\" && pwd )`"
 
 # cleanup and set apt proxy port if not configured
 rm -rf *.box; rm -rf *.log;
+echo Clean up output directories and boxes
+for bt in virtualbox-iso parallels-iso vmware-iso; do
+  echo box output directory = "output-$BOXNAME-$bt";
+  if [ -d "output-$BOXNAME-$bt" ]; then
+    rm -rf "output-$BOXNAME-$bt";
+  fi
+done
+
 if [ -z "$APT_PROXY_PORT" ]; then
   APT_PROXY_PORT=3142
+fi
+
+# TODO: extract from variables
+PASSWORD="ubuntai"
+
+if [ -n "$1" ]; then
+  VAGRANT_BOXES="$1"
+elif [ -z "$VAGRANT_BOXES" ]; then
+  VAGRANT_BOXES='nat-xenial lan-xenial nat-stretch lan-stretch'
 fi
 
 # Checks LAN apt proxies availability
@@ -62,10 +79,6 @@ do_local_proxy() {
   fi
 }
 
-# TODO: extract from variables
-PASSWORD="ubuntai"
-
-
 # check for packer
 packer=`which packer`
 if [ -z "$packer" ]; then 
@@ -101,16 +114,6 @@ if [ -z "$vbox" ]; then
 else 
   echo ' ==> [OK] VirtualBox executable found at '$vbox
 fi
-
-echo Clean up output directories and boxes
-rm -rf *.box;
-rm -rf *.log;
-for bt in virtualbox-iso parallels-iso vmware-iso; do
-  echo box output directory = "output-$BOXNAME-$bt";
-  if [ -d "output-$BOXNAME-$bt" ]; then
-    rm -rf "output-$BOXNAME-$bt";
-  fi
-done
 
 # check to see if a proxy is configured
 if [ -n "$APT_PROXY_URL" ]; then
@@ -162,7 +165,7 @@ box=$box BASE_DIR=$BASE_DIR         \
   APT_PROXY_HOST=$APT_PROXY_HOST    \
   $BASE_DIR/http/xenial.sh
 
-for box in nat-xenial lan-xenial nat-stretch lan-stretch; do
+for box in $VAGRANT_BOXES; do
     echo "==> [$box] Validating $box/template.json ..."
     jsonnet $box/template.jsonnet > $box/template.json
 
@@ -180,7 +183,7 @@ for box in nat-xenial lan-xenial nat-stretch lan-stretch; do
     fi
 done
 
-for box in nat-xenial lan-xenial nat-stretch lan-stretch; do
+for box in $VAGRANT_BOXES; do
     echo "==> [$box] Running packer build on $box/template.json ..."
 
     box=$box BASE_DIR=$BASE_DIR         \
