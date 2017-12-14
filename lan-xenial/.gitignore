@@ -1,4 +1,5 @@
 .vagrant
+template.json
 *.box
 *.log
 tests

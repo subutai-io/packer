@@ -7,79 +7,51 @@ require_relative 'subutai_hooks.rb'
 require_relative 'subutai_net.rb'
 require_relative 'subutai_config.rb'
 
-SubutaiConfig.bridged!
-SubutaiConfig.logging!(:debug)
-
 SubutaiConfig.load_config(ARGV[0])
+SubutaiConfig.logging!(:debug)
 SubutaiConfig.print
 
 Vagrant.require_version '>= 2.0.1'
 
 Vagrant.configure('2') do |config|
-  config.vm.box = 'subutai/lan-ubuntu'
+  config.vm.box = 'subutai/nat-stretch'
   config.ssh.username = 'subutai'
-  config.ssh.password = 'ubuntai'
 
-  # We need to find the SSH port so we can use it
-  config.ssh.port = SubutaiConfig.get(:_SSH_PORT)
-
-  if SubutaiConfig.get(:BRIDGE).nil?
-    config.vm.network 'public_network', :type => 'dhcp', :adapter => 1, nic_type: 'virtio'
-  else
-    config.vm.network 'public_network', :type => 'dhcp', :adapter => 1, nic_type: 'virtio',
-                      :bridge => SubutaiConfig.get(:BRIDGE)
-  end
-
-  config.vm.network 'private_network', :type => 'dhcp', :adapter => 3, nic_type: 'virtio'
-
-  config.vm.provider 'virtualbox' do |vb|
-    vb.memory = SubutaiConfig.get(:SUBUTAI_RAM)
-    vb.cpus = SubutaiConfig.get(:SUBUTAI_CPU)
-
-    # eth1 nat interface configuration
-    vb.customize ['modifyvm', :id, '--nic2', 'nat']
-    vb.customize ['modifyvm', :id, '--nictype2', 'virtio']
-    vb.customize ['modifyvm', :id, '--natpf2', "ssh,tcp,127.0.0.1,#{SubutaiConfig.get(:_SSH_PORT)},,22"]
-
+  config.vm.network 'private_network', type: 'dhcp', nic_type: 'virtio'
+  
     if SubutaiConfig.get(:SUBUTAI_PEER)
-      vb.customize ['modifyvm', :id, '--natpf2', "https,tcp,127.0.0.1,#{SubutaiConfig.get(:_CONSOLE_PORT)},,8443"]
+      config.vm.network 'forwarded_port', guest: 8443, host: SubutaiConfig.get(:_CONSOLE_PORT)
     end
-
-    # To avoid the Sierra bug let's turn off things we do not need
-    # See here: https://github.com/monetate/ectou-export/issues/5
-    vb.customize ['modifyvm', :id, '--audio', 'none']
-    vb.customize ['modifyvm', :id, '--uart1', 'off']
-    vb.customize ['modifyvm', :id, '--uart2', 'off']
-    vb.customize ['modifyvm', :id, '--uart3', 'off']
-    vb.customize ['modifyvm', :id, '--uart4', 'off']
-
-    # only for dev and master
-    vb.linked_clone = true
+  
+    config.vm.provider 'virtualbox' do |vb|
+      vb.memory = SubutaiConfig.get(:SUBUTAI_RAM)
+      vb.cpus = SubutaiConfig.get(:SUBUTAI_CPU)
+  
+      # To avoid the Sierra bug let's turn off things we do not need
+      # See here: https://github.com/monetate/ectou-export/issues/5
+      vb.customize ['modifyvm', :id, '--audio', 'none']
+      vb.customize ['modifyvm', :id, '--uart1', 'off']
+      vb.customize ['modifyvm', :id, '--uart2', 'off']
+      vb.customize ['modifyvm', :id, '--uart3', 'off']
+      vb.customize ['modifyvm', :id, '--uart4', 'off']
+  
+      # This box is used for multi-vm configurations and to reduce disk usage
+      # with possibly several virtual machines, we need to use linked clones.
+      vb.linked_clone = true
+    end
+  
+    if SubutaiConfig.provision_snap?
+      config.vm.provision 'file', source: SubutaiConfig.get(:_ALT_SNAP), destination: '$HOME/subutai.snap'
+      SubutaiConfig.snap_provisioned!
+    end
+  
+    if SubutaiConfig.provision_management?
+      config.vm.provision 'file', source: SubutaiConfig.get(:_ALT_MANAGEMENT), destination: '$HOME/subutai.management'
+      SubutaiConfig.management_provisioned!
+    end
+  
+    config.vm.provision 'shell',
+      env: SubutaiConfig.config,
+      path: 'https://raw.githubusercontent.com/subutai-io/packer/master/provisioning/en/provisioner.sh'
   end
-
-  config.vm.provision 'shell', inline: <<-SHELL
-    # Neet to wait for network: reset on Vagrant up changes
-    while true; do
-      ping -c 1 mit.edu &> /dev/null;
-      if [ ! "$?" = "0" ]; then
-        echo "Configuring interfaces ..."
-        sleep 5;
-      else
-        break;
-      fi;
-    done
-  SHELL
-
-  if SubutaiConfig.provision_snap?
-    config.vm.provision 'file', source: SubutaiConfig.get(:_ALT_SNAP), destination: '$HOME/subutai.snap'
-    SubutaiConfig.snap_provisioned!
-  end
-
-  if SubutaiConfig.provision_management?
-    config.vm.provision 'file', source: SubutaiConfig.get(:_ALT_MANAGEMENT), destination: '$HOME/subutai.management'
-    SubutaiConfig.management_provisioned!
-  end
-
-  config.vm.provision 'shell', env: SubutaiConfig.config,
-    path: 'https://raw.githubusercontent.com/subutai-io/packer/master/provisioning/en/provisioner.sh'
-end
+  

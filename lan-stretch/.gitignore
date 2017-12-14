@@ -1,4 +1,5 @@
 .vagrant
+template.json
 output-*
 *.box
 *.log
