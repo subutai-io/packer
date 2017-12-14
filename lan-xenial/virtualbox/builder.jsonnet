@@ -33,7 +33,9 @@
      "ssh_wait_timeout": "10000s",
      "type": "virtualbox-iso",
      "vboxmanage": [
+       [ "modifyvm", "{{.Name}}", "--nictype0", "virtio" ],
        [ "modifyvm", "{{.Name}}", "--nictype1", "virtio" ],
+       [ "modifyvm", "{{.Name}}", "--nictype2", "virtio" ],
        [ "modifyvm", "{{.Name}}", "--memory", "{{ user `memory` }}" ],
        [ "modifyvm", "{{.Name}}", "--cpus", "{{ user `cpus` }}" ]
      ],

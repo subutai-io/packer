@@ -7,6 +7,7 @@
         "{{user `scripts`}}/apt_proxy.sh",
         "{{user `scripts`}}/apt.sh",
         "{{user `scripts`}}/snap.sh",
+        "{{user `scripts`}}/vagrant.sh",
         "{{user `scripts`}}/vbox.sh",
         "{{user `scripts`}}/fix_vagrant.sh",
         "{{user `scripts`}}/rc_local.sh",

@@ -38,7 +38,19 @@
             [
                "modifyvm",
                "{{.Name}}",
+               "--nictype0",
+               "virtio"
+            ],
+            [
+               "modifyvm",
+               "{{.Name}}",
                "--nictype1",
+               "virtio"
+            ],
+            [
+               "modifyvm",
+               "{{.Name}}",
+               "--nictype2",
                "virtio"
             ],
             [

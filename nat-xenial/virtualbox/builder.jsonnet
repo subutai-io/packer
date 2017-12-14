@@ -1,7 +1,8 @@
 {
     "boot_command": [
         "{{ user `boot_command_prefix` }}",
-        "/install/vmlinuz noapic ",
+        "/install/vmlinuz ",
+        // "noapic net.ifnames=0 biosdevname=0 ",
         "url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/{{ user `preseed` }} ",
         "debian-installer={{ user `locale` }} auto locale={{ user `locale` }} kbd-chooser/method=us ",
         "grub-installer/bootdev=/dev/sda<wait> ",

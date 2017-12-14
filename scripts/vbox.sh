@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 echo "==> Installing VirtualBox guest additions"
 
 # Assuming the following packages are installed
