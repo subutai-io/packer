@@ -195,4 +195,6 @@ for box in nat-xenial lan-xenial nat-stretch lan-stretch; do
       echo "[$box][ERROR] Aborting builds due to $box build failure."
       exit 1
     fi
+
+    vagrant box add --force subutai/$box $box*.box
 done
