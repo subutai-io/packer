@@ -1,0 +1,155 @@
+{
+   "builders": [
+      {
+         "boot_command": [
+            "<esc><wait>",
+            "install",
+            " auto",
+            " net.ifnames=0",
+            " url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/{{ user `preseed` }}",
+            " debian-installer=en_US",
+            " locale=en_US",
+            " keymap=us",
+            " netcfg/get_hostname=subutai",
+            " netcfg/get_domain=vm ",
+            "<enter>"
+         ],
+         "boot_wait": "10s",
+         "disk_size": "{{user `disk_size`}}",
+         "guest_additions_path": "VBoxGuestAdditions_{{.Version}}.iso",
+         "guest_os_type": "{{ user `virtualbox_guest_os_type` }}",
+         "hard_drive_interface": "sata",
+         "headless": "{{ user `headless` }}",
+         "http_directory": "{{user `http`}}",
+         "iso_checksum": "{{ user `iso_checksum` }}",
+         "iso_checksum_type": "{{ user `iso_checksum_type` }}",
+         "iso_urls": [
+            "{{ user `iso_path` }}/{{ user `iso_name` }}",
+            "{{ user `iso_url` }}"
+         ],
+         "keep_registered": "{{user `keep_registered`}}",
+         "output_directory": "output-{{ user `vm_name` }}",
+         "post_shutdown_delay": "1m",
+         "shutdown_command": "echo '{{ user `ssh_password` }}'|sudo -S shutdown -P now",
+         "skip_export": "{{user `skip_export`}}",
+         "ssh_password": "{{user `ssh_password`}}",
+         "ssh_username": "{{user `ssh_username`}}",
+         "ssh_wait_timeout": "10000s",
+         "type": "virtualbox-iso",
+         "vboxmanage": [
+            [
+               "modifyvm",
+               "{{.Name}}",
+               "--nictype1",
+               "virtio"
+            ],
+            [
+               "modifyvm",
+               "{{.Name}}",
+               "--memory",
+               "{{ user `memory` }}"
+            ],
+            [
+               "modifyvm",
+               "{{.Name}}",
+               "--cpus",
+               "{{ user `cpus` }}"
+            ]
+         ],
+         "virtualbox_version_file": ".vbox_version",
+         "vm_name": "{{ user `vm_name` }}"
+      }
+   ],
+   "post-processors": [
+      [
+         {
+            "compression_level": 9,
+            "keep_input_artifact": false,
+            "only": [
+               "virtualbox-iso"
+            ],
+            "override": {
+               "virtualbox": {
+                  "include": [
+                     "{{user `ruby`}}/subutai_net.rb",
+                     "{{user `ruby`}}/subutai_hooks.rb",
+                     "{{user `ruby`}}/subutai_config.rb"
+                  ],
+                  "output": "{{user `vm_name`}}-{{user `version`}}.box",
+                  "vagrantfile_template": "{{user `base_dir`}}/lan-stretch/virtualbox/Vagrantfile"
+               }
+            },
+            "type": "vagrant"
+         }
+      ]
+   ],
+   "provisioners": [
+      {
+         "destination": "/tmp/virtualbox-interfaces",
+         "source": "{{user `http`}}/virtualbox-interfaces",
+         "type": "file"
+      },
+      {
+         "destination": "/tmp/fix-vagrant.service",
+         "source": "{{user `http`}}/fix-vagrant.service",
+         "type": "file"
+      },
+      {
+         "destination": "/tmp/fix-vagrant",
+         "source": "{{user `http`}}/fix-vagrant",
+         "type": "file"
+      },
+      {
+         "override": {
+            "virtualbox-iso": {
+               "execute_command": "export PROXY_ON='{{user `proxy_on`}}';export APT_PROXY_HOST='{{user `apt_proxy_host`}}';export APT_PROXY_URL='{{user `apt_proxy_url`}}';export BRANCHTAG='{{user `branch_or_tag`}}';export DISTRIBUTION='{{user `distribution`}}';export DESKTOP='{{user `desktop`}}';export SSH_USERNAME='{{user `ssh_username`}}';export SSH_PASSWORD='{{user `ssh_password`}}';echo {{user `ssh_password`}} | sudo -E -S sh '{{ .Path }}'",
+               "scripts": [
+                  "{{user `scripts`}}/sudo.sh",
+                  "{{user `scripts`}}/build_time.sh",
+                  "{{user `scripts`}}/authorized_keys.sh",
+                  "{{user `scripts`}}/apt_proxy.sh",
+                  "{{user `scripts`}}/apt.sh",
+                  "{{user `scripts`}}/snap.sh",
+                  "{{user `scripts`}}/vbox.sh",
+                  "{{user `scripts`}}/fix_vagrant.sh",
+                  "{{user `scripts`}}/rc_local.sh",
+                  "{{user `scripts`}}/grub.sh",
+                  "{{user `scripts`}}/cleanup.sh"
+               ]
+            }
+         },
+         "type": "shell"
+      }
+   ],
+   "variables": {
+      "apt_proxy_host": "{{env `APT_PROXY_HOST`}}",
+      "apt_proxy_url": "{{env `APT_PROXY_URL`}}",
+      "base_dir": "{{env `BASE_DIR`}}",
+      "branch_or_tag": "2.0.0",
+      "cpus": "2",
+      "desktop": "false",
+      "disk_size": "131070",
+      "distribution": "debian",
+      "headless": "true",
+      "hostname": "subutai",
+      "http": "{{env `BASE_DIR`}}/http",
+      "iso_checksum": "db8ab7871bc2b7d456c4746e706fb5d3",
+      "iso_checksum_type": "md5",
+      "iso_name": "debian-9.3.0-amd64-netinst.iso",
+      "iso_url": "https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-9.3.0-amd64-netinst.iso",
+      "keep_registered": "false",
+      "locale": "en_US.UTF8",
+      "memory": "4096",
+      "null_host": "192.168.81.129",
+      "preseed": "stretch.cfg",
+      "proxy_on": "{{env `PROXY_ON`}}",
+      "ruby": "{{env `BASE_DIR`}}/ruby",
+      "scripts": "{{env `BASE_DIR`}}/scripts",
+      "skip_export": "false",
+      "ssh_password": "ubuntai",
+      "ssh_username": "subutai",
+      "version": "2.0.0",
+      "virtualbox_guest_os_type": "Debian_64",
+      "vm_name": "lan-stretch"
+   }
+}

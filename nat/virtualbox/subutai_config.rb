@@ -1,1 +1,0 @@
-../ruby/subutai_config.rb
