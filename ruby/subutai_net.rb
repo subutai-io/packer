@@ -1,5 +1,7 @@
 require 'socket'
 require 'timeout'
+require 'rbconfig'
+require 'log4r'
 
 # methods dealing with port management
 
@@ -22,4 +24,98 @@ end
 def find_port(port)
   port += 1 while port_bound?('127.0.0.1', port)
   port
+end
+
+# Most hypervisors uses a mac prefix: we cannot just generate a random mac
+PROVIDERS=%i[:virtualbox :libvirt :vmware_fusion :vmware :parallels :hyper_v]
+PROVIDER_MAC_PREFIXES = {
+    :virtualbox       => '080027',
+    :libvirt          => '525400',
+    :vmware_fusion    => '______',
+    :vmware           => '______',
+    :parallels        => '______',
+    :hyper_v          => '______'
+}
+
+os = nil
+os = :windows if (RbConfig::CONFIG['host_os'] =~ /mswin|mingw|cygwin/)
+os = :mac     if
+os = :linux   if
+puts "Detected OS = #{os}"
+
+def broadcast_addr
+  octets = `route print 0.0.0.0 | findstr 0.0.0.0`.split(' ').map(&:strip)[2].split('.')    \
+    if (RbConfig::CONFIG['host_os'] =~ /mswin|mingw|cygwin/)
+  octets = `ip route show | grep default | awk '{print $3}'`.gsub(/\s+/, "").split(".")     \
+    if (RbConfig::CONFIG['host_os'] =~ /linux/)
+  octets = `route get default | grep gateway | awk '{print $2}'`.gsub(/\s+/, "").split(".") \
+    if (RbConfig::CONFIG['host_os'] =~ /darwin/)
+  octets[3] = 255
+  octets.join('.')
+end
+
+def broadcast_ping(count)
+  system("ping -n #{count} #{broadcast_addr} >/dev/null")   \
+    if (RbConfig::CONFIG['host_os'] =~ /mswin|mingw|cygwin/)
+  system("ping -c #{count} #{broadcast_addr} >/dev/null")   \
+    if (RbConfig::CONFIG['host_os'] =~ /darwin|linux/)
+end
+
+def zero_pad_mac(mac)
+  reassembled = ''
+  mac.split(':').each do |octet|
+    octet = '0' + octet if octet.length == 1
+    reassembled += octet
+  end
+  reassembled
+end
+
+def arp_table
+  broadcast_ping(2)
+  arp_table = {}
+  `arp -a`.split("\n").each do |line|
+    matches = /.*(\d+\.\d+\.\d+.\d+)[[:space:]]((([a-f]|[0-9]){1,2}:){5}([a-f]|[0-9]){1,2})[[:space:]].*/.match(line) \
+      if (RbConfig::CONFIG['host_os'] =~ /mswin|mingw|cygwin/)
+    matches = /.*\((\d+\.\d+\.\d+.\d+)\) at ((([a-f]|[0-9]){1,2}:){5}([a-f]|[0-9]){1,2}) .*/.match(line) \
+      if (RbConfig::CONFIG['host_os'] =~ /darwin|linux/)
+    puts " ==> [DEBUG]: #{matches[2]} for IP #{matches[1]} padded and converted = #{zero_pad_mac(matches[2])}"
+    arp_table.store(zero_pad_mac(matches[2]), matches[1])
+  end
+  arp_table
+end
+
+def mac_uniq?(mac)
+  arptab = arp_table
+  arptab[mac].nil?
+end
+
+def find_mac(provider)
+  mac = random_mac_addr(provider)
+  until mac_uniq?(mac) do
+    mac = random_mac_addr(provider)
+  end
+end
+
+# Generate a random mac address that works with the hypervisor of a provider
+def random_mac_addr(provider)
+  symbol = provider.to_sym
+  case symbol
+    when :virtualbox
+      PROVIDER_MAC_PREFIXES[:virtualbox] + 3.times.map { '%02x' % rand(0..255) }.join
+    when :libvirt
+      PROVIDER_MAC_PREFIXES[:libvirt] + 3.times.map { '%02x' % rand(0..255) }.join
+    when :vmware_fusion
+      # PROVIDER_MAC_PREFIXES[:vmware_fusion] + 3.times.map { '%02x' % rand(0..255) }.join
+      raise "Unsupported provider #{provider}"
+    when :vmware
+      # PROVIDER_MAC_PREFIXES[:vmware] + 3.times.map { '%02x' % rand(0..255) }.join
+      raise "Unsupported provider #{provider}"
+    when :parallels
+      # PROVIDER_MAC_PREFIXES[:parallels] + 3.times.map { '%02x' % rand(0..255) }.join
+      raise "Unsupported provider #{provider}"
+    when :hyper_v
+      # PROVIDER_MAC_PREFIXES[:hyper_v] + 3.times.map { '%02x' % rand(0..255) }.join
+    else
+      raise "Unsupported provider #{provider}"
+  end
 end

@@ -21,6 +21,10 @@ class SubutaiNetTest < Test::Unit::TestCase
       find_port(2000) < 2000
   end
 
+  def test_find_mac
+    find_mac(:virtualbox)
+  end
+
   def test_failure
     assert_false(port_bound?('127.0.0.1', 1))
     assert_raise do
