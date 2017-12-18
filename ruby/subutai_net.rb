@@ -39,8 +39,8 @@ PROVIDER_MAC_PREFIXES = {
 
 os = nil
 os = :windows if (RbConfig::CONFIG['host_os'] =~ /mswin|mingw|cygwin/)
-os = :mac     if
-os = :linux   if
+os = :mac     if (RbConfig::CONFIG['host_os'] =~ /darwin/)
+os = :linux   if (RbConfig::CONFIG['host_os'] =~ /linux/)
 puts "Detected OS = #{os}"
 
 def broadcast_addr

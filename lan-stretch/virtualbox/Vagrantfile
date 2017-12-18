@@ -24,10 +24,14 @@ Vagrant.configure('2') do |config|
 
   # Bridged Interface enp0s5
   if SubutaiConfig.get(:BRIDGE).nil?
-    config.vm.network 'public_network', :type => 'dhcp', :adapter => 1, nic_type: 'virtio'
+    config.vm.network 'public_network', :type => 'dhcp',
+                      :adapter => 1, nic_type: 'virtio',
+                      :mac => find_mac
   else
-    config.vm.network 'public_network', :type => 'dhcp', :adapter => 1, nic_type: 'virtio',
-                      :bridge => SubutaiConfig.get(:BRIDGE)
+    config.vm.network 'public_network', :type => 'dhcp',
+                      :adapter => 1, nic_type: 'virtio',
+                      :bridge => SubutaiConfig.get(:BRIDGE),
+                      :mac => find_mac
   end
 
   # Host-Only Interface enp0s9

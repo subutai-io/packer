@@ -73,7 +73,7 @@ apt-cdrom-setup apt-setup/cdrom/set-first boolean false
 
 EOF
 
-if [ -n "$PROXY_ON" ]; then
+if [ "$PROXY_ON" == "true" ]; then
 cat >> $BASE_DIR/http/stretch.cfg <<-EOF
 # Detected proxy live repo proxy so using apt-cache-ng
 d-i mirror/country string manual

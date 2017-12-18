@@ -9,8 +9,12 @@ Vagrant.configure("2") do |config|
     v.name = "apt-cacher-ng"
   end
 
-  config.vm.provision "file", source: "~/Downloads/apt-cacher-ng.tgz", destination: "apt-cacher-ng.tgz"
-  
+  if File.exist?(File.expand_path("~/Downloads/apt-cacher-ng.tgz"))
+    config.vm.provision "file", 
+      source: "~/Downloads/apt-cacher-ng.tgz", 
+      destination: "apt-cacher-ng.tgz"
+  end
+
   config.vm.provision "shell", inline: <<-SHELL
     DEBIAN_FRONTEND=noninteractive apt-get update
     DEBIAN_FRONTEND=noninteractive apt-get upgrade -y

@@ -3,16 +3,6 @@
 BASE_DIR="`dirname \"$0\"`"
 BASE_DIR="`( cd \"$BASE_DIR\" && pwd )`"
 
-# cleanup and set apt proxy port if not configured
-rm -rf *.box; rm -rf *.log;
-echo Clean up output directories and boxes
-for bt in virtualbox-iso parallels-iso vmware-iso; do
-  echo box output directory = "output-$BOXNAME-$bt";
-  if [ -d "output-$BOXNAME-$bt" ]; then
-    rm -rf "output-$BOXNAME-$bt";
-  fi
-done
-
 if [ -z "$APT_PROXY_PORT" ]; then
   APT_PROXY_PORT=3142
 fi
@@ -25,6 +15,18 @@ if [ -n "$1" ]; then
 elif [ -z "$VAGRANT_BOXES" ]; then
   VAGRANT_BOXES='nat-xenial lan-xenial nat-stretch lan-stretch'
 fi
+
+# cleanup and set apt proxy port if not configured
+rm -rf *.box; rm -rf *.log;
+echo Clean up output directories and boxes
+for BOXNAME in $VAGRANT_BOXES; do
+  for bt in virtualbox-iso parallels-iso vmware-iso; do
+    echo box output directory = "output-$BOXNAME-$bt";
+    if [ -d "output-$BOXNAME-$bt" ]; then
+      rm -rf "output-$BOXNAME-$bt";
+    fi
+  done
+done
 
 # Checks LAN apt proxies availability
 check_proxy() {
@@ -117,13 +119,13 @@ fi
 
 # check to see if a proxy is configured
 if [ -n "$APT_PROXY_URL" ]; then
-  echo Proxy configured: APT_PROXY_URL = $APT_PROXY_URL
-  if [ -n "$(check_proxy $APT_PROXY_URL)" ]; then
+  echo 'Proxy configured: APT_PROXY_URL = '$APT_PROXY_URL
+  if [ -n "check_proxy $APT_PROXY_URL" ]; then
     echo Proxy is on
     PROXY_ON="true"
   else
     echo WARNING: Proxy is off
-    APT_PROXY_URL="$(do_local_proxy)"
+    APT_PROXY_URL=$(do_local_proxy)
     if [ -n "$APT_PROXY_URL" ]; then
       APT_PROXY_HOST=$(echo $APT_PROXY_URL|sed -e 's/http:\/\///g')
       PROXY_ON="true"
@@ -135,7 +137,8 @@ if [ -n "$APT_PROXY_URL" ]; then
     fi
   fi
 else
-  APT_PROXY_URL=do_local_proxy
+  echo 'Proxy NOT configured: APT_PROXY_URL NOT set'
+  APT_PROXY_URL=$(do_local_proxy)
   if [ -n "$APT_PROXY_URL" ]; then
     APT_PROXY_HOST="localhost:$APT_PROXY_PORT"
     APT_PROXY_HOST=$(echo $APT_PROXY_URL|sed -e 's/http:\/\///g')
