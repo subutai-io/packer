@@ -1,9 +1,11 @@
 require 'yaml'
 require 'digest'
+
 require_relative 'subutai_net'
 require_relative 'subutai_hooks'
 
 # Vagrant Driven Subutai Configuration
+# noinspection RubyTooManyMethodsInspection
 module SubutaiConfig
   LOG_MODES = %i[debug info warn error].freeze
   PARENT_DIR = './.vagrant'.freeze
@@ -20,6 +22,7 @@ module SubutaiConfig
   ].freeze
   GENERATED_PARAMETERS = %i[
     _CONSOLE_PORT
+    _BASE_MAC
     _SSH_PORT
     _LOG_MODE
     _ALT_SNAP _ALT_SNAP_MD5 _ALT_SNAP_MD5_LAST
@@ -48,8 +51,8 @@ module SubutaiConfig
 
     # Configuration parameters below have not been implemented
     SUBUTAI_SNAP: nil,               # alternative snap to provision
-    SUBUTAI_DESKTOP: false,          # installs a desktop with tray and p2p client
-    SUBUTAI_MAN_TMPL: nil,           # alternative management template to provision
+    SUBUTAI_DESKTOP: false,          # install desktop with tray and p2p client
+    SUBUTAI_MAN_TMPL: nil,           # provision alternative management template
     APT_PROXY_URL: nil,              # configure apt proxy URL
     PROVISION: true                  # to provision or not to
   }
@@ -219,18 +222,23 @@ module SubutaiConfig
 
   # NOTE: Console port ONLY needed in nat mode
   # NOTE: SSH port only needed in bridged mode
-  def self.do_ports
+  def self.do_network(provider)
     # set the next available console port if provisioning a peer in nat mode
     put(:_CONSOLE_PORT, find_port(get(:DESIRED_CONSOLE_PORT)), true) \
-      if !@bridged && boolean?(:SUBUTAI_PEER) && get(:_CONSOLE_PORT).nil? && write?
+      if !@bridged && boolean?(:SUBUTAI_PEER) &&
+         get(:_CONSOLE_PORT).nil? &&
+         write?
 
     # set the SSH port if we are using bridged mode
     put(:_SSH_PORT, find_port(get(:DESIRED_SSH_PORT)), true) \
       if @bridged && get(:_SSH_PORT).nil? && write?
+
+    put(:_BASE_MAC, find_mac(provider), true) \
+      if @bridged && get(:_BASE_MAC).nil? && write?
   end
 
   # Loads the generated and user configuration from YAML files
-  def self.load_config(cmd)
+  def self.load_config(cmd, provider)
     raise 'SubutaiConfig.cmd not set' if cmd.nil?
     @cmd = cmd
 
@@ -244,7 +252,7 @@ module SubutaiConfig
       put(key.to_sym, value, false) if USER_PARAMETERS.include? key.to_sym
     end
     do_handlers
-    do_ports
+    do_network(provider)
   end
 
   def self.reset
@@ -288,7 +296,7 @@ module SubutaiConfig
     puts ' --------------------------------------------------------------------'
 
     @config.each do |key, value|
-      puts "#{('       ' + key.to_s).ljust(25)} => #{value}" \
+      puts "#{('       ' + key.to_s).ljust(29)} => #{value}" \
         unless generated? key
     end
 
@@ -297,7 +305,7 @@ module SubutaiConfig
     puts ' --------------------------------------------------------------------'
 
     @config.each do |key, value|
-      puts "#{('     + ' + key.to_s).ljust(25)} => #{value}" if generated? key
+      puts "#{('     + ' + key.to_s).ljust(29)} => #{value}" if generated? key
     end
   end
 end

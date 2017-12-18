@@ -4,8 +4,9 @@ echo '------------------------------------------------------------------'
 echo 'User Specified Parameters:'
 echo '------------------------------------------------------------------'
 echo 'PROVISION                = '$PROVISION
+echo 'BRIDGED                  = '$BRIDGED
 echo 'SUBUTAI_PEER             = '$SUBUTAI_PEER
-echo 'DESIRED_CONSOLE_PORT             = '$DESIRED_CONSOLE_PORT
+echo 'DESIRED_CONSOLE_PORT     = '$DESIRED_CONSOLE_PORT
 echo 'SUBUTAI_ENV              = '$SUBUTAI_ENV
 echo 'SUBUTAI_RAM              = '$SUBUTAI_RAM
 echo 'SUBUTAI_CPU              = '$SUBUTAI_CPU
@@ -13,10 +14,12 @@ echo 'SUBUTAI_SNAP             = '$SUBUTAI_SNAP
 echo 'SUBUTAI_DESKTOP          = '$SUBUTAI_DESKTOP
 echo 'SUBUTAI_MAN_TMPL         = '$SUBUTAI_MAN_TMPL
 echo 'APT_PROXY_URL            = '$APT_PROXY_URL
+echo
 echo '------------------------------------------------------------------'
 echo 'Run Generated Parameters:'
 echo '------------------------------------------------------------------'
 echo '_CONSOLE_PORT            = '$_CONSOLE_PORT
+echo '_BASE_MAC                = '$_BASE_MAC
 echo '_ALT_SNAP                = '$_ALT_SNAP
 echo '_ALT_SNAP_MD5            = '$_ALT_SNAP_MD5
 echo '_ALT_SNAP_MD5_LAST       = '$_ALT_SNAP_MD5_LAST
@@ -146,5 +149,7 @@ else
   ./rhost_message.sh
 fi
 
-CONSOLE_PORT=$CONSOLE_PORT ./final_message.sh
-rm -f import.err *.sh    
+CONSOLE_PORT=$CONSOLE_PORT \
+   BRIDGED=$BRIDGED ./final_message.sh
+
+rm -f import.err *.sh

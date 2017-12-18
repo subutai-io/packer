@@ -10,7 +10,7 @@ require_relative 'subutai_config.rb'
 SubutaiConfig.bridged!
 SubutaiConfig.logging!(:debug)
 
-SubutaiConfig.load_config(ARGV[0])
+SubutaiConfig.load_config(ARGV[0], :virtualbox)
 SubutaiConfig.print
 
 Vagrant.require_version '>= 2.0.1'
@@ -19,19 +19,18 @@ Vagrant.configure('2') do |config|
   config.vm.box = 'subutai/lan-ubuntu'
   config.ssh.username = 'subutai'
 
+  # Need to override packer's base_mac setting
+  config.vm.base_mac = SubutaiConfig.get(:_BASE_MAC)
+
   # We need to find the SSH port so we can use it
   config.ssh.port = SubutaiConfig.get(:_SSH_PORT)
 
-  # Bridged Interface enp0s5
+  # Bridged Interface enp0s3
   if SubutaiConfig.get(:BRIDGE).nil?
-    config.vm.network 'public_network', :type => 'dhcp',
-                      :adapter => 1, nic_type: 'virtio',
-                      :mac => find_mac
+    config.vm.network 'public_network', :type => 'dhcp', :adapter => 1, nic_type: 'virtio'
   else
-    config.vm.network 'public_network', :type => 'dhcp',
-                      :adapter => 1, nic_type: 'virtio',
-                      :bridge => SubutaiConfig.get(:BRIDGE),
-                      :mac => find_mac
+    config.vm.network 'public_network', :type => 'dhcp', :adapter => 1, nic_type: 'virtio',
+                      :bridge => SubutaiConfig.get(:BRIDGE)
   end
 
   # Host-Only Interface enp0s9

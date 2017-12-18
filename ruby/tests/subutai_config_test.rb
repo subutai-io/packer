@@ -24,7 +24,7 @@ class SubutaiConfigTest < Test::Unit::TestCase
 
   # checks defaults without changing any values
   def defaults?
-    SubutaiConfig.load_config 'up'
+    SubutaiConfig.load_config 'up', :virtualbox
     assert_equal(SubutaiConfig.config.count, 10)
 
     assert_true(SubutaiConfig.get(:SUBUTAI_PEER))
@@ -48,12 +48,12 @@ class SubutaiConfigTest < Test::Unit::TestCase
   # Raise exception without setting valid cmd
   def test_no_cmd
     assert_raise do
-      SubutaiConfig.load_config(nil)
+      SubutaiConfig.load_config(nil, :virtualbox)
     end
   end
 
   def test_cleanup!
-    SubutaiConfig.load_config('up')
+    SubutaiConfig.load_config('up', :virtualbox)
     SubutaiConfig.put('_CONSOLE_PORT', 10_394, true)
     SubutaiConfig.put('SUBUTAI_PEER', false, true)
     SubutaiConfig.cleanup!
@@ -62,7 +62,7 @@ class SubutaiConfigTest < Test::Unit::TestCase
   end
 
   def test_cleanup
-    SubutaiConfig.load_config('up')
+    SubutaiConfig.load_config('up', :virtualbox)
     SubutaiConfig.put('SUBUTAI_PEER', true, true)
     assert_path_exist(SubutaiConfig::GENERATED_FILE, 'generated.yaml')
 
@@ -72,7 +72,7 @@ class SubutaiConfigTest < Test::Unit::TestCase
     SubutaiConfig.put('SUBUTAI_PEER', true, true)
     assert_path_exist(SubutaiConfig::GENERATED_FILE, 'generated.yaml')
 
-    SubutaiConfig.load_config('destroy')
+    SubutaiConfig.load_config('destroy', :virtualbox)
     assert_path_exist(SubutaiConfig::GENERATED_FILE, 'generated.yaml')
 
     SubutaiConfig.cleanup
@@ -80,7 +80,7 @@ class SubutaiConfigTest < Test::Unit::TestCase
   end
 
   def test_get_put_up
-    SubutaiConfig.load_config 'up'
+    SubutaiConfig.load_config('up', :virtualbox)
 
     #
     # Bunch of tests for User Parameters
@@ -171,7 +171,7 @@ class SubutaiConfigTest < Test::Unit::TestCase
     assert_equal(pkg, SubutaiConfig.get('SUBUTAI_MAN_TMPL'))
 
     # APT_PROXY_URL
-    assert_nil(SubutaiConfig.get(:APT_PROXY_URL))
+    assert_equal(SubutaiConfig.get(:APT_PROXY_URL), ENV['APT_PROXY_URL'])
     url = 'http://localhost:3124'
     assert_equal(url, SubutaiConfig.put(:APT_PROXY_URL, url, true))
     assert_equal(url, SubutaiConfig.get(:APT_PROXY_URL))
@@ -179,7 +179,7 @@ class SubutaiConfigTest < Test::Unit::TestCase
   end
 
   def test_get_put_generated
-    SubutaiConfig.load_config 'up'
+    SubutaiConfig.load_config('up', :virtualbox)
 
     # _CONSOLE_PORT
     assert_equal(1234, SubutaiConfig.put(:_CONSOLE_PORT, 1234, true))
@@ -202,14 +202,14 @@ class SubutaiConfigTest < Test::Unit::TestCase
   end
 
   def test_print
-    SubutaiConfig.load_config('up')
+    SubutaiConfig.load_config('up', :virtualbox)
     SubutaiConfig.put('_CONSOLE_PORT', '10009', true)
     SubutaiConfig.print
   end
 
   def test_up
     cmd = 'up'
-    SubutaiConfig.load_config(cmd)
+    SubutaiConfig.load_config(cmd, :virtualbox)
     assert_equal(cmd, SubutaiConfig.cmd, 'cmd does not equal ' + cmd)
     SubutaiConfig.put('SUBUTAI_PEER', true, true)
     assert_path_exist(SubutaiConfig::GENERATED_FILE)
@@ -220,7 +220,7 @@ class SubutaiConfigTest < Test::Unit::TestCase
 
   def test_destroy
     cmd = 'destroy'
-    SubutaiConfig.load_config(cmd)
+    SubutaiConfig.load_config(cmd, :virtualbox)
     assert_equal(cmd, SubutaiConfig.cmd, 'cmd does not equal ' + cmd)
   end
 
@@ -229,7 +229,7 @@ class SubutaiConfigTest < Test::Unit::TestCase
     pkg = './bogus/path/management.deb'
     snap = './bogus/path.snap'
 
-    SubutaiConfig.load_config(cmd)
+    SubutaiConfig.load_config(cmd, :virtualbox)
     assert_equal(cmd, SubutaiConfig.cmd, 'cmd does not equal ' + cmd)
     assert_equal(snap, SubutaiConfig.put(:SUBUTAI_SNAP, snap, true))
     assert_equal(pkg, SubutaiConfig.put(:SUBUTAI_MAN_TMPL, pkg, true))
@@ -247,7 +247,7 @@ class SubutaiConfigTest < Test::Unit::TestCase
     SubutaiConfig.reset
 
     cmd = 'ssh'
-    SubutaiConfig.load_config(cmd)
+    SubutaiConfig.load_config(cmd, :virtualbox)
     assert_equal(cmd, SubutaiConfig.cmd, 'cmd does not equal ' + cmd)
     assert_nil(SubutaiConfig.get(:SUBUTAI_SNAP))
     assert_nil(SubutaiConfig.get(:SUBUTAI_MAN_TMPL))
@@ -264,17 +264,17 @@ class SubutaiConfigTest < Test::Unit::TestCase
     assert_equal(pkg, SubutaiConfig.get(:_ALT_MANAGEMENT))
 
     cmd = 'suspend'
-    SubutaiConfig.load_config(cmd)
+    SubutaiConfig.load_config(cmd, :virtualbox)
     assert_equal(cmd, SubutaiConfig.cmd, 'cmd does not equal ' + cmd)
 
     cmd = 'resume'
-    SubutaiConfig.load_config(cmd)
+    SubutaiConfig.load_config(cmd, :virtualbox)
     assert_equal(cmd, SubutaiConfig.cmd, 'cmd does not equal ' + cmd)
   end
 
   def test_unknown_key
     assert_raise do
-      SubutaiConfig.load_config 'up'
+      SubutaiConfig.load_config('up', :virtualbox)
       SubutaiConfig.put('foo', 'bar', true)
     end
   end
@@ -282,20 +282,20 @@ class SubutaiConfigTest < Test::Unit::TestCase
   def test_bad_env_subutai_yaml_0
     SubutaiConfig.override_conf_file('./ruby/tests/subutai0.yaml')
     assert_raise do
-      SubutaiConfig.load_config 'up'
+      SubutaiConfig.load_config('up', :virtualbox)
     end
   end
 
   def test_bad_key_subutai_yaml_1
     SubutaiConfig.override_conf_file('./ruby/tests/subutai1.yaml')
     assert_raise do
-      SubutaiConfig.load_config 'up'
+      SubutaiConfig.load_config('up', :virtualbox)
     end
   end
 
   def test_subutai_yaml_2
     SubutaiConfig.override_conf_file('./ruby/tests/subutai2.yaml')
-    SubutaiConfig.load_config 'up'
+    SubutaiConfig.load_config('up', :virtualbox)
     SubutaiConfig.logging!(:debug)
     SubutaiConfig.print
     SubutaiConfig.log('up', 'dummy message')
@@ -309,11 +309,16 @@ class SubutaiConfigTest < Test::Unit::TestCase
     assert_true(SubutaiConfig.get(:ALLOW_INSECURE))
     assert_equal('./foo/bar/bogus/path/to/shell/script.sh', SubutaiConfig.get(:SUBUTAI_SNAP))
     assert_equal('./bar/foo/bogus/path/to/deb/pkg/management.deb', SubutaiConfig.get(:SUBUTAI_MAN_TMPL))
-    assert_equal('http://some_server:4444', SubutaiConfig.get(:APT_PROXY_URL))
+
+    if ENV['APT_PROXY_URL'].nil?
+      assert_equal('http://some_server:4444', SubutaiConfig.get(:APT_PROXY_URL))
+    else
+      assert_equal(ENV['APT_PROXY_URL'], SubutaiConfig.get(:APT_PROXY_URL))
+    end
   end
 
   def test_boolean?
-    SubutaiConfig.load_config 'up'
+    SubutaiConfig.load_config('up', :virtualbox)
     assert_true(SubutaiConfig.boolean?(:SUBUTAI_PEER))
     assert_false(SubutaiConfig.boolean?(:SUBUTAI_DESKTOP))
     assert_false(SubutaiConfig.boolean?(:SUBUTAI_SNAP))
@@ -335,12 +340,12 @@ class SubutaiConfigTest < Test::Unit::TestCase
 
     assert_not_nil(SubutaiConfig.config)
 
-    SubutaiConfig.load_config 'ssh'
+    SubutaiConfig.load_config('ssh', :virtualbox)
     assert_true(SubutaiConfig.read?)
   end
 
   def test_provision_snap?
-    SubutaiConfig.load_config 'ssh'
+    SubutaiConfig.load_config('ssh', :virtualbox)
     configs = SubutaiConfig.config
 
     # Make it all negative for provisioning conditions
@@ -368,7 +373,7 @@ class SubutaiConfigTest < Test::Unit::TestCase
     configs.store(:_ALT_SNAP_MD5_LAST, nil)
     assert_false(SubutaiConfig.provision_snap?)
 
-    SubutaiConfig.load_config 'provision'
+    SubutaiConfig.load_config('provision', :virtualbox)
     configs.store(:PROVISION, true)
     configs.store(:_ALT_SNAP, './ruby/tests/snap_script.sh')
     configs.store(:_ALT_SNAP_MD5, '6fc87ffd922973f8c88fd939fc091885')
@@ -379,7 +384,7 @@ class SubutaiConfigTest < Test::Unit::TestCase
   end
 
   def test_provision_management?
-    SubutaiConfig.load_config 'ssh'
+    SubutaiConfig.load_config('ssh', :virtualbox)
     configs = SubutaiConfig.config
 
     # Make it all negative for provisioning conditions
@@ -407,8 +412,11 @@ class SubutaiConfigTest < Test::Unit::TestCase
     configs.store(:_ALT_MANAGEMENT_MD5_LAST, nil)
     assert_false(SubutaiConfig.provision_management?)
 
-    SubutaiConfig.load_config 'provision'
+    SubutaiConfig.load_config('ssh', :virtualbox)
+    puts configs
     configs.store(:PROVISION, true)
+    puts configs
+
     configs.store(:_ALT_MANAGEMENT, './ruby/tests/snap_script.sh')
     configs.store(:_ALT_MANAGEMENT_MD5, '6fc87ffd922973f8c88fd939fc091885')
     configs.store(:_ALT_MANAGEMENT_MD5_LAST, nil)
@@ -418,11 +426,11 @@ class SubutaiConfigTest < Test::Unit::TestCase
   end
 
   def test_do_handlers
-    SubutaiConfig.load_config 'ssh'
+    SubutaiConfig.load_config('ssh', :virtualbox)
     configs = SubutaiConfig.config
     assert_false(SubutaiConfig.do_handlers)
 
-    SubutaiConfig.load_config 'up'
+    SubutaiConfig.load_config('up', :virtualbox)
     configs.store(:SUBUTAI_SNAP, './ruby/tests/snap_script.sh')
     configs.store(:SUBUTAI_MAN_TMPL, './ruby/tests/snap_script.sh')
     assert_true(SubutaiConfig.do_handlers)

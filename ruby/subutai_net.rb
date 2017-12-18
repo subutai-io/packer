@@ -41,14 +41,13 @@ os = nil
 os = :windows if (RbConfig::CONFIG['host_os'] =~ /mswin|mingw|cygwin/)
 os = :mac     if (RbConfig::CONFIG['host_os'] =~ /darwin/)
 os = :linux   if (RbConfig::CONFIG['host_os'] =~ /linux/)
-puts "Detected OS = #{os}"
 
 def broadcast_addr
   octets = `route print 0.0.0.0 | findstr 0.0.0.0`.split(' ').map(&:strip)[2].split('.')    \
     if (RbConfig::CONFIG['host_os'] =~ /mswin|mingw|cygwin/)
   octets = `ip route show | grep default | awk '{print $3}'`.gsub(/\s+/, "").split(".")     \
     if (RbConfig::CONFIG['host_os'] =~ /linux/)
-  octets = `route get default | grep gateway | awk '{print $2}'`.gsub(/\s+/, "").split(".") \
+  octets = `route -n get default | grep gateway | awk '{print $2}'`.gsub(/\s+/, "").split(".") \
     if (RbConfig::CONFIG['host_os'] =~ /darwin/)
   octets[3] = 255
   octets.join('.')
@@ -78,7 +77,6 @@ def arp_table
       if (RbConfig::CONFIG['host_os'] =~ /mswin|mingw|cygwin/)
     matches = /.*\((\d+\.\d+\.\d+.\d+)\) at ((([a-f]|[0-9]){1,2}:){5}([a-f]|[0-9]){1,2}) .*/.match(line) \
       if (RbConfig::CONFIG['host_os'] =~ /darwin|linux/)
-    puts " ==> [DEBUG]: #{matches[2]} for IP #{matches[1]} padded and converted = #{zero_pad_mac(matches[2])}"
     arp_table.store(zero_pad_mac(matches[2]), matches[1])
   end
   arp_table
@@ -94,6 +92,7 @@ def find_mac(provider)
   until mac_uniq?(mac) do
     mac = random_mac_addr(provider)
   end
+  mac
 end
 
 # Generate a random mac address that works with the hypervisor of a provider
