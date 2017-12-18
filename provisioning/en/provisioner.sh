@@ -4,7 +4,6 @@ echo '------------------------------------------------------------------'
 echo 'User Specified Parameters:'
 echo '------------------------------------------------------------------'
 echo 'PROVISION                = '$PROVISION
-echo 'BRIDGED                  = '$BRIDGED
 echo 'SUBUTAI_PEER             = '$SUBUTAI_PEER
 echo 'DESIRED_CONSOLE_PORT     = '$DESIRED_CONSOLE_PORT
 echo 'SUBUTAI_ENV              = '$SUBUTAI_ENV
@@ -19,6 +18,7 @@ echo '------------------------------------------------------------------'
 echo 'Run Generated Parameters:'
 echo '------------------------------------------------------------------'
 echo '_CONSOLE_PORT            = '$_CONSOLE_PORT
+echo '_BRIDGED                 = '$_BRIDGED
 echo '_BASE_MAC                = '$_BASE_MAC
 echo '_ALT_SNAP                = '$_ALT_SNAP
 echo '_ALT_SNAP_MD5            = '$_ALT_SNAP_MD5
