@@ -149,7 +149,7 @@ else
   ./rhost_message.sh
 fi
 
-CONSOLE_PORT=$CONSOLE_PORT \
-   BRIDGED=$BRIDGED ./final_message.sh
+_CONSOLE_PORT=$_CONSOLE_PORT \
+   _BRIDGED=$_BRIDGED ./final_message.sh
 
 rm -f import.err *.sh

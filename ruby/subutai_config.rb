@@ -21,6 +21,7 @@ module SubutaiConfig
     PROVISION BRIDGE
   ].freeze
   GENERATED_PARAMETERS = %i[
+    _BRIDGED
     _CONSOLE_PORT
     _BASE_MAC
     _SSH_PORT
@@ -235,6 +236,8 @@ module SubutaiConfig
 
     put(:_BASE_MAC, find_mac(provider), true) \
       if @bridged && get(:_BASE_MAC).nil? && write?
+
+    put(:_BRIDGED, @bridged, true) if write?
   end
 
   # Loads the generated and user configuration from YAML files
