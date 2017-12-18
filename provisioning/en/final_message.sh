@@ -18,5 +18,5 @@ fi
 
 Default u/p: 'admin' / 'secret'
 Vagrant ssh into box and change the 'subutai'/'ubuntai' user password!
-If you forget the url above, just take a look in .vagrant/generated.yaml
+If you forget the url above, just take a look in .vagrant/generated.yml
 EOM

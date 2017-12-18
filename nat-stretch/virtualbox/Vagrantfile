@@ -7,7 +7,7 @@ require_relative 'subutai_hooks.rb'
 require_relative 'subutai_net.rb'
 require_relative 'subutai_config.rb'
 
-SubutaiConfig.load_config(ARGV[0])
+SubutaiConfig.load_config(ARGV[0], :virtualbox)
 SubutaiConfig.logging!(:debug)
 SubutaiConfig.print
 

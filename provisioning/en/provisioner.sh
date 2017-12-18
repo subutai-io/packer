@@ -1,5 +1,6 @@
 #!/bin/bash
 
+echo
 echo '------------------------------------------------------------------'
 echo 'User Specified Parameters:'
 echo '------------------------------------------------------------------'
@@ -26,6 +27,7 @@ echo '_ALT_SNAP_MD5_LAST       = '$_ALT_SNAP_MD5_LAST
 echo '_ALT_MANAGEMENT_MD5      = '$_ALT_MANAGEMENT_MD5
 echo '_ALT_MANAGEMENT_MD5_LAST = '$_ALT_MANAGEMENT_MD5_LAST
 echo '_ALT_MANAGEMENT          = '$_ALT_MANAGEMENT
+echo
 
 if [ "$PROVISION" = "false" ]; then
     echo Provisioning has been disabled, existing with SUCCESS
