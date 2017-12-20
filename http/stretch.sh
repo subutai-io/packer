@@ -6,10 +6,6 @@ fi
 
 cat > $BASE_DIR/http/stretch.cfg <<-EOF
 # Account setup
-#d-i passwd/root-password password $PASSWORD
-#d-i passwd/root-password-again password $PASSWORD
-#d-i passwd/root-login boolean true
-
 d-i passwd/root-login boolean false
 d-i passwd/user-fullname string Subutai User
 d-i passwd/username string subutai
@@ -29,19 +25,6 @@ d-i netcfg/get_hostname subutai
 d-i netcfg/get_domain vm
 
 # Partitioning
-#d-i partman-auto/method string lvm
-#d-i partman-lvm/device_remove_lvm boolean true
-#d-i partman-md/device_remove_md boolean true
-#d-i partman-lvm/confirm boolean true
-#d-i partman-lvm/confirm_nooverwrite boolean true
-#d-i partman/choose_partition select finish
-#d-i partman-auto-lvm/guided_size string max
-#d-i partman-auto/choose_recipe select atomic
-#d-i partman/default_filesystem string ext3
-#d-i partman/confirm_wirte_new_label boolean true
-#d-i partman/confirm boolean true
-#d-i partman/confirm_nooverwrite boolean true
-
 d-i   partman-auto/disk                  string   /dev/sda
 d-i   partman-auto/method                string   lvm
 d-i   partman-auto-lvm/guided_size       string   max

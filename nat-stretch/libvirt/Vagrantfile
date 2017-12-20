@@ -1,0 +1,49 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+require 'fileutils'
+
+require_relative 'subutai_hooks.rb'
+require_relative 'subutai_net.rb'
+require_relative 'subutai_config.rb'
+
+SubutaiConfig.load_config(ARGV[0], :libvirt)
+SubutaiConfig.logging!(:debug)
+SubutaiConfig.print
+
+Vagrant.require_version '>= 2.0.1'
+
+Vagrant.configure('2') do |config|
+  config.vm.box = 'subutai/nat-stretch'
+  config.ssh.username = 'subutai'
+
+  config.vm.network 'private_network', type: 'dhcp', nic_type: 'virtio'
+  
+  if SubutaiConfig.get(:SUBUTAI_PEER)
+    config.vm.network 'forwarded_port', guest: 8443, host: SubutaiConfig.get(:_CONSOLE_PORT)
+  end
+
+  config.vm.provider 'libvirt' do |libvirt|
+    libvirt.driver = "kvm"
+    libvirt.memory = SubutaiConfig.get(:SUBUTAI_RAM)
+    libvirt.cpus = SubutaiConfig.get(:SUBUTAI_CPU)
+
+    libvirt.connect_via_ssh = false
+    libvirt.username = 'root'
+  end
+
+  if SubutaiConfig.provision_snap?
+    config.vm.provision 'file', source: SubutaiConfig.get(:_ALT_SNAP), destination: '$HOME/subutai.snap'
+    SubutaiConfig.snap_provisioned!
+  end
+
+  if SubutaiConfig.provision_management?
+    config.vm.provision 'file', source: SubutaiConfig.get(:_ALT_MANAGEMENT), destination: '$HOME/subutai.management'
+    SubutaiConfig.management_provisioned!
+  end
+
+  config.vm.provision 'shell',
+    env: SubutaiConfig.config,
+    path: 'https://raw.githubusercontent.com/subutai-io/packer/master/provisioning/en/provisioner.sh'
+end
+  
