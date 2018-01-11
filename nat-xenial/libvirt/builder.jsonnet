@@ -17,7 +17,7 @@
     "disk_interface": "scsi", // URGENT TODO change this to virtio
     "disk_compression": "false",
     "format": "qcow2",
-    "net_device": "virtio-net",
+    // "net_device": "virtio-net",
 
     "headless": "{{ user `headless` }}",
     "http_directory": "{{user `http`}}",

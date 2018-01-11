@@ -17,12 +17,12 @@
     "disk_interface": "scsi", // URGENT TODO change this to virtio
     "disk_compression": "false",
     "format": "qcow2",
-    "net_device": "virtio-net",
+    // "net_device": "virtio-net",
 
     "headless": "{{ user `headless` }}",
     "http_directory": "{{user `http`}}",
 
-    "output_directory": "output-{{ user `vm_name` }}-{{user `version`}}-{{.Provider}}",
+    "output_directory": "output-{{ user `vm_name` }}-{{user `version`}}-libvirt",
 
     "shutdown_command": "echo '{{ user `ssh_password` }}'|sudo -S shutdown -P now",
     "ssh_password": "{{user `ssh_password`}}",
