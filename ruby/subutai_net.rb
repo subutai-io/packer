@@ -77,7 +77,12 @@ def arp_table
       if (RbConfig::CONFIG['host_os'] =~ /mswin|mingw|cygwin/)
     matches = /.*\((\d+\.\d+\.\d+.\d+)\) at ((([a-f]|[0-9]){1,2}:){5}([a-f]|[0-9]){1,2}) .*/.match(line) \
       if (RbConfig::CONFIG['host_os'] =~ /darwin|linux/)
-    arp_table.store(zero_pad_mac(matches[2]), matches[1])
+
+    if ! matches.nil? && ! matches[2].nil?
+      key_mac = zero_pad_mac(matches[2])
+      value_ip = matches[1]
+      arp_table.store(key_mac, value_ip)
+    end
   end
   arp_table
 end

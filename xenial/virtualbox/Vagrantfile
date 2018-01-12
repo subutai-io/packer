@@ -8,7 +8,7 @@ require_relative 'subutai_net.rb'
 require_relative 'subutai_config.rb'
 
 SubutaiConfig.bridged!
-SubutaiConfig.logging!(:debug)
+# SubutaiConfig.logging!(:debug)
 
 SubutaiConfig.load_config(ARGV[0], :virtualbox)
 SubutaiConfig.print
