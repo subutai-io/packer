@@ -27,5 +27,5 @@
     "ssh_password": "ubuntai",
     "version": "2.0.0",
     "virtualbox_guest_os_type": "Debian_64",
-    "vm_name": "lan-stretch"
+    "vm_name": "stretch"
 }

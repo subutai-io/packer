@@ -10,33 +10,14 @@ fi
 # TODO: extract from variables
 PASSWORD="ubuntai"
 
-#
-# Settings for boxes to build for providers
-# ----------------------------------------------------------------------------
-# - by default all are used
-# - first argument if present overrides box list
-# - second argument if present overrides providers list
-# - if no arguments are given for a list then environment varaibles override 
-#
-# TODO: Very error prone because people give a list and do not quote it at the
-# CLI so we should see if we can use some kind of shell CLI argument processing
-# library.
-#
-
 if [ -n "$1" ]; then
   VAGRANT_BOXES="$1"
   for box in $VAGRANT_BOXES; do
     case "$box" in
-      "nat-xenial")
+      "xenial")
         break
         ;;
-      "nat-stretch")
-        break
-        ;;
-      "lan-xenial")
-        break
-        ;;
-      "lan-stretch")
+      "stretch")
         break
         ;;
       *) echo "Bad box name in box list: $box"; exit 1
@@ -44,7 +25,7 @@ if [ -n "$1" ]; then
     esac
   done
 elif [ -z "$VAGRANT_BOXES" ]; then
-  VAGRANT_BOXES='nat-xenial lan-xenial nat-stretch lan-stretch'
+  VAGRANT_BOXES='xenial stretch'
 fi
 
 if [ -n "$2" ]; then
@@ -62,7 +43,7 @@ if [ -n "$2" ]; then
     esac
   done
 elif [ -z "$PACKER_PROVIDERS" ]; then
-  PACKER_PROVIDERS='virtualbox qemu'
+  PACKER_PROVIDERS='virtualbox-iso'
 fi
 
 # cleanup and set apt proxy port if not configured
@@ -90,14 +71,6 @@ check_proxy() {
   fi
 }
 
-# Using vbguest to bring down noise - should have this plugin anyways
-do_vbguest_plugin() {
-  if [ -z "$(vagrant plugin list | grep vagrant-vbguest)" ]; then
-    echo "Installing missing vagrant-vbguest plugin" >&2
-    vagrant plugin install vagrant-vbguest >&2
-  fi
-}
-
 do_local_proxy() {
   local local_proxy="http://$(hostname):$APT_PROXY_PORT"
   if [ -n "$(check_proxy $local_proxy)" ]; then
@@ -110,8 +83,6 @@ do_local_proxy() {
   read answer
 
   if [ "$answer" = "y" ]; then
-    do_vbguest_plugin >&2
-
     cd $BASE_DIR/cache
     vagrant up >&2
     cd $BASE_DIR
@@ -262,6 +233,8 @@ for box in $VAGRANT_BOXES; do
 
     if [ "$?" -ne 0 ]; then
       echo "[$box][ERROR] Aborting builds due to $box build failure."
+      echo "build line was:"
+      echo "packer build -on-error=ask -only=$PACKER_PROVIDERS -except=null $box/template.json"
       exit 1
     fi
 

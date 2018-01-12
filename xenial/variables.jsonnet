@@ -1,4 +1,4 @@
-{ 
+{
     "base_dir": "{{env `BASE_DIR`}}",
     "scripts": "{{env `BASE_DIR`}}/scripts",
     "ruby": "{{env `BASE_DIR`}}/ruby",
@@ -11,9 +11,8 @@
     "desktop": "false",
     "disk_size": "131070",
     "distribution": "ubuntu",
-    "headless": "false",
+    "headless": "true",
     "hostname": "subutai",
-    "iso_path": "{{env `ISO_IMAGES`}}",
     "iso_checksum": "10fcd20619dce11fe094e960c85ba4a9",
     "iso_checksum_type": "md5",
     "iso_name": "ubuntu-16.04.3-server-amd64.iso",
@@ -29,5 +28,5 @@
     "ssh_password": "ubuntai",
     "version": "2.0.0",
     "virtualbox_guest_os_type": "Ubuntu_64",
-    "vm_name": "nat-xenial"
+    "vm_name": "xenial"
 }
