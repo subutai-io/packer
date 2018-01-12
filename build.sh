@@ -12,8 +12,38 @@ PASSWORD="ubuntai"
 
 if [ -n "$1" ]; then
   VAGRANT_BOXES="$1"
+  for box in $VAGRANT_BOXES; do
+    case "$box" in
+      "xenial")
+        break
+        ;;
+      "stretch")
+        break
+        ;;
+      *) echo "Bad box name in box list: $box"; exit 1
+        ;;
+    esac
+  done
 elif [ -z "$VAGRANT_BOXES" ]; then
-  VAGRANT_BOXES='nat-xenial lan-xenial nat-stretch lan-stretch'
+  VAGRANT_BOXES='xenial stretch'
+fi
+
+if [ -n "$2" ]; then
+  PACKER_PROVIDERS="$2"
+  for provider in $PACKER_PROVIDERS; do
+    case "$provider" in
+      "virtualbox-iso") echo Enabling virtualbox builder
+        break
+        ;;
+      "qemu") echo Enabling libvirt builder
+        break
+        ;;
+      *) echo "Bad or unsupported provider: $provider"; exit 1
+        ;;
+    esac
+  done
+elif [ -z "$PACKER_PROVIDERS" ]; then
+  PACKER_PROVIDERS='virtualbox-iso'
 fi
 
 # cleanup and set apt proxy port if not configured
@@ -41,14 +71,6 @@ check_proxy() {
   fi
 }
 
-# Using vbguest to bring down noise - should have this plugin anyways
-do_vbguest_plugin() {
-  if [ -z "$(vagrant plugin list | grep vagrant-vbguest)" ]; then
-    echo "Installing missing vagrant-vbguest plugin" >&2
-    vagrant plugin install vagrant-vbguest >&2
-  fi
-}
-
 do_local_proxy() {
   local local_proxy="http://$(hostname):$APT_PROXY_PORT"
   if [ -n "$(check_proxy $local_proxy)" ]; then
@@ -61,8 +83,6 @@ do_local_proxy() {
   read answer
 
   if [ "$answer" = "y" ]; then
-    do_vbguest_plugin >&2
-
     cd $BASE_DIR/cache
     vagrant up >&2
     cd $BASE_DIR
@@ -111,8 +131,7 @@ fi
 # check for vbox
 vbox=`which VirtualBox`
 if [ -z "$vbox" ]; then 
-  echo ' ==> [ERROR] Virtualbox not found'
-  exit 1
+  echo ' ==> [WARNING] Virtualbox not found'
 else 
   echo ' ==> [OK] VirtualBox executable found at '$vbox
 fi
@@ -120,9 +139,24 @@ fi
 # check to see if a proxy is configured
 if [ -n "$APT_PROXY_URL" ]; then
   echo 'Proxy configured: APT_PROXY_URL = '$APT_PROXY_URL
+
   if [ -n "check_proxy $APT_PROXY_URL" ]; then
     echo Proxy is on
     PROXY_ON="true"
+
+    # double check that the APT_PROXY_HOST is also configured with port
+    if [ -z "$APT_PROXY_URL" ]; then
+      echo " ==> [WARNING] APT_PROXY_URL=$APT_PROXY_URL but APT_PROXY_HOST is undefined"
+      echo " ==> [WARNING] Attempting to extract APT_PROXY_HOST from URL"
+      APT_PROXY_HOST=$(echo $APT_PROXY_URL|sed -e 's/http:\/\///g')
+    fi
+
+    if [ -z "$(echo $APT_PROXY_HOST|awk -F':' '{print $2}')" ]; then
+      echo " ==> [ERROR] No port included on APT_PROXY_HOST value of $APT_PROXY_HOST"
+      echo " ==> [ERROR] Oddly a port is required in the preseed file. Please add it."
+      echo " ==> [ERROR] i.e. $APT_PROXY_HOST:3142 - Terminating ..."
+      exit 1
+    fi
   else
     echo WARNING: Proxy is off
     APT_PROXY_URL=$(do_local_proxy)
@@ -195,10 +229,12 @@ for box in $VAGRANT_BOXES; do
       APT_PROXY_PORT=$APT_PROXY_PORT    \
       APT_PROXY_URL=$APT_PROXY_URL      \
       APT_PROXY_HOST=$APT_PROXY_HOST    \
-    time packer build -on-error=ask -only=virtualbox-iso -except=null $box/template.json
+    time packer build -on-error=ask -only=$PACKER_PROVIDERS -except=null $box/template.json
 
     if [ "$?" -ne 0 ]; then
       echo "[$box][ERROR] Aborting builds due to $box build failure."
+      echo "build line was:"
+      echo "packer build -on-error=ask -only=$PACKER_PROVIDERS -except=null $box/template.json"
       exit 1
     fi
 

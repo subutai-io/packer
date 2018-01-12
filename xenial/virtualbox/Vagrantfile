@@ -8,7 +8,7 @@ require_relative 'subutai_net.rb'
 require_relative 'subutai_config.rb'
 
 SubutaiConfig.bridged!
-SubutaiConfig.logging!(:debug)
+# SubutaiConfig.logging!(:debug)
 
 SubutaiConfig.load_config(ARGV[0], :virtualbox)
 SubutaiConfig.print
@@ -22,28 +22,20 @@ Vagrant.configure('2') do |config|
   # Need to override packer's base_mac setting
   config.vm.base_mac = SubutaiConfig.get(:_BASE_MAC)
 
-  # We need to find the SSH port so we can use it
-  config.ssh.port = SubutaiConfig.get(:_SSH_PORT)
-
-  # Bridged Interface enp0s3
+  # Second Bridged Interface enp???
   if SubutaiConfig.get(:BRIDGE).nil?
-    config.vm.network 'public_network', :type => 'dhcp', :adapter => 1, nic_type: 'virtio'
+    config.vm.network 'public_network', :type => 'dhcp', :adapter => 2, nic_type: 'virtio'
   else
-    config.vm.network 'public_network', :type => 'dhcp', :adapter => 1, nic_type: 'virtio',
-                      :bridge => SubutaiConfig.get(:BRIDGE)
+    config.vm.network 'public_network', :type => 'dhcp', :adapter => 2, nic_type: 'virtio', 
+      :bridge => SubutaiConfig.get(:BRIDGE)
   end
 
-  # Host-Only Interface enp0s9
+  # Third Host-Only Interface enp???
   config.vm.network 'private_network', :type => 'dhcp', :adapter => 3, nic_type: 'virtio'
 
   config.vm.provider 'virtualbox' do |vb|
     vb.memory = SubutaiConfig.get(:SUBUTAI_RAM)
     vb.cpus = SubutaiConfig.get(:SUBUTAI_CPU)
-
-    # NAT Interface enp0s8
-    vb.customize ['modifyvm', :id, '--nic2', 'nat']
-    vb.customize ['modifyvm', :id, '--nictype2', 'virtio']
-    vb.customize ['modifyvm', :id, '--natpf2', "ssh,tcp,127.0.0.1,#{SubutaiConfig.get(:_SSH_PORT)},,22"]
 
     # To avoid the Sierra bug let's turn off things we do not need
     # See here: https://github.com/monetate/ectou-export/issues/5
@@ -58,16 +50,10 @@ Vagrant.configure('2') do |config|
   end
 
   config.vm.provision 'shell', inline: <<-SHELL
-    # Neet to wait for network: reset on Vagrant up changes
-    while true; do
-      ping -c 1 mit.edu &> /dev/null;
-      if [ ! "$?" = "0" ]; then
-        echo "Configuring interfaces ..."
-        sleep 5;
-      else
-        break;
-      fi;
-    done
+    echo "SUBUTAI_VAGRANT_VERSION=$VERSION"   >> /etc/environment
+    echo "SUBUTAI_BRIDGE_IFACE=enp0s8"        >> /etc/environment
+    echo "SUBUTAI_NAT_IFACE=enp0s3"           >> /etc/environment
+    echo "SUBUTAI_HOST_IFACE=enp0s9"          >> /etc/environment
   SHELL
 
   if SubutaiConfig.provision_snap?

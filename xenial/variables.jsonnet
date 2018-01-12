@@ -28,5 +28,5 @@
     "ssh_password": "ubuntai",
     "version": "2.0.0",
     "virtualbox_guest_os_type": "Ubuntu_64",
-    "vm_name": "lan-xenial"
+    "vm_name": "xenial"
 }

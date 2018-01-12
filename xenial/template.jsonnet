@@ -1,6 +1,6 @@
 {
    "builders": [
-     import "virtualbox/builder.jsonnet",
+        import "virtualbox/builder.jsonnet",
    ],
    "post-processors": [
       [
@@ -17,13 +17,13 @@
          }
       ]
    ],
-   "provisioners": [
-      {
-         "override": {
-            "virtualbox-iso": import "virtualbox/provisioner.jsonnet",
-         },
-         "type": "shell"
-      }
-   ],
-   "variables": import "variables.jsonnet",
+  "provisioners": [
+    {
+      "override": {
+        "virtualbox-iso": import "virtualbox/provisioner.jsonnet",
+      },
+      "type": "shell"
+    }
+  ],
+   "variables": import "variables.jsonnet"
 }
