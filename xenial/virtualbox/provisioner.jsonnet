@@ -8,7 +8,6 @@
         "{{user `scripts`}}/apt.sh",
         "{{user `scripts`}}/snap.sh",
         "{{user `scripts`}}/vagrant.sh",
-        "{{user `scripts`}}/vbox.sh",
         "{{user `scripts`}}/rc_local.sh",
         "{{user `scripts`}}/grub.sh",
         "{{user `scripts`}}/cleanup.sh"
