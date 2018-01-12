@@ -19,11 +19,16 @@
    ],
    "provisioners": [
       {
+        type: "file",
+        source: "http/stretch.sources.list",
+        destination: "/tmp/sources.list"
+      },
+      {
          "override": {
             "virtualbox-iso": import "virtualbox/provisioner.jsonnet",
          },
          "type": "shell"
-      }
+      },
    ],
    "variables": import "variables.jsonnet",
 }
