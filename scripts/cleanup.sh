@@ -17,7 +17,6 @@ echo "cleaning up pgp keys"
 rm -rf /var/snap/subutai$BRANCHTAG/current/.gnupg/
 
 # remove the proxy configuration for local apt-cacher-ng setup
-if [ -e /etc/apt/apt.conf.d/02proxy ]; then
+if [ -f /etc/apt/apt.conf.d/02proxy ]; then
   sudo rm -f /etc/apt/apt.conf.d/02proxy;
-  sudo sync;
 fi

@@ -10,7 +10,7 @@ module SubutaiConfig
   LOG_MODES = %i[debug info warn error].freeze
   PARENT_DIR = './.vagrant'.freeze
   GENERATED_FILE = PARENT_DIR + '/generated.yml'.freeze
-  CONF_FILE = './vagrant-subutai.yml'.freeze
+  CONF_FILE = File.expand_path('./vagrant-subutai.yml').freeze
   USER_CONF_FILE = File.expand_path('~/.vagrant-subutai/vagrant-subutai.yml').freeze
   SUBUTAI_ENVIRONMENTS = %i[prod master dev sysnet].freeze
   USER_PARAMETERS = %i[
@@ -246,8 +246,8 @@ module SubutaiConfig
     @cmd = cmd
 
     # Load YAML based user and local configuration if they exist
+    load_config_file(CONF_FILE) if File.exist?(CONF_FILE)
     load_config_file(USER_CONF_FILE) if File.exist?(USER_CONF_FILE)
-    load_config_file(conf_file) if File.exist?(conf_file)
     load_generated
 
     # Load overrides from the environment, and generated configurations
