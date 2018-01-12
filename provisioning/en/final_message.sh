@@ -6,9 +6,15 @@ Search for 'Subutai' in your browser's extension/plugin store to find it and ins
 
 EOM
 
-IP=`ip addr show enp0s3 | grep inet | grep -v inet6 | awk '{print $2}' | sed 's/\/.*//'`
+get_ip () {
+  ip addr show $SUBUTAI_BRIDGE_IFACE | \
+    egrep '^[[:space:]]+inet[[:space:]]+' | \
+    egrep -o '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | \
+    cut -d$'\n' -f 1
+}
+
 if [ "$_BRIDGED" == "true" ]; then
-    URL='Console URL: https://'$IP':8443'
+    URL='Console URL: https://'`get_ip`':8443'
 else
     URL='Console URL: https://localhost:'$_CONSOLE_PORT
 fi

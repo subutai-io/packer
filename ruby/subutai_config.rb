@@ -11,7 +11,7 @@ module SubutaiConfig
   PARENT_DIR = './.vagrant'.freeze
   GENERATED_FILE = PARENT_DIR + '/generated.yml'.freeze
   CONF_FILE = './vagrant-subutai.yml'.freeze
-  USER_CONF_FILE = File.expand_path('~/.vagrant-subutai.yml').freeze
+  USER_CONF_FILE = File.expand_path('~/.vagrant-subutai/vagrant-subutai.yml').freeze
   SUBUTAI_ENVIRONMENTS = %i[prod master dev sysnet].freeze
   USER_PARAMETERS = %i[
     DESIRED_CONSOLE_PORT DESIRED_SSH_PORT
