@@ -6,6 +6,7 @@ Search for 'Subutai' in your browser's extension/plugin store to find it and ins
 
 EOM
 
+echo "SUBUTAI_BRIDGE_IFACE = $SUBUTAI_BRIDGE_IFACE"
 get_ip () {
   ip addr show $SUBUTAI_BRIDGE_IFACE | \
     egrep '^[[:space:]]+inet[[:space:]]+' | \
