@@ -13,7 +13,9 @@ module SubutaiConfig
   CONF_FILE = File.expand_path('./vagrant-subutai.yml').freeze
   USER_CONF_FILE = File.expand_path('~/.vagrant-subutai/vagrant-subutai.yml').freeze
   SUBUTAI_ENVIRONMENTS = %i[prod master dev sysnet].freeze
-  
+
+  # Without a variable key listed here it will not get pulled in from
+  # the environment, or from any of the vagrant-subutai.yml conf files
   USER_PARAMETERS = %i[
     DESIRED_CONSOLE_PORT
     DESIRED_SSH_PORT
@@ -26,7 +28,10 @@ module SubutaiConfig
     SUBUTAI_DESKTOP
     SUBUTAI_MAN_TMPL
     APT_PROXY_URL
-    PROVISION BRIDGE
+    PROVISION
+    BRIDGE
+    AUTHORIZED_KEYS
+    PASSWORD_OVERRIDE
   ].freeze
   
   GENERATED_PARAMETERS = %i[

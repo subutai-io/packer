@@ -54,12 +54,34 @@ Vagrant.configure('2') do |config|
     end
   end
 
-  config.vm.provision 'shell', inline: <<-SHELL
+  config.vm.provision 'shell', env: SubutaiConfig.config, inline: <<-SHELL
     echo "SUBUTAI_VAGRANT_VERSION=$VERSION"   >> /etc/environment
     echo "SUBUTAI_BRIDGE_IFACE=enp0s8"        >> /etc/environment
     echo "SUBUTAI_NAT_IFACE=enp0s3"           >> /etc/environment
     echo "SUBUTAI_HOST_IFACE=enp0s9"          >> /etc/environment
+
+    if [ -n "$PASSWORD_OVERRIDE" ]; then
+      usermod --password $(echo "$PASSWORD_OVERRIDE" | openssl passwd -1 -stdin) subutai
+    fi
   SHELL
+
+  unless SubutaiConfig.get(:AUTHORIZED_KEYS).nil?
+    config.vm.provision 'file', source: SubutaiConfig.get(:AUTHORIZED_KEYS), destination: '/tmp/authorized_keys'
+
+    config.vm.provision 'shell', inline: <<-SHELL
+      mkdir -p /root/.ssh
+      cat /tmp/authorized_keys >> /root/.ssh/authorized_keys
+      chmod 600 /root/.ssh/authorized_keys
+      chmod 700 /root/.ssh
+
+      mkdir -p /home/subutai/.ssh
+      cat /tmp/authorized_keys >> /home/subutai/.ssh/authorized_keys
+      chown subutai:subutai /home/subutai/.ssh/authorized_keys
+      chmod 600 /home/subutai/.ssh/authorized_keys
+      chmod 700 /home/subutai/.ssh
+      chown subutai:subutai /home/subutai/.ssh
+    SHELL
+  end
 
   if SubutaiConfig.provision_snap?
     config.vm.provision 'file', source: SubutaiConfig.get(:_ALT_SNAP), destination: '$HOME/subutai.snap'
