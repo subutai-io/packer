@@ -8,7 +8,7 @@
     "branch_or_tag": "2.0.0",
     "cpus": "2",
     "desktop": "false",
-    "disk_size": "131070",
+    "disk_size": "531070",
     "distribution": "debian",
     "headless": "true",
     "hostname": "subutai",
