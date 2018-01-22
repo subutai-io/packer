@@ -17,7 +17,10 @@ Vagrant.require_version '>= 2.0.1'
 
 Vagrant.configure('2') do |config|
   config.vm.box = 'subutai/xenial'
-  config.vm.box_url = 'https://cdn.subut.ai:8338/kurjun/rest/template/download?name=vagrant-subutai-xenial-virtualbox.box'
+  url = SubutaiConfig.url_of_cdn
+  owner = '43d722f2c81bcd5159de5e5a482613b046c548b6'
+  artifact_name = 'vagrant-subutai-xenial-virtualbox.box'
+  config.vm.box_url = url + '/raw/download?id=' + get_latest_id_artifact(owner,artifact_name)
   config.ssh.username = 'subutai'
 
   # Need to override packer's base_mac setting
