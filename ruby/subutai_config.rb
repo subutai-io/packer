@@ -342,7 +342,6 @@ module SubutaiConfig
     uri = URI(url)
     response = Net::HTTP.get(uri)
     result = JSON.parse(response)
-    puts result[0]['id']
     result[0]['id']
   end
 end
