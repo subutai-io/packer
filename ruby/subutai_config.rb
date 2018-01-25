@@ -1,5 +1,7 @@
 require 'yaml'
 require 'digest'
+require 'net/http'
+require 'json'
 
 require_relative 'subutai_net'
 require_relative 'subutai_hooks'
@@ -83,6 +85,8 @@ module SubutaiConfig
 
   @bridged = false
 
+  @url_of_cdn = 'https://cdn.subut.ai:8338/kurjun/rest'
+
   def self.write?
     raise 'SubutaiConfig.cmd not set' if @cmd.nil?
     @cmd == 'up'
@@ -151,6 +155,9 @@ module SubutaiConfig
     @config
   end
 
+  def self.url_of_cdn
+    @url_of_cdn
+  end
   def self.override_conf_file(filepath)
     @conf_file_override = filepath
   end
@@ -328,6 +335,14 @@ module SubutaiConfig
     @config.each do |key, value|
       puts "#{('     + ' + key.to_s).ljust(29)} => #{value}" if generated? key
     end
+  end
+
+  def self.get_latest_id_artifact(owner, artifact_name)
+    url = url_of_cdn + '/raw/info?owner=' + owner + '&name=' + artifact_name
+    uri = URI(url)
+    response = Net::HTTP.get(uri)
+    result = JSON.parse(response)
+    result[0]['id']
   end
 end
 
