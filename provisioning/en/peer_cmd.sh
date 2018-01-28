@@ -20,7 +20,7 @@ if [ $errcode -ne 0 ]; then
   if [ -n "$certificate" ]; then
     echo "You're using a local CDN cache node with a self signed certiifcate."
 
-    if [ "$CMD" == "subutai-dev" -o "$CMD" == "subutai-master" ]; then
+    if [ "$CMD" != "subutai" ]; then
       echo "You're not using production so I'll enable insecure CDN downloads for you now."
       CMD=$CMD ./insecure.sh
       echo "Trying management import again ..."
