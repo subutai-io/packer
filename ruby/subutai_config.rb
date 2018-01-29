@@ -251,9 +251,7 @@ module SubutaiConfig
   def self.do_network(provider)
     # set the next available console port if provisioning a peer in nat mode
     put(:_CONSOLE_PORT, find_port(get(:DESIRED_CONSOLE_PORT)), true) \
-      if !@bridged && boolean?(:SUBUTAI_PEER) &&
-         get(:_CONSOLE_PORT).nil? &&
-         write?
+      if boolean?(:SUBUTAI_PEER) && get(:_CONSOLE_PORT).nil? && write?
 
     # set the SSH port if we are using bridged mode
     put(:_SSH_PORT, find_port(get(:DESIRED_SSH_PORT)), true) \
