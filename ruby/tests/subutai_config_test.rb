@@ -441,4 +441,21 @@ class SubutaiConfigTest < Test::Unit::TestCase
       SubutaiConfig.do_handlers
     end
   end
+
+  def test_get_latest_id_artifact
+    owner = '683499ecd07820e7050aebcc3b53d4ec239fbdf3'
+    artifact_name = 'file_name_cdn.tar.gz'
+    id = SubutaiConfig.get_latest_id_artifact(owner,artifact_name)
+    assert_equal(id,'87b462e5-c862-45f5-99e5-e8baf32d8823', "Id of this " + artifact_name + " file not latest")
+
+    owner = '1297432ca164899d498c80dd4904264128210370'
+    artifact_name = '189e725f4587b679740f0f7783745056'
+    id = SubutaiConfig.get_latest_id_artifact(owner,artifact_name)
+    assert_equal(id,'bb5ae9e9-d8c4-4663-a2b1-463f8f3864bd', "Id of this " + artifact_name + " file not latest")
+
+    owner = '1297432ca164899d498c80dd4904264128210370'
+    artifact_name = '391dd4201b7c89f0cb837bb35ebe527b'
+    id = SubutaiConfig.get_latest_id_artifact(owner,artifact_name)
+    assert_equal(id,'338d4964-ad17-4449-95c1-7f2c9785b289', "Id of this " + artifact_name + " file not latest")
+  end
 end
