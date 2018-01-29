@@ -15,7 +15,8 @@ get_ip () {
     cut -d$'\n' -f 1
 }
 
-if [ "$_BRIDGED" == "true" ]; then
+bridge_ip="$(get_ip)"
+if [ "$_BRIDGED" == "true" -a -n "$bridge_ip" ]; then
     URL='Console URL: https://'`get_ip`':8443'
 else
     URL='Console URL: https://localhost:'$_CONSOLE_PORT
