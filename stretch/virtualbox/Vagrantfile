@@ -3,11 +3,11 @@
 
 require 'fileutils'
 
-unless Vagrant.has_plugin?('subutai_cli')
-  raise 'SubutaiCli plugin required: vagrant plugin install subutai_cli'
+unless Vagrant.has_plugin?('vagrant-subutai')
+  raise 'Vagrant Subutai Cli plugin required: vagrant plugin install vagrant-subutai'
 end
 
-require 'subutai_cli'
+require 'vagrant-subutai'
 
 SubutaiConfig.bridged!
 # SubutaiConfig.logging!(:debug)
