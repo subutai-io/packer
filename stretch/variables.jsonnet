@@ -1,11 +1,10 @@
 {
     "base_dir": "{{env `BASE_DIR`}}",
     "scripts": "{{env `BASE_DIR`}}/scripts",
-    "ruby": "{{env `BASE_DIR`}}/ruby",
     "http": "{{env `BASE_DIR`}}/http",
     "apt_proxy_host": "{{env `APT_PROXY_HOST`}}",
     "apt_proxy_url": "{{env `APT_PROXY_URL`}}",
-    "branch_or_tag": "2.0.4",
+    "branch_or_tag": "2.0.5",
     "cpus": "2",
     "desktop": "false",
     "disk_size": "131070",
@@ -25,7 +24,7 @@
     "skip_export": "false",
     "ssh_username": "subutai",
     "ssh_password": "ubuntai",
-    "version": "2.0.4",
+    "version": "2.0.5",
     "virtualbox_guest_os_type": "Debian_64",
     "vm_name": "stretch"
 }

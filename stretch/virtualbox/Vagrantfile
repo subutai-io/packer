@@ -3,15 +3,19 @@
 
 require 'fileutils'
 
-require_relative 'subutai_hooks.rb'
-require_relative 'subutai_net.rb'
-require_relative 'subutai_config.rb'
+unless Vagrant.has_plugin?('subutai_cli')
+  raise 'SubutaiCli plugin required: vagrant plugin install subutai_cli'
+end
+
+require 'subutai_cli'
 
 SubutaiConfig.bridged!
 # SubutaiConfig.logging!(:debug)
 
 SubutaiConfig.load_config(ARGV[0], :virtualbox)
 SubutaiConfig.print
+
+$GROW_BY = SubutaiConfig.get_grow_by
 
 Vagrant.require_version '>= 2.0.1'
 
@@ -59,6 +63,45 @@ Vagrant.configure('2') do |config|
     unless Vagrant.has_plugin?("vagrant-vbguest")
       raise 'VBGuest plugin required: vagrant plugin install vagrant-vbguest!'
     end
+
+    if ARGV[0] == 'up'
+      # Adds Virtual Disks
+      unless SubutaiConfig.get(:SUBUTAI_DISK).nil?
+        grow_by = SubutaiConfig.get_grow_by
+        generated_disk = SubutaiConfig.get(:_SUBUTAI_DISK)
+        disk_port = SubutaiConfig.get(:_SUBUTAI_DISK_PORT)
+        disk_port = 1 if disk_port.nil?
+
+        file_disk = "./SubutaiDisk-#{disk_port}-#{grow_by}.vdi"
+
+        unless File.exist?(file_disk)
+          if grow_by > 0
+            STDOUT.puts "Grow by: #{grow_by} gb"
+            temp_grow_by = grow_by
+            grow_by = grow_by * 1024 + 2 * 1024 # 2 gb for overhead
+            vb.customize ['createhd', '--filename', file_disk, '--size', grow_by]
+
+            # SATA port should change every added new virtual disks
+            if disk_port.nil?
+              vb.customize ['storageattach', :id,  '--storagectl', 'SATA Controller', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', file_disk]
+              SubutaiConfig.put(:_SUBUTAI_DISK_PORT, 1, true)
+            else
+              disk_port = disk_port.to_i + 1 # increase port by one
+              vb.customize ['storageattach', :id,  '--storagectl', 'SATA Controller', '--port', disk_port, '--device', 0, '--type', 'hdd', '--medium', file_disk]
+              SubutaiConfig.put(:_SUBUTAI_DISK_PORT, disk_port, true)
+            end
+
+            if generated_disk.nil?
+              SubutaiConfig.put(:_SUBUTAI_DISK, temp_grow_by, true) # we set sum of virtual disks to _SUBUTAI_DISK
+            else
+              SubutaiConfig.put(:_SUBUTAI_DISK, temp_grow_by + generated_disk.to_i, true) # we set sum of virtual disks to _SUBUTAI_DISK
+            end
+          else
+            STDOUT.puts "WARNING the operation will be ignored because it shrink operations are not supported"
+          end
+        end
+      end
+    end
   end
 
   config.vm.provision 'shell', env: SubutaiConfig.config, inline: <<-SHELL
@@ -101,5 +144,12 @@ Vagrant.configure('2') do |config|
   end
 
   config.vm.provision 'shell', env: SubutaiConfig.config,
-    path: 'https://raw.githubusercontent.com/subutai-io/packer/master/provisioning/en/provisioner.sh'
+                      path: 'https://raw.githubusercontent.com/subutai-io/packer/master/provisioning/en/provisioner.sh'
+
+  unless $GROW_BY.nil?
+    if $GROW_BY > 0
+      config.vm.provision "shell", run: "always", env: {DISK_SIZE: $GROW_BY.to_i},
+                          path: 'https://raw.githubusercontent.com/subutai-io/packer/issue-33/scripts/subutai_disk.sh'
+    end
+  end
 end
