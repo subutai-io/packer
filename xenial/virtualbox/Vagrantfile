@@ -148,7 +148,7 @@ Vagrant.configure('2') do |config|
   unless $GROW_BY.nil?
     if $GROW_BY > 0
       config.vm.provision "shell", run: "always", env: {DISK_SIZE: $GROW_BY.to_i},
-                          path: 'https://raw.githubusercontent.com/subutai-io/packer/issue-33/scripts/subutai_disk.sh'
+                          path: 'https://raw.githubusercontent.com/subutai-io/packer/master/provisioning/en/subutai_disk.sh'
     end
   end
 end

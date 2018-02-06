@@ -12,7 +12,7 @@ sudo lvextend -L+$(($DISK_SIZE+1))'G' /dev/mapper/main-btrfs
 which btrfs
 
 if [ $? != 0 ]; then
-  sudo apt install btrfs-tools
+  sudo apt -y install btrfs-tools
 fi
 
 sudo btrfs filesystem resize +$DISK_SIZE'g' /var/snap/subutai/common/lxc
