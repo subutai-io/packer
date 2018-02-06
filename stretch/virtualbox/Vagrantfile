@@ -65,41 +65,14 @@ Vagrant.configure('2') do |config|
     end
 
     if ARGV[0] == 'up'
-      # Adds Virtual Disks
-      unless SubutaiConfig.get(:SUBUTAI_DISK).nil?
-        grow_by = SubutaiConfig.get_grow_by
-        generated_disk = SubutaiConfig.get(:_SUBUTAI_DISK)
-        disk_port = SubutaiConfig.get(:_SUBUTAI_DISK_PORT)
-        disk_port = 1 if disk_port.nil?
+      has_grow, grow_by = SubutaiDisk.has_grow
 
-        file_disk = "./SubutaiDisk-#{disk_port}-#{grow_by}.vdi"
+      if has_grow
+        STDOUT.puts  "\e[33mDisk size is growing by #{grow_by} gb.\e[0m"
 
-        unless File.exist?(file_disk)
-          if grow_by > 0
-            STDOUT.puts "Grow by: #{grow_by} gb"
-            temp_grow_by = grow_by
-            grow_by = grow_by * 1024 + 2 * 1024 # 2 gb for overhead
-            vb.customize ['createhd', '--filename', file_disk, '--size', grow_by]
-
-            # SATA port should change every added new virtual disks
-            if disk_port.nil?
-              vb.customize ['storageattach', :id,  '--storagectl', 'SATA Controller', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', file_disk]
-              SubutaiConfig.put(:_SUBUTAI_DISK_PORT, 1, true)
-            else
-              disk_port = disk_port.to_i + 1 # increase port by one
-              vb.customize ['storageattach', :id,  '--storagectl', 'SATA Controller', '--port', disk_port, '--device', 0, '--type', 'hdd', '--medium', file_disk]
-              SubutaiConfig.put(:_SUBUTAI_DISK_PORT, disk_port, true)
-            end
-
-            if generated_disk.nil?
-              SubutaiConfig.put(:_SUBUTAI_DISK, temp_grow_by, true) # we set sum of virtual disks to _SUBUTAI_DISK
-            else
-              SubutaiConfig.put(:_SUBUTAI_DISK, temp_grow_by + generated_disk.to_i, true) # we set sum of virtual disks to _SUBUTAI_DISK
-            end
-          else
-            STDOUT.puts "WARNING the operation will be ignored because it shrink operations are not supported"
-          end
-        end
+        vb.customize ['createhd', '--filename', SubutaiDisk.file(grow_by), '--size', SubutaiDisk.size(grow_by)]
+        vb.customize ['storageattach', :id,  '--storagectl', 'SATA Controller', '--port', SubutaiDisk.port, '--device', 0, '--type', 'hdd', '--medium', SubutaiDisk.file(grow_by)]
+        SubutaiDisk.save_conf(grow_by)
       end
     end
   end
@@ -146,10 +119,10 @@ Vagrant.configure('2') do |config|
   config.vm.provision 'shell', env: SubutaiConfig.config,
                       path: 'https://raw.githubusercontent.com/subutai-io/packer/master/provisioning/en/provisioner.sh'
 
-  unless $GROW_BY.nil?
-    if $GROW_BY > 0
-      config.vm.provision "shell", run: "always", env: {DISK_SIZE: $GROW_BY.to_i},
-                          path: 'https://raw.githubusercontent.com/subutai-io/packer/master/provisioning/en/subutai_disk.sh'
-    end
+  has_grow, grow_by = SubutaiDisk.has_grow
+
+  if has_grow
+    config.vm.provision "shell", run: "always", env: {DISK_SIZE: grow_by.to_i},
+                        path: 'https://raw.githubusercontent.com/subutai-io/packer/refactor-merge33/provisioning/en/subutai_disk.sh'
   end
 end
