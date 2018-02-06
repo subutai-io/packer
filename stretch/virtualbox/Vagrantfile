@@ -66,13 +66,16 @@ Vagrant.configure('2') do |config|
 
     if ARGV[0] == 'up'
       has_grow, grow_by = SubutaiDisk.has_grow
+      file_disk = SubutaiDisk.file(grow_by)
 
-      if has_grow
-        STDOUT.puts  "\e[33mDisk size is growing by #{grow_by} gb.\e[0m"
+      unless File.exist? (file_disk)
+        if has_grow
+          STDOUT.puts  "\e[33mDisk size is growing by #{grow_by} gb.\e[0m"
 
-        vb.customize ['createhd', '--filename', SubutaiDisk.file(grow_by), '--size', SubutaiDisk.size(grow_by)]
-        vb.customize ['storageattach', :id,  '--storagectl', 'SATA Controller', '--port', SubutaiDisk.port, '--device', 0, '--type', 'hdd', '--medium', SubutaiDisk.file(grow_by)]
-        SubutaiDisk.save_conf(grow_by)
+          vb.customize ['createhd', '--filename', file_disk, '--size', SubutaiDisk.size(grow_by)]
+          vb.customize ['storageattach', :id,  '--storagectl', 'SATA Controller', '--port', SubutaiDisk.port, '--device', 0, '--type', 'hdd', '--medium', file_disk]
+          SubutaiDisk.save_conf(grow_by)
+        end
       end
     end
   end
