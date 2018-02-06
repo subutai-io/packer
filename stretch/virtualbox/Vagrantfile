@@ -126,6 +126,6 @@ Vagrant.configure('2') do |config|
 
   if has_grow
     config.vm.provision "shell", run: "always", env: {DISK_SIZE: grow_by.to_i},
-                        path: 'https://raw.githubusercontent.com/subutai-io/packer/refactor-merge33/provisioning/en/subutai_disk.sh'
+                        path: 'https://raw.githubusercontent.com/subutai-io/packer/master/provisioning/en/subutai_disk.sh'
   end
 end
