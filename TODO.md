@@ -5,16 +5,3 @@ Vagrant Techniques
 2. [Arguments and Env Vars] (https://goo.gl/VBGfgh), can be used with SUBINT (short for subutai interactive) to trigger local script to ask a few questions.
 3. [Automatically Install Gems and Plugins] (https://gist.github.com/sneal/9242343) does not seem to work, can still look for other tactics. Nice [thread] (https://gist.github.com/sneal/9242343) on this.
 
-
-Useful Code Snippets
---------------------
-
-### Launching a Browser
-
-If we have to install the gem just forget it. Let's look at the code and use.
-
-```ruby
-require 'launchy'
-Launchy.open("http://localhost:#{consolePort}")
-```
-
