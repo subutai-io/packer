@@ -15,4 +15,4 @@ if [ $? != 0 ]; then
   sudo apt -y install btrfs-tools
 fi
 
-sudo btrfs filesystem resize +$DISK_SIZE'g' /var/snap/subutai/common/lxc
+sudo btrfs filesystem resize +$DISK_SIZE'g' /var/snap/subutai*/common/lxc
