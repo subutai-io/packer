@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-disk_name=`lsblk -o NAME | tail -1`
+result=`lsblk -o SIZE,NAME --bytes | grep "$((1073741824*(DISK_SIZE+2)))" | tail -1`
+disk_name=`expr match "$result" '.*\([s][d][b-z]*\)'`
 
 disk="/dev/${disk_name}"
 
