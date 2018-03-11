@@ -3,8 +3,23 @@
 BASE_DIR="`dirname \"$0\"`"
 BASE_DIR="`( cd \"$BASE_DIR\" && pwd )`"
 
-if [ -z "$APT_PROXY_PORT" ]; then
-  APT_PROXY_PORT=3142
+if [ -n "$ACNG_PORT" ]; then
+  MIRROR_PORT="$ACNG_PORT"
+elif [ -n "$APT_PROXY_PORT" ]; then
+  MIRROR_PORT="$APT_PROXY_PORT"
+else 
+  MIRROR_PORT=3142
+fi
+
+if [ -n "$ACNG_HOST" ]; then
+  DI_MIRROR_HOSTNAME="$ACNG_HOST:$MIRROR_PORT"
+  DI_MIRROR_MIRROR="http://$ACNG_HOST:$MIRROR_PORT"
+elif [ -n "$APT_PROXY_HOST" -a -z "$(echo $APT_PROXY_HOST | grep ':')" ]; then
+  DI_MIRROR_HOSTNAME="$APT_PROXY_HOST:$MIRROR_PORT"
+  DI_MIRROR_MIRROR="http://$APT_PROXY_HOST:$MIRROR_PORT"
+elif [ -n "$APT_PROXY_HOST" -a -n "$(echo $APT_PROXY_HOST | grep ':')" ]; then
+  DI_MIRROR_HOSTNAME="$ACNG_HOST"
+  DI_MIRROR_MIRROR="http://$APT_PROXY_HOST"
 fi
 
 # TODO: extract from variables
@@ -46,7 +61,7 @@ elif [ -z "$PACKER_PROVIDERS" ]; then
   PACKER_PROVIDERS='virtualbox-iso'
 fi
 
-# cleanup and set apt proxy port if not configured
+# cleanup boxes
 rm -rf *.box; rm -rf *.log;
 echo Clean up output directories and boxes
 for BOXNAME in $VAGRANT_BOXES; do
@@ -58,21 +73,21 @@ for BOXNAME in $VAGRANT_BOXES; do
   done
 done
 
-# Checks LAN apt proxies availability
+# Checks if LAN apt proxy is availability
 check_proxy() {
   if [ -n "$1" ]; then # if arg provided use it
     echo "Checking proxy URL $1/acng-report.html" >&2
     wget -t 1 --timeout=2 -qO- "$1/acng-report.html" | grep "Transfer statistics"
     return $?
   else # no argument tries env value
-    echo "Checking proxy URL $APT_PROXY_URL/acng-report.html" >&2
-    wget -t 1 --timeout=2 -qO- "$APT_PROXY_URL/acng-report.html" | grep "Transfer statistics" >&2
+    echo "Checking proxy URL $DI_MIRROR_MIRROR/acng-report.html" >&2
+    wget -t 1 --timeout=2 -qO- "$DI_MIRROR_MIRROR/acng-report.html" | grep "Transfer statistics" >&2
     return $?
   fi
 }
 
 do_local_proxy() {
-  local local_proxy="http://$(hostname):$APT_PROXY_PORT"
+  local local_proxy="http://$(hostname):$MIRROR_PORT"
   if [ -n "$(check_proxy $local_proxy)" ]; then
     echo "Local proxy $local_proxy is on! Using it." >&2
     echo $local_proxy
@@ -137,81 +152,80 @@ else
 fi
 
 # check to see if a proxy is configured
-if [ -n "$APT_PROXY_URL" ]; then
-  echo 'Proxy configured: APT_PROXY_URL = '$APT_PROXY_URL
+if [ -n "$DI_MIRROR_MIRROR" ]; then
+  echo 'Proxy configured: DI_MIRROR_MIRROR = '$DI_MIRROR_MIRROR
 
-  if [ -n "check_proxy $APT_PROXY_URL" ]; then
+  if [ -n "check_proxy $DI_MIRROR_MIRROR" ]; then
     echo Proxy is on
     PROXY_ON="true"
 
-    # double check that the APT_PROXY_HOST is also configured with port
-    if [ -z "$APT_PROXY_URL" ]; then
-      echo " ==> [WARNING] APT_PROXY_URL=$APT_PROXY_URL but APT_PROXY_HOST is undefined"
-      echo " ==> [WARNING] Attempting to extract APT_PROXY_HOST from URL"
-      APT_PROXY_HOST=$(echo $APT_PROXY_URL|sed -e 's/http:\/\///g')
+    # double check that the DI_MIRROR_HOSTNAME is also configured with port
+    if [ -z "$DI_MIRROR_HOSTNAME" ]; then
+      echo " ==> [WARNING] DI_MIRROR_MIRROR=$DI_MIRROR_MIRROR but DI_MIRROR_HOSTNAME is undefined"
+      echo " ==> [WARNING] Attempting to extract DI_MIRROR_HOSTNAME from DI_MIRROR_MIRROR URL"
+      DI_MIRROR_HOSTNAME=$(echo $DI_MIRROR_MIRROR|sed -e 's/http:\/\///g')
     fi
 
-    if [ -z "$(echo $APT_PROXY_HOST|awk -F':' '{print $2}')" ]; then
-      echo " ==> [ERROR] No port included on APT_PROXY_HOST value of $APT_PROXY_HOST"
+    if [ -z "$(echo $DI_MIRROR_HOSTNAME|awk -F':' '{print $2}')" ]; then
+      echo " ==> [ERROR] No port included on DI_MIRROR_HOSTNAME value of $DI_MIRROR_HOSTNAME"
       echo " ==> [ERROR] Oddly a port is required in the preseed file. Please add it."
-      echo " ==> [ERROR] i.e. $APT_PROXY_HOST:3142 - Terminating ..."
       exit 1
     fi
   else
     echo WARNING: Proxy is off
-    APT_PROXY_URL=$(do_local_proxy)
-    if [ -n "$APT_PROXY_URL" ]; then
-      APT_PROXY_HOST=$(echo $APT_PROXY_URL|sed -e 's/http:\/\///g')
+    DI_MIRROR_MIRROR=$(do_local_proxy)
+    if [ -n "$DI_MIRROR_MIRROR" ]; then
+      DI_MIRROR_HOSTNAME=$(echo $DI_MIRROR_MIRROR|sed -e 's/http:\/\///g')
       PROXY_ON="true"
     else
-      APT_PROXY_URL=""
-      APT_PROXY_HOST=""
-      APT_PROXY_PORT=""
+      DI_MIRROR_HOSTNAME=""
+      DI_MIRROR_MIRROR=""
+      MIRROR_PORT=""
       PROXY_ON="false"
     fi
   fi
 else
-  echo 'Proxy NOT configured: APT_PROXY_URL NOT set'
-  APT_PROXY_URL=$(do_local_proxy)
-  if [ -n "$APT_PROXY_URL" ]; then
-    APT_PROXY_HOST="localhost:$APT_PROXY_PORT"
-    APT_PROXY_HOST=$(echo $APT_PROXY_URL|sed -e 's/http:\/\///g')
+  echo 'Proxy NOT configured: DI_MIRROR_MIRROR NOT set'
+  DI_MIRROR_MIRROR=$(do_local_proxy)
+  if [ -n "$DI_MIRROR_MIRROR" ]; then
+    DI_MIRROR_HOSTNAME="localhost:$MIRROR_PORT"
+    DI_MIRROR_HOSTNAME=$(echo $DI_MIRROR_MIRROR|sed -e 's/http:\/\///g')
     PROXY_ON="true"
   else
-    APT_PROXY_URL=""
-    APT_PROXY_HOST=""
-    APT_PROXY_PORT=""
+    DI_MIRROR_HOSTNAME=""
+    DI_MIRROR_MIRROR=""
+    MIRROR_PORT=""
     PROXY_ON="false"
   fi
 fi
 
 # TODO: export password from variables in json file
-box=$box BASE_DIR=$BASE_DIR         \
-  PROXY_ON=$PROXY_ON                \
-  PASSWORD=$PASSWORD                \
-  APT_PROXY_PORT=$APT_PROXY_PORT    \
-  APT_PROXY_URL=$APT_PROXY_URL      \
-  APT_PROXY_HOST=$APT_PROXY_HOST    \
+box=$box BASE_DIR=$BASE_DIR              \
+  PROXY_ON=$PROXY_ON                     \
+  PASSWORD=$PASSWORD                     \
+  MIRROR_PORT=$MIRROR_PORT               \
+  DI_MIRROR_MIRROR=$DI_MIRROR_MIRROR     \
+  DI_MIRROR_HOSTNAME=$DI_MIRROR_HOSTNAME \
   $BASE_DIR/http/stretch.sh
 
-box=$box BASE_DIR=$BASE_DIR         \
-  PROXY_ON=$PROXY_ON                \
-  PASSWORD=$PASSWORD                \
-  APT_PROXY_PORT=$APT_PROXY_PORT    \
-  APT_PROXY_URL=$APT_PROXY_URL      \
-  APT_PROXY_HOST=$APT_PROXY_HOST    \
+box=$box BASE_DIR=$BASE_DIR              \
+  PROXY_ON=$PROXY_ON                     \
+  PASSWORD=$PASSWORD                     \
+  MIRROR_PORT=$MIRROR_PORT               \
+  DI_MIRROR_MIRROR=$DI_MIRROR_MIRROR     \
+  DI_MIRROR_HOSTNAME=$DI_MIRROR_HOSTNAME \
   $BASE_DIR/http/xenial.sh
 
 for box in $VAGRANT_BOXES; do
     echo "==> [$box] Validating $box/template.json ..."
     jsonnet $box/template.jsonnet > $box/template.json
 
-    box=$box BASE_DIR=$BASE_DIR         \
-      PROXY_ON=$PROXY_ON                \
-      PASSWORD=$PASSWORD                \
-      APT_PROXY_PORT=$APT_PROXY_PORT    \
-      APT_PROXY_URL=$APT_PROXY_URL      \
-      APT_PROXY_HOST=$APT_PROXY_HOST    \
+    box=$box BASE_DIR=$BASE_DIR              \
+      PROXY_ON=$PROXY_ON                     \
+      PASSWORD=$PASSWORD                     \
+      MIRROR_PORT=$MIRROR_PORT               \
+      DI_MIRROR_MIRROR=$DI_MIRROR_MIRROR     \
+      DI_MIRROR_HOSTNAME=$DI_MIRROR_HOSTNAME \
     packer validate $box/template.json
 
     if [ "$?" -ne 0 ]; then
@@ -223,12 +237,12 @@ done
 for box in $VAGRANT_BOXES; do
     echo "==> [$box] Running packer build on $box/template.json ..."
 
-    box=$box BASE_DIR=$BASE_DIR         \
-      PROXY_ON=$PROXY_ON                \
-      PASSWORD=$PASSWORD                \
-      APT_PROXY_PORT=$APT_PROXY_PORT    \
-      APT_PROXY_URL=$APT_PROXY_URL      \
-      APT_PROXY_HOST=$APT_PROXY_HOST    \
+    box=$box BASE_DIR=$BASE_DIR              \
+      PROXY_ON=$PROXY_ON                     \
+      PASSWORD=$PASSWORD                     \
+      MIRROR_PORT=$MIRROR_PORT               \
+      DI_MIRROR_MIRROR=$DI_MIRROR_MIRROR     \
+      DI_MIRROR_HOSTNAME=$DI_MIRROR_HOSTNAME \
     time packer build -on-error=ask -only=$PACKER_PROVIDERS -except=null $box/template.json
 
     if [ "$?" -ne 0 ]; then

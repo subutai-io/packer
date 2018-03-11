@@ -99,10 +99,10 @@ if [ "$PROXY_ON" == "true" ]; then
 cat >> $BASE_DIR/http/xenial.cfg <<-EOF
 # Detected proxy live repo proxy so using apt-cache-ng
 d-i mirror/country string manual
-d-i mirror/http/hostname string $APT_PROXY_HOST
+d-i mirror/http/hostname string $DI_MIRROR_HOSTNAME
 d-i mirror/http/directory string /ubuntu
 d-i mirror/http/proxy string
-d-i mirror/http/mirror select $APT_PROXY_URL
+d-i mirror/http/mirror select $DI_MIRROR_MIRROR
 
 EOF
 else

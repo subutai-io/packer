@@ -1,48 +1,38 @@
 {
-    "type": "qemu",
-    "vm_name": "{{ user `vm_name` }}",
+  "type": "qemu",
+  "vm_name": "{{ user `vm_name` }}",
 
-    //
-    // General Builder Configuration Options
-    //
+  "boot_command": import "../../http/debian-boot.jsonnet",
+  "boot_wait": "10s",
+  "shutdown_command": "echo '{{ user `ssh_password` }}'|sudo -S shutdown -P now",
 
-    // Required
-    "iso_checksum": "{{ user `iso_checksum` }}",
-    "iso_checksum_type": "{{ user `iso_checksum_type` }}",
-    "iso_urls": [ // TODO check to use correct location for this and other providers
-        "{{ user `iso_path` }}/{{ user `iso_name` }}",
-        "{{ user `iso_url` }}"
-    ],
-    // "iso_target_path": "", TODO[devops] investigate for saving to iso images
+  "disk_size": "{{user `disk_size`}}",
+  "disk_interface": "scsi", // URGENT TODO change this to virtio
+  "disk_compression": "false",
+  "format": "qcow2",
+  // "disk_image": "", TODO[devops] investigate this option for using existing images
 
-    //
-    // Optional Here Down!
-    //
+//   "headless": "{{ user `headless` }}",
+  "headless": "false",
+  "http_directory": "{{user `http`}}",
 
-    "boot_wait": "10s",
-    "boot_command": import "../../http/debian-boot.jsonnet",
+  "iso_checksum": "{{ user `iso_checksum` }}",
+  "iso_checksum_type": "{{ user `iso_checksum_type` }}",
+  "iso_urls": [ // TODO check to use correct location for this and other providers
+    "{{ user `iso_path` }}/{{ user `iso_name` }}",
+    "{{ user `iso_url` }}"
+  ],
+  // "iso_target_path": "", TODO[devops] investigate for saving to iso images
 
-    "disk_size": "{{user `disk_size`}}",
-    "disk_interface": "scsi", // URGENT TODO change this to virtio
-    "disk_compression": "false",
-    "format": "qcow2",
-    // "disk_image": "", TODO[devops] investigate this option for using existing images
-    "net_device": "virtio-net",
+  "output_directory": "output-qemu-{{ user `vm_name` }}",
 
-    "headless": "{{ user `headless` }}",
-    "http_directory": "{{user `http`}}",
+  "ssh_password": "{{user `ssh_password`}}",
+  "ssh_username": "{{user `ssh_username`}}",
+  "ssh_wait_timeout": "10000s",
 
-    "output_directory": "output-{{.Provider}}-{{ user `vm_name` }}",
-
-    "keep_registered": "{{user `keep_registered`}}",
-    "shutdown_command": "echo '{{ user `ssh_password` }}'|sudo -S shutdown -P now",
-    "skip_export": "{{user `skip_export`}}",
-    "ssh_password": "{{user `ssh_password`}}",
-    "ssh_username": "{{user `ssh_username`}}",
-    "ssh_wait_timeout": "10000s",
-
-    "qemuargs": [
-        [ "-m", "{{user `memory`}}" ],
-        [ "-smp", "{{ user `cpus` }},maxcpus=16,cores=4" ],
-    ],
+  "net_device": "virtio-net",
+  "qemuargs": [
+     [ "-m", "{{user `memory`}}" ],
+     [ "-smp", "{{ user `cpus` }},maxcpus=16,cores=4" ],
+  ],
 }
