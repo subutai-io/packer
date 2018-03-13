@@ -127,6 +127,7 @@ d-i grub-installer/only_debian boolean true
 d-i grub-installer/bootdev string default
 # Turn off last message about the install being complete
 d-i finish-install/reboot_in_progress note
+d-i pkgsel/update-policy select unattended-upgrades
 
 EOF
 
