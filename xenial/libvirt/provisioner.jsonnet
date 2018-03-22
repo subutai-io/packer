@@ -20,6 +20,6 @@
         "{{user `scripts`}}/rc_local.sh",
         "{{user `scripts`}}/grub.sh",
         "{{user `scripts`}}/cleanup.sh",
-        "{{user `scripts`}}/debian/networking.sh"
+        "{{user `scripts`}}/ubuntu/networking.sh"
     ]
 }
