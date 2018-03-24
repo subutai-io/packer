@@ -24,3 +24,6 @@ fi
 echo "Replacing /etc/apt/sources.list with standard sources"
 cp /tmp/sources.list /etc/apt/sources.list
 apt-get update
+
+echo "Setting ulimit -n 65535 in /etc/profile"
+sed -i '1 i\ulimit -n 65535' /etc/profile
