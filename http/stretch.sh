@@ -25,7 +25,7 @@ d-i netcfg/get_hostname subutai
 d-i netcfg/get_domain vm
 
 # Partitioning
-d-i   partman-auto/disk                  string   /dev/sda
+d-i   partman-auto/disk                  string   /dev/vda
 d-i   partman-auto/method                string   lvm
 d-i   partman-auto-lvm/guided_size       string   max
 d-i   partman-auto/purge_lvm_from_device boolean  true
