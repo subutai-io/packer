@@ -25,5 +25,6 @@ echo "Replacing /etc/apt/sources.list with standard sources"
 cp /tmp/sources.list /etc/apt/sources.list
 apt-get update
 
+echo "Adding /etc/network/interfaces interface called ens5"
 echo "auto ens5" >> /etc/network/interfaces
 echo "iface ens5 inet dhcp" >> /etc/network/interfaces
