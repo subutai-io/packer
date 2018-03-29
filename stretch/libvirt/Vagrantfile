@@ -57,15 +57,17 @@ Vagrant.configure('2') do |config|
 
     if ARGV[0] == 'up'
       has_grow, grow_by = SubutaiDisk.has_grow
-      path = SubutaiDisk.path
 
       if has_grow
+        path = SubutaiDisk.path
+        size = SubutaiDisk.libvirt_size(grow_by)
+
         STDOUT.puts  "\e[33mDisk size is growing by #{grow_by} gb.\e[0m"
 
         if path.nil?
-          libvirt.storage :file, :size => "#{(has_grow+2)}G", :cache => "none"
+          libvirt.storage :file, :size => size, :cache => "none"
         else
-          libvirt.storage :file, :size => "#{(has_grow+2)}G", :path => path, :cache => "none"
+          libvirt.storage :file, :size => size, :path => path, :cache => "none"
         end
         SubutaiDisk.save_conf(grow_by)
       end
