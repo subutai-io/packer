@@ -53,12 +53,28 @@ Vagrant.configure('2') do |config|
 
     libvirt.memory = SubutaiConfig.get(:SUBUTAI_RAM)
     libvirt.cpus = SubutaiConfig.get(:SUBUTAI_CPU)
+
+    if ARGV[0] == 'up'
+      has_grow, grow_by = SubutaiDisk.has_grow
+      path = SubutaiDisk.path
+
+      if has_grow
+        STDOUT.puts  "\e[33mDisk size is growing by #{grow_by} gb.\e[0m"
+
+        if path.nil?
+          libvirt.storage :file, :size => "#{(has_grow+2)}G", :cache => "none"
+        else
+          libvirt.storage :file, :size => "#{(has_grow+2)}G", :path => path, :cache => "none"
+        end
+        SubutaiDisk.save_conf(grow_by)
+      end
+    end
   end
 
   config.vm.provision 'shell', env: SubutaiConfig.config, inline: <<-SHELL
     echo "SUBUTAI_VAGRANT_VERSION=$VERSION"   >> /etc/environment
-    echo "SUBUTAI_BRIDGE_IFACE=ens6"          >> /etc/environment
-    echo "SUBUTAI_NAT_IFACE=ens5"             >> /etc/environment
+    echo "SUBUTAI_BRIDGE_IFACE=eth1"          >> /etc/environment
+    echo "SUBUTAI_NAT_IFACE=eth0"             >> /etc/environment
    # echo "SUBUTAI_HOST_IFACE=enp0s9"          >> /etc/environment
 
     if [ -n "$PASSWORD_OVERRIDE" ]; then
@@ -96,4 +112,13 @@ Vagrant.configure('2') do |config|
 
   config.vm.provision 'shell', env: SubutaiConfig.config,
                       path: 'https://raw.githubusercontent.com/subutai-io/packer/master/provisioning/en/provisioner.sh'
+
+  has_grow, grow_by = SubutaiDisk.has_grow
+
+  if has_grow
+    config.vm.provision "shell", run: "always", env: {DISK_SIZE: grow_by.to_i},
+                        path: 'https://raw.githubusercontent.com/subutai-io/packer/debian-libvirt/provisioning/en/virtio/subutai_disk.sh'
+  end
+
+  config.vm.provision :blueprint
 end
