@@ -32,13 +32,7 @@ Vagrant.configure('2') do |config|
   config.vm.base_mac = SubutaiConfig.get(:_BASE_MAC)
 
   # Second Bridged Interface enp???
-  if SubutaiConfig.get(:BRIDGE).nil?
-    config.vm.network "public_network",
-                      dev: "virbr0",
-                      bridge: "bridge"
-    #config.vm.network :public_network, :dev => "virbr0", :bridge => 'bridge'
-  else
-    #config.vm.network :public_network, :dev => SubutaiConfig.get(:BRIDGE), :type => 'bridge'
+  unless SubutaiConfig.get(:BRIDGE).nil?
     config.vm.network "public_network", type: "bridge",
                       dev: SubutaiConfig.get(:BRIDGE),
                       mode: "bridge",
