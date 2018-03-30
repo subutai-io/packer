@@ -271,7 +271,7 @@ for box in $VAGRANT_BOXES; do
       MIRROR_PORT=$MIRROR_PORT               \
       DI_MIRROR_MIRROR=$DI_MIRROR_MIRROR     \
       DI_MIRROR_HOSTNAME=$DI_MIRROR_HOSTNAME \
-    packer build -on-error=ask -except=null $box/template.json
+    packer build -on-error=ask -only=$PACKER_PROVIDERS -except=null $box/template.json
 
     if [ "$?" -ne 0 ]; then
       echo "[$box][ERROR] Aborting builds due to $box build failure."
