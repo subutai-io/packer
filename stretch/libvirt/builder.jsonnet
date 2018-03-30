@@ -2,12 +2,12 @@
   "type": "qemu",
   "vm_name": "{{ user `vm_name` }}",
 
-  "boot_command": import "../../http/debian-boot.jsonnet",
+  "boot_command": import "../../http/virtio/debian-boot.jsonnet",
   "boot_wait": "10s",
   "shutdown_command": "echo '{{ user `ssh_password` }}'|sudo -S shutdown -P now",
 
   "disk_size": "{{user `disk_size`}}",
-  "disk_interface": "virtio", // URGENT TODO change this to virtio [scsi]
+  "disk_interface": "virtio",
   "disk_compression": "false",
   "format": "qcow2",
   // "disk_image": "", TODO[devops] investigate this option for using existing images

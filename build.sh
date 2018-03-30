@@ -58,7 +58,7 @@ if [ -n "$2" ]; then
     esac
   done
 elif [ -z "$PACKER_PROVIDERS" ]; then
-  PACKER_PROVIDERS='virtualbox-iso'
+  PACKER_PROVIDERS='virtualbox-iso qemu'
 fi
 
 # cleanup boxes
@@ -151,6 +151,14 @@ else
   echo ' ==> [OK] VirtualBox executable found at '$vbox
 fi
 
+# check for kvm
+kvm=`which virsh`
+if [ -z "$kvm" ]; then
+  echo ' ==> [WARNING] KVM not found'
+else
+  echo ' ==> [OK] KVM executable found at '$kvm
+fi
+
 # check to see if a proxy is configured
 if [ -n "$DI_MIRROR_MIRROR" ]; then
   echo 'Proxy configured: DI_MIRROR_MIRROR = '$DI_MIRROR_MIRROR
@@ -200,6 +208,7 @@ else
 fi
 
 # TODO: export password from variables in json file
+# for sata disk interface
 box=$box BASE_DIR=$BASE_DIR              \
   PROXY_ON=$PROXY_ON                     \
   PASSWORD=$PASSWORD                     \
@@ -208,6 +217,16 @@ box=$box BASE_DIR=$BASE_DIR              \
   DI_MIRROR_HOSTNAME=$DI_MIRROR_HOSTNAME \
   $BASE_DIR/http/stretch.sh
 
+# for virtio disk interface
+box=$box BASE_DIR=$BASE_DIR              \
+  PROXY_ON=$PROXY_ON                     \
+  PASSWORD=$PASSWORD                     \
+  MIRROR_PORT=$MIRROR_PORT               \
+  DI_MIRROR_MIRROR=$DI_MIRROR_MIRROR     \
+  DI_MIRROR_HOSTNAME=$DI_MIRROR_HOSTNAME \
+  $BASE_DIR/http/virtio/stretch.sh
+
+# for sata disk interface
 box=$box BASE_DIR=$BASE_DIR              \
   PROXY_ON=$PROXY_ON                     \
   PASSWORD=$PASSWORD                     \
@@ -215,6 +234,15 @@ box=$box BASE_DIR=$BASE_DIR              \
   DI_MIRROR_MIRROR=$DI_MIRROR_MIRROR     \
   DI_MIRROR_HOSTNAME=$DI_MIRROR_HOSTNAME \
   $BASE_DIR/http/xenial.sh
+
+# for virtio disk interface
+box=$box BASE_DIR=$BASE_DIR              \
+  PROXY_ON=$PROXY_ON                     \
+  PASSWORD=$PASSWORD                     \
+  MIRROR_PORT=$MIRROR_PORT               \
+  DI_MIRROR_MIRROR=$DI_MIRROR_MIRROR     \
+  DI_MIRROR_HOSTNAME=$DI_MIRROR_HOSTNAME \
+  $BASE_DIR/http/virtio/xenial.sh
 
 for box in $VAGRANT_BOXES; do
     echo "==> [$box] Validating $box/template.json ..."
@@ -243,7 +271,7 @@ for box in $VAGRANT_BOXES; do
       MIRROR_PORT=$MIRROR_PORT               \
       DI_MIRROR_MIRROR=$DI_MIRROR_MIRROR     \
       DI_MIRROR_HOSTNAME=$DI_MIRROR_HOSTNAME \
-    packer build -on-error=ask -only=$PACKER_PROVIDERS -except=null $box/template.json
+    packer build -on-error=ask -except=null $box/template.json
 
     if [ "$?" -ne 0 ]; then
       echo "[$box][ERROR] Aborting builds due to $box build failure."

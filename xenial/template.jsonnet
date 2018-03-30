@@ -1,7 +1,7 @@
 {
    "builders": [
-        import "virtualbox/builder.jsonnet",
         import "libvirt/builder.jsonnet",
+        import "virtualbox/builder.jsonnet",
    ],
    "post-processors": [
       [

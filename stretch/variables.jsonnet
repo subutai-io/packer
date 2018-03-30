@@ -20,6 +20,7 @@
     "memory": "4096",
     "null_host": "192.168.81.129",
     "preseed": "stretch.cfg",
+    "preseed_virtio": "virtio/stretch.cfg",
     "proxy_on": "{{env `PROXY_ON`}}",
     "skip_export": "false",
     "ssh_username": "subutai",
