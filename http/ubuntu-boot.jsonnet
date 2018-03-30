@@ -3,7 +3,7 @@
     "/install/vmlinuz noapic ",
     "url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/{{ user `preseed` }} ",
     "debian-installer={{ user `locale` }} auto locale={{ user `locale` }} kbd-chooser/method=us ",
-    "grub-installer/bootdev=/dev/sda<wait> ",
+    "grub-installer/bootdev=/dev/vda<wait> ",
     "hostname={{ user `hostname` }} ",
     "fb=false debconf/frontend=noninteractive ",
     "keyboard-configuration/modelcode=SKIP keyboard-configuration/layout=USA ",
