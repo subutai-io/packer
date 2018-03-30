@@ -4,7 +4,7 @@ if [ -z "$PASSWORD" ]; then
   PASSWORD="ubuntai"
 fi
 
-cat > $BASE_DIR/http/xenial.cfg <<-EOF
+cat > $BASE_DIR/http/virtio/xenial.cfg <<-EOF
 # Account setup
 #d-i passwd/root-password password $PASSWORD
 #d-i passwd/root-password-again password $PASSWORD
@@ -64,7 +64,7 @@ d-i netcfg/get_domain vm
 # swap
 #
 
-d-i   partman-auto/disk                  string   /dev/sda
+d-i   partman-auto/disk                  string   /dev/vda
 d-i   partman-auto/method                string   lvm
 d-i   partman-auto-lvm/guided_size       string   max
 d-i   partman-auto/purge_lvm_from_device boolean  true
@@ -74,9 +74,9 @@ d-i   partman-lvm/confirm_nooverwrite    boolean  true
 d-i   partman-auto/confirm               boolean  true
 EOF
 
-cat $BASE_DIR/http/partition.cfg >> $BASE_DIR/http/xenial.cfg
+cat $BASE_DIR/http/virtio/partition.cfg >> $BASE_DIR/http/virtio/xenial.cfg
 
-cat >> $BASE_DIR/http/xenial.cfg <<-EOF
+cat >> $BASE_DIR/http/virtio/xenial.cfg <<-EOF
 d-i   partman/confirm_write_new_label  boolean true
 d-i   partman-partitioning/confirm_write_new_label boolean true
 d-i   partman/choose_partition select finish
@@ -96,7 +96,7 @@ apt-cdrom-setup apt-setup/cdrom/set-first boolean false
 EOF
 
 if [ "$PROXY_ON" == "true" ]; then
-cat >> $BASE_DIR/http/xenial.cfg <<-EOF
+cat >> $BASE_DIR/http/virtio/xenial.cfg <<-EOF
 # Detected proxy live repo proxy so using apt-cache-ng
 d-i mirror/country string manual
 d-i mirror/http/hostname string $DI_MIRROR_HOSTNAME
@@ -106,7 +106,7 @@ d-i mirror/http/mirror select $DI_MIRROR_MIRROR
 
 EOF
 else
-cat >> $BASE_DIR/http/xenial.cfg <<-EOF
+cat >> $BASE_DIR/http/virtio/xenial.cfg <<-EOF
 # No live proxy, using normal package mirrors
 d-i     mirror/country          string enter information manually
 d-i     mirror/http/hostname    string archive.ubuntu.org
@@ -117,7 +117,7 @@ d-i     mirror/http/proxy       string
 EOF
 fi
 
-cat >> $BASE_DIR/http/xenial.cfg <<-EOF
+cat >> $BASE_DIR/http/virtio/xenial.cfg <<-EOF
 # Don't send reports back to the project
 popularity-contest popularity-contest/participate boolean false
 # Package selection
@@ -127,8 +127,7 @@ d-i grub-installer/only_debian boolean true
 d-i grub-installer/bootdev string default
 # Turn off last message about the install being complete
 d-i finish-install/reboot_in_progress note
-d-i pkgsel/update-policy select unattended-upgrades
 
 EOF
 
-cat $BASE_DIR/http/packages.cfg >> $BASE_DIR/http/xenial.cfg
+cat $BASE_DIR/http/packages.cfg >> $BASE_DIR/http/virtio/xenial.cfg

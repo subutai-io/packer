@@ -2,7 +2,7 @@
   "type": "qemu",
   "vm_name": "{{ user `vm_name` }}",
 
-  "boot_command": import "../../http/virtio/debian-boot.jsonnet",
+  "boot_command": import "../../http/virtio/ubuntu-boot.jsonnet",
   "boot_wait": "10s",
   "shutdown_command": "echo '{{ user `ssh_password` }}'|sudo -S shutdown -P now",
 
