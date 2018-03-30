@@ -58,7 +58,7 @@ if [ -n "$2" ]; then
     esac
   done
 elif [ -z "$PACKER_PROVIDERS" ]; then
-  PACKER_PROVIDERS='virtualbox-iso qemu'
+  PACKER_PROVIDERS='virtualbox-iso,qemu'
 fi
 
 # cleanup boxes
