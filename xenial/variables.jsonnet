@@ -26,7 +26,7 @@
     "skip_export": "false",
     "ssh_username": "subutai",
     "ssh_password": "ubuntai",
-    "version": "3.0.0",
+    "version": "3.0.4",
     "virtualbox_guest_os_type": "Ubuntu_64",
     "vm_name": "xenial"
 }
