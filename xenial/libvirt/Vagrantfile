@@ -14,7 +14,7 @@ end
 require 'vagrant-subutai'
 
 SubutaiConfig.bridged!
-#SubutaiConfig.logging!(:debug)
+SubutaiConfig.logging!(:debug)
 
 SubutaiConfig.load_config(ARGV[0], :libvirt)
 SubutaiConfig.print
@@ -28,6 +28,16 @@ Vagrant.configure('2') do |config|
   artifact_name = 'vagrant-subutai-xenial-libvirt.box'
   config.vm.box_url = url + '/raw/download?id=' + SubutaiConfig.get_latest_id_artifact(owner, artifact_name)
   config.ssh.username = 'subutai'
+
+  # check LIBVIRT_USER and LIBVIRT_HOST
+  if !SubutaiConfig.get(:LIBVIRT_HOST).nil? && !SubutaiConfig.get(:LIBVIRT_USER).nil?
+    STDOUT.puts "\e\nStarted libvirt operation in remote machine\n.\e[0m"
+    proxy_timeout = 500000
+
+    config.ssh.insert_key = false
+    config.ssh.forward_agent = true
+    config.ssh.proxy_command = "ssh #{SubutaiConfig.get(:LIBVIRT_USER).strip}@#{SubutaiConfig.get(:LIBVIRT_HOST).strip} netcat -w #{proxy_timeout} %h %p"
+  end
 
   config.vm.base_mac = SubutaiConfig.get(:_BASE_MAC)
 
@@ -47,7 +57,6 @@ Vagrant.configure('2') do |config|
 
   config.vm.provider 'libvirt' do |libvirt|
     libvirt.driver = 'kvm'
-    libvirt.connect_via_ssh = false
     libvirt.username = 'subutai'
     libvirt.storage_pool_name = 'default'
 
@@ -66,6 +75,12 @@ Vagrant.configure('2') do |config|
 
         SubutaiDisk.save_conf(grow_by)
       end
+    end
+
+    # check LIBVIRT_USER and LIBVIRT_HOST
+    if !SubutaiConfig.get(:LIBVIRT_HOST).nil? && !SubutaiConfig.get(:LIBVIRT_USER).nil?
+      libvirt.uri = "qemu+ssh://#{SubutaiConfig.get(:LIBVIRT_USER).strip}@#{SubutaiConfig.get(:LIBVIRT_HOST).strip}:#{SubutaiConfig.get(:LIBVIRT_PORT)}/system"
+      libvirt.connect_via_ssh
     end
   end
 
@@ -115,7 +130,7 @@ Vagrant.configure('2') do |config|
 
   if has_grow
     config.vm.provision "shell", run: "always", env: {DISK_SIZE: grow_by.to_i},
-                        path: 'https://raw.githubusercontent.com/subutai-io/packer/debian-libvirt/provisioning/en/virtio/subutai_disk.sh'
+                        path: 'https://raw.githubusercontent.com/subutai-io/packer/master/provisioning/en/virtio/subutai_disk.sh'
   end
 
   config.vm.provision :blueprint
