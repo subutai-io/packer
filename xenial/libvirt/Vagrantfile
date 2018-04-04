@@ -43,10 +43,17 @@ Vagrant.configure('2') do |config|
 
   # Second Bridged Interface enp???
   unless SubutaiConfig.get(:BRIDGE).nil?
-    config.vm.network "public_network", type: "bridge",
-                      dev: SubutaiConfig.get(:BRIDGE),
-                      mode: "bridge",
-                      network_name: "public-network"
+    if SubutaiConfig.get(:LIBVIRT_MACVTAP)
+      config.vm.network "public_network", type: "direct",
+                        dev: SubutaiConfig.get(:BRIDGE),
+                        mode: "bridge",
+                        network_name: "public-network"
+    else
+      config.vm.network "public_network", type: "bridge",
+                        dev: SubutaiConfig.get(:BRIDGE),
+                        mode: "bridge",
+                        network_name: "public-network"
+    end
   end
 
   if SubutaiConfig.get(:SUBUTAI_PEER)
