@@ -50,6 +50,9 @@ if [ -n "$2" ]; then
       "virtualbox-iso") echo Enabling virtualbox builder
         break
         ;;
+      "vmware-iso") echo Enabling vmware builder
+        break
+        ;;
       "qemu") echo Enabling libvirt builder
         break
         ;;
@@ -58,7 +61,7 @@ if [ -n "$2" ]; then
     esac
   done
 elif [ -z "$PACKER_PROVIDERS" ]; then
-  PACKER_PROVIDERS='virtualbox-iso,qemu'
+  PACKER_PROVIDERS='virtualbox-iso,qemu,vmware'
 fi
 
 # cleanup boxes
@@ -157,6 +160,14 @@ if [ -z "$kvm" ]; then
   echo ' ==> [WARNING] KVM not found'
 else
   echo ' ==> [OK] KVM executable found at '$kvm
+fi
+
+# check for vmware
+vmware=`which vmware`
+if [ -z "$vmware" ]; then
+  echo ' ==> [WARNING] Vmware not found'
+else
+  echo ' ==> [OK] Vmware executable found at '$vmware
 fi
 
 # check to see if a proxy is configured
@@ -263,7 +274,7 @@ for box in $VAGRANT_BOXES; do
 done
 
 for box in $VAGRANT_BOXES; do
-    echo "==> [$box] Running packer build on $box/template.json ..."
+    echo "==> [$box] Running packer build on $box/template.json. Providers: $PACKER_PROVIDERS"
 
     box=$box BASE_DIR=$BASE_DIR              \
       PROXY_ON=$PROXY_ON                     \
