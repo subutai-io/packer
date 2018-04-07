@@ -42,7 +42,7 @@ Vagrant.configure('2') do |config|
   config.vm.base_mac = SubutaiConfig.get(:_BASE_MAC)
 
   # Second Bridged Interface enp???
-  unless SubutaiConfig.get(:BRIDGE).nil?
+  unless SubutaiConfig.get(:BRIDGE).nil? || SubutaiConfig.boolean?(:LIBVIRT_NO_BRIDGE)
     if SubutaiConfig.get(:LIBVIRT_MACVTAP)
       config.vm.network "public_network", type: "direct",
                         dev: SubutaiConfig.get(:BRIDGE),
@@ -56,7 +56,7 @@ Vagrant.configure('2') do |config|
     end
   end
 
-  if SubutaiConfig.get(:SUBUTAI_PEER)
+  if SubutaiConfig.boolean?(:SUBUTAI_PEER)
     config.vm.network 'forwarded_port', guest: 8443, host: SubutaiConfig.get(:_CONSOLE_PORT)
   end
 
