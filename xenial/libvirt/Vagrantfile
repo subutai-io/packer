@@ -14,7 +14,7 @@ end
 require 'vagrant-subutai'
 
 SubutaiConfig.bridged!
-SubutaiConfig.logging!(:debug)
+#SubutaiConfig.logging!(:debug)
 
 SubutaiConfig.load_config(ARGV[0], :libvirt)
 SubutaiConfig.print
