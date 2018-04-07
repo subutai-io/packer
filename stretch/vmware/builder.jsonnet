@@ -26,8 +26,7 @@
   "ssh_username": "{{user `ssh_username`}}",
   "ssh_wait_timeout": "10000s",
   "vmx_data": {
-    "cpuid.coresPerSocket": "1",
-    "ethernet0.pciSlotNumber": "32"
+    "cpuid.coresPerSocket": "1"
   },
   "vmx_remove_ethernet_interfaces": true
 }

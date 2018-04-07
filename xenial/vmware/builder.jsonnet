@@ -27,8 +27,7 @@
   "ssh_wait_timeout": "10000s",
   "tools_upload_flavor": "linux",
   "vmx_data": {
-    "cpuid.coresPerSocket": "1",
-    "ethernet0.pciSlotNumber": "32"
+    "cpuid.coresPerSocket": "1"
   },
   "vmx_remove_ethernet_interfaces": true
 }
