@@ -37,7 +37,7 @@ Vagrant.configure('2') do |config|
 
     config.ssh.insert_key = false
     config.ssh.forward_agent = true
-    config.ssh.proxy_command = "ssh #{SubutaiConfig.get(:LIBVIRT_USER).strip}@#{SubutaiConfig.get(:LIBVIRT_HOST).strip} netcat -w #{proxy_timeout} %h %p"
+    config.ssh.proxy_command = "ssh -p #{SubutaiConfig.get(:LIBVIRT_PORT)} #{SubutaiConfig.get(:LIBVIRT_USER).strip}@#{SubutaiConfig.get(:LIBVIRT_HOST).strip} netcat -w #{proxy_timeout} %h %p"
   end
 
   config.vm.base_mac = SubutaiConfig.get(:_BASE_MAC)
