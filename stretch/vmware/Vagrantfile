@@ -28,24 +28,14 @@ Vagrant.configure('2') do |config|
   url = SubutaiConfig.url_of_cdn
   owner = '43d722f2c81bcd5159de5e5a482613b046c548b6'
   artifact_name = 'vagrant-subutai-stretch-vmware-workstation.box'
-  #config.vm.box_url = url + '/raw/download?id=' + SubutaiConfig.get_latest_id_artifact(owner,artifact_name) # TODO only vagrant up get info id from cdn
+  #config.vm.box_url = url + '/raw/download?id=' + SubutaiConfig.get_latest_id_artifact(owner,artifact_name)
   config.ssh.username = 'subutai'
 
   config.vm.base_mac = SubutaiConfig.get(:_BASE_MAC)
 
-  # Second Bridged Interface enp???
-  unless SubutaiConfig.get(:BRIDGE).nil?
-    config.vm.network 'public_network', :type => 'dhcp', :adapter => 1
-  end
-
-
-  if SubutaiConfig.get(:SUBUTAI_PEER)
+  if SubutaiConfig.boolean?(:SUBUTAI_PEER)
     config.vm.network 'forwarded_port', guest: 8443, host: SubutaiConfig.get(:_CONSOLE_PORT), auto_correct: true
   end
-
-  # Third Host-Only Interface enp???
- # config.vm.network 'private_network', :type => 'dhcp', :adapter => 3
-
 
   config.vm.synced_folder ".", "/vagrant", type: "rsync"
 
@@ -79,13 +69,35 @@ Vagrant.configure('2') do |config|
     v.vmx["memsize"] = SubutaiConfig.get(:SUBUTAI_RAM)
     v.vmx["numvcpus"] = SubutaiConfig.get(:SUBUTAI_CPU)
     v.vmx["ethernet0.pcislotnumber"] = "33"
+
+    # Bridge interface
+    v.vmx["ethernet1.addresstype"] = "generated"
+    v.vmx["ethernet1.generatedaddressoffset"] = "10"
+    v.vmx["ethernet1.linkstatepropagation.enable"] = "TRUE"
+    v.vmx["ethernet1.pcislotnumber"] = "32"
+    v.vmx["ethernet1.present"] = "TRUE"
+
+    # Nat interface
+    v.vmx["ethernet2.pciSlotNumber"] = "34"
+    v.vmx["ethernet2.connectionType"] = "hostonly"
+    v.vmx["ethernet2.addressType"] = "generated"
+    v.vmx["ethernet2.present"] = "TRUE"
+    #v.vmx["ethernet2.generatedAddress"] = "00:0c:29:82:e7:5c"
+    v.vmx["ethernet2.generatedAddressOffset"] = "20"
+  end
+
+  has_grow, grow_by = SubutaiDisk.has_grow
+
+  if has_grow
+    config.vm.provision "shell", run: "always", env: {DISK_SIZE: grow_by.to_i},
+                        path: 'https://raw.githubusercontent.com/subutai-io/packer/master/provisioning/en/subutai_disk.sh'
   end
 
   config.vm.provision 'shell', env: SubutaiConfig.config, inline: <<-SHELL
     echo "SUBUTAI_VAGRANT_VERSION=$VERSION"   >> /etc/environment
-    echo "SUBUTAI_BRIDGE_IFACE=eth1"        >> /etc/environment
-    echo "SUBUTAI_NAT_IFACE=eth0"           >> /etc/environment
-    #echo "SUBUTAI_HOST_IFACE=enp0s9"          >> /etc/environment
+    echo "SUBUTAI_BRIDGE_IFACE=eth0"        >> /etc/environment
+    echo "SUBUTAI_NAT_IFACE=eth1"           >> /etc/environment
+    echo "SUBUTAI_HOST_IFACE=eth2"          >> /etc/environment
 
     if [ -n "$PASSWORD_OVERRIDE" ]; then
       usermod --password $(echo "$PASSWORD_OVERRIDE" | openssl passwd -1 -stdin) subutai
@@ -122,13 +134,6 @@ Vagrant.configure('2') do |config|
 
   config.vm.provision 'shell', env: SubutaiConfig.config,
                       path: 'https://raw.githubusercontent.com/subutai-io/packer/master/provisioning/en/provisioner.sh'
-
-  has_grow, grow_by = SubutaiDisk.has_grow
-
-  if has_grow
-    config.vm.provision "shell", run: "always", env: {DISK_SIZE: grow_by.to_i},
-                        path: 'https://raw.githubusercontent.com/subutai-io/packer/master/provisioning/en/subutai_disk.sh'
-  end
 
   config.vm.provision :blueprint
 end
