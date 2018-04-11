@@ -39,32 +39,9 @@ Vagrant.configure('2') do |config|
 
   config.vm.synced_folder ".", "/vagrant", type: "rsync"
 
-=begin
-  config.vm.provider 'libvirt' do |libvirt|
-    libvirt.driver = 'kvm'
-    libvirt.connect_via_ssh = false
-    libvirt.username = 'subutai'
-    libvirt.storage_pool_name = 'default'
-
-    libvirt.memory = SubutaiConfig.get(:SUBUTAI_RAM)
-    libvirt.cpus = SubutaiConfig.get(:SUBUTAI_CPU)
-
-    if ARGV[0] == 'up'
-      has_grow, grow_by = SubutaiDisk.has_grow
-
-      if has_grow
-        size = SubutaiDisk.libvirt_size(grow_by)
-
-        STDOUT.puts  "\e[33mDisk size is growing by #{grow_by} gb.\e[0m"
-
-        libvirt.storage :file, :size => size, :cache => "none"
-
-        SubutaiDisk.save_conf(grow_by)
-      end
-    end
-  end
-=end
   config.vm.provider "vmware_desktop" do |v|
+    v.whitelist_verified = true
+
     v.linked_clone = false
     v.vmx["memsize"] = SubutaiConfig.get(:SUBUTAI_RAM)
     v.vmx["numvcpus"] = SubutaiConfig.get(:SUBUTAI_CPU)
@@ -78,26 +55,18 @@ Vagrant.configure('2') do |config|
     v.vmx["ethernet1.present"] = "TRUE"
 
     # Nat interface
-    v.vmx["ethernet2.pciSlotNumber"] = "34"
-    v.vmx["ethernet2.connectionType"] = "hostonly"
-    v.vmx["ethernet2.addressType"] = "generated"
-    v.vmx["ethernet2.present"] = "TRUE"
-    #v.vmx["ethernet2.generatedAddress"] = "00:0c:29:82:e7:5c"
-    v.vmx["ethernet2.generatedAddressOffset"] = "20"
-  end
-
-  has_grow, grow_by = SubutaiDisk.has_grow
-
-  if has_grow
-    config.vm.provision "shell", run: "always", env: {DISK_SIZE: grow_by.to_i},
-                        path: 'https://raw.githubusercontent.com/subutai-io/packer/master/provisioning/en/subutai_disk.sh'
+    #v.vmx["ethernet2.pciSlotNumber"] = "34"
+    #v.vmx["ethernet2.connectionType"] = "hostonly"
+    #v.vmx["ethernet2.addressType"] = "generated"
+    #v.vmx["ethernet2.present"] = "TRUE"
+    #v.vmx["ethernet2.generatedAddressOffset"] = "20"
   end
 
   config.vm.provision 'shell', env: SubutaiConfig.config, inline: <<-SHELL
     echo "SUBUTAI_VAGRANT_VERSION=$VERSION"   >> /etc/environment
     echo "SUBUTAI_BRIDGE_IFACE=eth0"        >> /etc/environment
     echo "SUBUTAI_NAT_IFACE=eth1"           >> /etc/environment
-    echo "SUBUTAI_HOST_IFACE=eth2"          >> /etc/environment
+    #echo "SUBUTAI_HOST_IFACE=eth2"          >> /etc/environment
 
     if [ -n "$PASSWORD_OVERRIDE" ]; then
       usermod --password $(echo "$PASSWORD_OVERRIDE" | openssl passwd -1 -stdin) subutai
