@@ -1,0 +1,93 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+require 'fileutils'
+
+unless Vagrant.has_plugin?('vagrant-subutai')
+  raise 'Vagrant Subutai Plugin required: vagrant plugin install vagrant-subutai'
+end
+
+unless Vagrant.has_plugin?('vagrant-parallels')
+  raise 'Vagrant Parallels Provider required. Please install: vagrant plugin install vagrant-parallels'
+end
+
+require 'vagrant-subutai'
+
+SubutaiConfig.bridged!
+SubutaiConfig.logging!(:debug)
+
+SubutaiConfig.load_config(ARGV[0], :parallels)
+SubutaiConfig.print
+
+Vagrant.require_version '>= 2.0.1'
+
+Vagrant.configure('2') do |config|
+
+  config.vm.box = 'subutai/stretch'
+  url = SubutaiConfig.url_of_cdn
+  owner = '43d722f2c81bcd5159de5e5a482613b046c548b6'
+  artifact_name = 'vagrant-subutai-stretch-parallels.box'
+  #config.vm.box_url = url + '/raw/download?id=' + SubutaiConfig.get_latest_id_artifact(owner,artifact_name)
+  config.ssh.username = 'subutai'
+
+  config.vm.base_mac = SubutaiConfig.get(:_BASE_MAC)
+
+  if SubutaiConfig.boolean?(:SUBUTAI_PEER)
+    config.vm.network 'forwarded_port', guest: 8443, host: SubutaiConfig.get(:_CONSOLE_PORT), auto_correct: true
+  end
+
+  config.vm.synced_folder ".", "/vagrant", type: "rsync"
+
+  config.vm.provision 'shell', env: SubutaiConfig.config, inline: <<-SHELL
+    echo "SUBUTAI_VAGRANT_VERSION=$VERSION"   >> /etc/environment
+    echo "SUBUTAI_BRIDGE_IFACE=eth1"        >> /etc/environment
+    echo "SUBUTAI_NAT_IFACE=eth0"           >> /etc/environment
+    #echo "SUBUTAI_HOST_IFACE=eth2"          >> /etc/environment
+
+    if [ -n "$PASSWORD_OVERRIDE" ]; then
+      usermod --password $(echo "$PASSWORD_OVERRIDE" | openssl passwd -1 -stdin) subutai
+    fi
+  SHELL
+
+  unless SubutaiConfig.get(:AUTHORIZED_KEYS).nil?
+    config.vm.provision 'file', source: SubutaiConfig.get(:AUTHORIZED_KEYS), destination: '/tmp/authorized_keys'
+
+    config.vm.provision 'shell', inline: <<-SHELL
+      mkdir -p /root/.ssh
+      cat /tmp/authorized_keys >> /root/.ssh/authorized_keys
+      chmod 600 /root/.ssh/authorized_keys
+      chmod 700 /root/.ssh
+
+      mkdir -p /home/subutai/.ssh
+      cat /tmp/authorized_keys >> /home/subutai/.ssh/authorized_keys
+      chown subutai:subutai /home/subutai/.ssh/authorized_keys
+      chmod 600 /home/subutai/.ssh/authorized_keys
+      chmod 700 /home/subutai/.ssh
+      chown subutai:subutai /home/subutai/.ssh
+    SHELL
+  end
+
+  if SubutaiConfig.provision_snap?
+    config.vm.provision 'file', source: SubutaiConfig.get(:_ALT_SNAP), destination: '$HOME/subutai.snap'
+    SubutaiConfig.snap_provisioned!
+  end
+
+  if SubutaiConfig.provision_management?
+    config.vm.provision 'file', source: SubutaiConfig.get(:_ALT_MANAGEMENT), destination: '$HOME/subutai.management'
+    SubutaiConfig.management_provisioned!
+  end
+
+  config.vm.provision 'shell', env: SubutaiConfig.config,
+                      path: 'https://raw.githubusercontent.com/subutai-io/packer/master/provisioning/en/provisioner.sh'
+
+  if ARGV[0] == 'up' || ARGV[0] == 'reload'
+    has_grow, grow_by = SubutaiDisk.has_grow
+
+    if has_grow
+      config.vm.provision "shell", run: "always", env: {DISK_SIZE: grow_by.to_i},
+                          path: 'https://raw.githubusercontent.com/subutai-io/packer/master/provisioning/en/subutai_disk.sh'
+    end
+  end
+
+  config.vm.provision :blueprint
+end

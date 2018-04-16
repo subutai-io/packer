@@ -2,6 +2,7 @@
 
 BASE_DIR="`dirname \"$0\"`"
 BASE_DIR="`( cd \"$BASE_DIR\" && pwd )`"
+OS=`uname`
 
 if [ -n "$ACNG_PORT" ]; then
   MIRROR_PORT="$ACNG_PORT"
@@ -53,15 +54,34 @@ if [ -n "$2" ]; then
       "vmware-iso") echo Enabling vmware builder
         break
         ;;
-      "qemu") echo Enabling libvirt builder
-        break
+      "parallels-iso")
+        if [ $OS = "Linux" ]; then
+          echo "Parallels builder not supported in $OS";
+          exit 1
+        else
+          echo Enabling parallels builder
+          break
+        fi
+        ;;  
+      "qemu")
+        if [ $OS = "Darwin" ]; then
+          echo "Libvirt builder not supported in $OS";
+          exit 1
+        else
+          echo Enabling libvirt builder
+          break
+        fi
         ;;
       *) echo "Bad or unsupported provider: $provider"; exit 1
         ;;
     esac
   done
 elif [ -z "$PACKER_PROVIDERS" ]; then
-  PACKER_PROVIDERS='virtualbox-iso,qemu,vmware'
+  if [ $OS = "Darwin" ]; then
+    PACKER_PROVIDERS='virtualbox-iso,vmware-iso,parallels-iso'
+  else
+    PACKER_PROVIDERS='virtualbox-iso,qemu,vmware-iso'
+  fi
 fi
 
 # cleanup boxes
@@ -155,11 +175,13 @@ else
 fi
 
 # check for kvm
-kvm=`which virsh`
-if [ -z "$kvm" ]; then
-  echo ' ==> [WARNING] KVM not found'
-else
-  echo ' ==> [OK] KVM executable found at '$kvm
+if [ $OS = "Linux" ]; then
+  kvm=`which virsh`
+  if [ -z "$kvm" ]; then
+    echo ' ==> [WARNING] KVM not found'
+  else
+    echo ' ==> [OK] KVM executable found at '$kvm
+  fi
 fi
 
 # check for vmware
@@ -168,6 +190,16 @@ if [ -z "$vmware" ]; then
   echo ' ==> [WARNING] Vmware not found'
 else
   echo ' ==> [OK] Vmware executable found at '$vmware
+fi
+
+# check for paralles
+if [ $OS = "Darwin" ]; then
+  parallels=`which prlsrvctl`
+  if [ -z "$parallels" ]; then
+    echo ' ==> [WARNING] Parallels not found'
+  else
+    echo ' ==> [OK] Paralles executable found at '$parallels
+  fi
 fi
 
 # check to see if a proxy is configured
