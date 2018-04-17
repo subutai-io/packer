@@ -21,7 +21,6 @@
         "{{user `scripts`}}/grub.sh",
         "{{user `scripts`}}/cleanup.sh",
         "{{user `scripts`}}/parallels.sh",
-        "{{user `scripts`}}/debian/networking.sh",
-        "{{user `scripts`}}/interface.sh"
+        "{{user `scripts`}}/debian/networking.sh"
     ]
 }
