@@ -10,7 +10,7 @@ end
 require 'vagrant-subutai'
 
 SubutaiConfig.bridged!
-SubutaiConfig.logging!(:debug)
+#SubutaiConfig.logging!(:debug)
 
 SubutaiConfig.load_config(ARGV[0], :vmware)
 SubutaiConfig.print
@@ -23,8 +23,8 @@ Vagrant.configure('2') do |config|
   config.vm.box = 'subutai/stretch'
   url = SubutaiConfig.url_of_cdn
   owner = '43d722f2c81bcd5159de5e5a482613b046c548b6'
-  artifact_name = 'vagrant-subutai-stretch-vmware-workstation.box'
-  #config.vm.box_url = url + '/raw/download?id=' + SubutaiConfig.get_latest_id_artifact(owner,artifact_name)
+  artifact_name = 'vagrant-subutai-stretch-vmware.box'
+  config.vm.box_url = url + '/raw/download?id=' + SubutaiConfig.get_latest_id_artifact(owner, artifact_name)
   config.ssh.username = 'subutai'
 
   config.vm.base_mac = SubutaiConfig.get(:_BASE_MAC)

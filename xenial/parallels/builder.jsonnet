@@ -3,7 +3,7 @@
   "guest_os_type": "debian",
   "vm_name": "{{ user `vm_name` }}",
 
-  "boot_command": import "../../http/debian-boot.jsonnet",
+  "boot_command": import "../../http/ubuntu-boot.jsonnet",
   "boot_wait": "10s",
   "shutdown_command": "echo '{{ user `ssh_password` }}'|sudo -S shutdown -P now",
 
