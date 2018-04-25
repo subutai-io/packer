@@ -1,7 +1,7 @@
 {
   "type": "hyperv-iso",
   "vm_name": "{{ user `vm_name` }}",
-  "boot_command": import ".\\http\\hyperv\\ubuntu-boot.jsonnet",
+  "boot_command": import "..\\..\\http\\hyperv\\ubuntu-boot.jsonnet",
   "disk_size": "{{user `disk_size`}}",
   "guest_additions_mode": "disable",
   "iso_url": "{{user `iso_url`}}",
