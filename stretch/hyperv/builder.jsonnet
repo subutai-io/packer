@@ -1,7 +1,7 @@
 {
   "type": "hyperv-iso",
   "vm_name": "{{ user `vm_name` }}",
-  "boot_command": import "..\\..\\http\\hyperv\\ubuntu-boot.jsonnet",
+  "boot_command": import ".\\http\\hyperv\\debian-boot.jsonnet",
   "disk_size": "{{user `disk_size`}}",
   "guest_additions_mode": "disable",
   "iso_url": "{{user `iso_url`}}",
@@ -11,7 +11,7 @@
   "ssh_username": "{{user `ssh_username`}}",
   "ssh_password": "{{user `ssh_password`}}",	
   "ssh_timeout" : "4h",
-  "http_directory": "../../http/",
+  "http_directory": "./http/",
   "boot_wait": "5s",
   "shutdown_command": "echo {{user `ssh_password`}} | sudo -S -E shutdown -P now",
   "ram_size": "{{user `memory`}}",

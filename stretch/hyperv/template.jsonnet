@@ -1,6 +1,6 @@
 {
    "builders": [
-        import "builder.jsonnet",
+        import ".\\stretch\\hyperv\\builder.jsonnet",
    ],
    "post-processors": [
       [
@@ -11,7 +11,7 @@
                "hyperv-iso"
             ],
             "override": {
-               "hyperv": import "post-processor.jsonnet"
+               "hyperv": import ".\\stretch\\hyperv\\post-processor.jsonnet"
             },
             "type": "vagrant"
          }
@@ -20,15 +20,15 @@
   "provisioners": [
     {
       type: "file",
-      source: "..\\..\\http\\stretch.sources.list",
+      source: ".\\http\\stretch.sources.list",
       destination: "/tmp/sources.list"
     },
     {
       "override": {
-        "hyperv-iso": import "provisioner.jsonnet",
+        "hyperv-iso": import ".\\stretch\\hyperv\\provisioner.jsonnet",
       },
       "type": "shell"
     },
   ],
-   "variables": import "..\\variables.jsonnet"
+   "variables": import ".\\stretch\\variables.jsonnet"
 }

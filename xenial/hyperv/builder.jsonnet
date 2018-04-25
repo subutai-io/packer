@@ -11,7 +11,7 @@
   "ssh_username": "{{user `ssh_username`}}",
   "ssh_password": "{{user `ssh_password`}}",	
   "ssh_timeout" : "4h",
-  "http_directory": "../../http/",
+  "http_directory": "./http/",
   "boot_wait": "5s",
   "shutdown_command": "echo {{user `ssh_password`}} | sudo -S -E shutdown -P now",
   "ram_size": "{{user `memory`}}",
