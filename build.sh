@@ -169,7 +169,8 @@ fi
 # check for vbox
 vbox=`which VirtualBox`
 if [ -z "$vbox" ]; then 
-  echo ' ==> [WARNING] Virtualbox not found'
+  echo ' ==> [ERROR] Virtualbox not found'
+  exit 1
 else 
   echo ' ==> [OK] VirtualBox executable found at '$vbox
 fi
