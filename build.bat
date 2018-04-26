@@ -15,6 +15,8 @@ FOR %%B IN (stretch) DO (
   jsonnet ".\%%B\hyperv\template.jsonnet" > ".\%%B\hyperv\%template%"
 
   if exist ".\%%B\hyperv\%template%" (
+      :: Generate stretch preseed file (stretch.cfg)
+      .\http\%%B.bat
       packer validate ".\%%B\hyperv\%template%" 2>nul
       if errorlevel 1 (
         echo Packer validation error %errorlevel%

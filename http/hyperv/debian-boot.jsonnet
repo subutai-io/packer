@@ -1,13 +1,9 @@
 [
-
-
-
-
-                    "<esc><wait>",
+    "<esc><wait>",
     "install",
     " auto",
     "interface=auto ",
-    " url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/hyperv/stretch.cfg",
+    " url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/stretch.cfg",
     " debian-installer=en_US",
     " locale=en_US",
     " keymap=us",

@@ -18,5 +18,8 @@
   "cpu": "{{user `cpus`}}",
   "generation": 1,
   "switch_name": "{{user `hyperv_switchname`}}",
-  "enable_secure_boot": false
+  "enable_secure_boot": false,
+            "enable_mac_spoofing": true,
+            "enable_dynamic_memory": false,
+            "enable_virtualization_extensions": false
 }
