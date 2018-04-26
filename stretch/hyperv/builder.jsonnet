@@ -16,7 +16,7 @@
   "shutdown_command": "echo {{user `ssh_password`}} | sudo -S -E shutdown -P now",
   "ram_size": "{{user `memory`}}",
   "cpu": "{{user `cpus`}}",
-  "generation": 2,
+  "generation": 1,
   "switch_name": "{{user `hyperv_switchname`}}",
   "enable_secure_boot": false
 }
