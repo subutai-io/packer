@@ -82,6 +82,7 @@ echo d-i   partman-auto/confirm               boolean  true
 type .\http\hyperv\partition.cfg>>.\http\xenial.cfg
 
 (
+echo.    
 echo d-i partman-basicmethods/method_only boolean false
 echo apt-cdrom-setup apt-setup/cdrom/set-first boolean false
 )>>.\http\xenial.cfg

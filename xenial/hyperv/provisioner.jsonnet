@@ -12,6 +12,8 @@
           "apt-get -y install net-tools snapd inotify-tools",
           "echo Installing btrfs tool",
           "apt-get -y install btrfs-tools",
+          "apt-get -y install linux-cloud-tools-$(uname -r)",
+          "apt-get -y install linux-virtual-lts-xenial linux-tools-virtual-lts-xenial linux-cloud-tools-virtual-lts-xenial",          
           "snap install core",
           "echo \"{{user `ssh_username`}}        ALL=(ALL)       NOPASSWD: ALL\" >> /etc/sudoers.d/{{user `ssh_username`}}",
           "chmod 440 /etc/sudoers.d/{{user `ssh_username`}}",
@@ -21,7 +23,6 @@
           "chown -R {{user `ssh_username`}}:{{user `ssh_username`}} /home/{{user `ssh_username`}}/.ssh",
           "cp /tmp/sources.list /etc/apt/sources.list",
           "apt-get update",
-          "apt-get install linux-cloud-tools-$(uname -r)",
           "sed -i '1 i\\ulimit -n 65535' /etc/profile"        
         ]
       }
