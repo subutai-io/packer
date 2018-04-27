@@ -21,6 +21,7 @@
           "chown -R {{user `ssh_username`}}:{{user `ssh_username`}} /home/{{user `ssh_username`}}/.ssh",
           "cp /tmp/sources.list /etc/apt/sources.list",
           "apt-get update",
+          "apt-get install linux-cloud-tools-$(uname -r)",
           "sed -i '1 i\\ulimit -n 65535' /etc/profile"        
         ]
       }
