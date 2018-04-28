@@ -6,3 +6,6 @@ deb-src  http://httpredir.debian.org/debian stretch-updates main contrib non-fre
 
 deb http://security.debian.org/ stretch/updates main contrib non-free
 deb-src http://security.debian.org/ stretch/updates main contrib non-free
+
+deb http://deb.subutai.io/subutai sid main
+deb http://ftp.de.debian.org/debian/ stretch main contrib non-free
