@@ -1,4 +1,4 @@
 {
-  "output": "vagrant-subutai-{{user `vm_name`}}-hyperv-{{user `version`}}.box",
+  "output": "vagrant-subutai-{{user `vm_name`}}-hyperv.box",
   "vagrantfile_template": ".\\xenial\\hyperv\\Vagrantfile"
 }
