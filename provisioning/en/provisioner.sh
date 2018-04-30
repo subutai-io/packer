@@ -126,7 +126,7 @@ elif [ -f "/home/subutai/subutai.zfs" ]; then
   cmd_path="$(which $CMD)"
 else
   echo "Installing $CMD ..."
-  echo " deb http://deb.subutai.io/subutai $ENV main" >> /etc/apt/sources.list
+  echo "\ndeb http://deb.subutai.io/subutai $ENV main" >> /etc/apt/sources.list
   apt update && apt -y install subutai
   cmd_path="$(which $CMD)"
 fi
