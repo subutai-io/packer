@@ -10,7 +10,7 @@ zfs create -o mountpoint="/var/lib/lxc" subutai/fs
 
 apt -y install lxc
 
-echo 'lxc.lxcpath=/var/lib/lxc' | tee --append /etc/lxc/lxc.conf
+#echo 'lxc.lxcpath=/var/lib/lxc' | tee --append /etc/lxc/lxc.conf
 
 apt-get -y install dirmngr
 
