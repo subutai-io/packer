@@ -9,6 +9,4 @@ sudo pvcreate "$disk"
 sudo vgextend main "$disk"
 sudo lvextend -L+$(($DISK_SIZE+1))'G' /dev/mapper/main-zfs
 
-
-
-# sudo btrfs filesystem resize +$DISK_SIZE'g' /var/snap/subutai*/common/lxc
+sudo zpool set autoexpand=on subutai
