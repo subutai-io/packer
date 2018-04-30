@@ -49,20 +49,22 @@ chmod +x *.sh
 
 case $SUBUTAI_ENV in
   sysnet)
-    CMD="subutai-sysnet"
+    ENV="unstable"
     ;;
   dev*)
-    CMD="subutai-dev"
+    ENV="dev"
     ;;
   master)
-    CMD="subutai-master"
+    ENV="master"
     ;;
   prod*)
-    CMD="subutai"
+    ENV="prod"
     ;;
   *)
-    CMD="subutai"
+    ENV="prod"
 esac
+
+CMD="subutai"
 
 cmd_path="$(which $CMD)"
 
@@ -124,6 +126,7 @@ elif [ -f "/home/subutai/subutai.zfs" ]; then
   cmd_path="$(which $CMD)"
 else
   echo "Installing $CMD ..."
+  echo " deb http://deb.subutai.io/subutai $ENV main" >> /etc/apt/sources.list
   apt update && apt -y install subutai
   cmd_path="$(which $CMD)"
 fi
