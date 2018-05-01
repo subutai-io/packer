@@ -323,5 +323,5 @@ for box in $VAGRANT_BOXES; do
       exit 1
     fi
 
-    vagrant box add --force subutai/$box $box*.box
+    vagrant box add --force subutai/$box vagrant-subutai-$box-*.box
 done

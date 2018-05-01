@@ -18,8 +18,8 @@
         "{{user `scripts`}}/vagrant.sh",
         "{{user `scripts`}}/rc_local.sh",
         "{{user `scripts`}}/grub.sh",
-        "{{user `scripts`}}/cleanup.sh",
         "{{user `scripts`}}/zfs.sh",
+        "{{user `scripts`}}/cleanup.sh",
         "{{user `scripts`}}/debian/networking.sh"
     ]
 }

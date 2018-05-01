@@ -22,6 +22,7 @@
         "{{user `scripts`}}/cleanup.sh",
         "{{user `scripts`}}/ubuntu/vmware.sh",
         "{{user `scripts`}}/ubuntu/networking.sh",
-        "{{user `scripts`}}/interface.sh"
+        "{{user `scripts`}}/interface.sh",
+        "{{user `scripts`}}/zfs.sh",
     ]
 }

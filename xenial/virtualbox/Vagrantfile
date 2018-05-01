@@ -108,25 +108,20 @@ Vagrant.configure('2') do |config|
     SHELL
   end
 
-  if SubutaiConfig.provision_snap?
-    config.vm.provision 'file', source: SubutaiConfig.get(:_ALT_SNAP), destination: '$HOME/subutai.snap'
-    SubutaiConfig.snap_provisioned!
-  end
-
   if SubutaiConfig.provision_management?
     config.vm.provision 'file', source: SubutaiConfig.get(:_ALT_MANAGEMENT), destination: '$HOME/subutai.management'
     SubutaiConfig.management_provisioned!
   end
 
   config.vm.provision 'shell', env: SubutaiConfig.config,
-                      path: 'https://raw.githubusercontent.com/subutai-io/packer/master/provisioning/en/provisioner.sh'
+                      path: 'https://raw.githubusercontent.com/subutai-io/packer/no-snap/provisioning/en/provisioner.sh'
 
   if ARGV[0] == 'up' || ARGV[0] == 'reload'
     has_grow, grow_by = SubutaiDisk.has_grow
 
     if has_grow
       config.vm.provision "shell", run: "always", env: {DISK_SIZE: grow_by.to_i},
-                          path: 'https://raw.githubusercontent.com/subutai-io/packer/master/provisioning/en/subutai_disk.sh'
+                          path: 'https://raw.githubusercontent.com/subutai-io/packer/no-snap/provisioning/en/subutai_disk.sh'
     end
   end
 
