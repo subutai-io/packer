@@ -5,8 +5,9 @@ disk_name=`expr match "$result" '.*\([s][d][b-z]*\)'`
 
 disk="/dev/${disk_name}"
 
-sudo pvcreate "$disk"
-sudo vgextend main "$disk"
-sudo lvextend -L+$(($DISK_SIZE+1))'G' /dev/mapper/main-zfs
+#sudo pvcreate "$disk"
+#sudo vgextend main "$disk"
+#sudo lvextend -L+$(($DISK_SIZE+1))'G' /dev/mapper/main-zfs
 
 sudo zpool set autoexpand=on subutai
+sudo zpool add -f subutai "$disk"
