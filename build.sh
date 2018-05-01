@@ -86,6 +86,7 @@ fi
 
 # cleanup boxes
 rm -rf *.box; rm -rf *.log;
+
 echo Clean up output directories and boxes
 for BOXNAME in $VAGRANT_BOXES; do
   for bt in virtualbox-iso parallels-iso vmware-iso; do
