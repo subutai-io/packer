@@ -68,7 +68,6 @@ if [ -n "$cmd_path" ]; then
   echo "$CMD is installed"
 else
   echo "Installing $CMD ..."
-  echo  >> /etc/apt/sources.list
   echo "deb http://deb.subutai.io/subutai $ENV main" | tee --append /etc/apt/sources.list
   apt update && apt -y install subutai
   cmd_path="$(which $CMD)"
