@@ -19,6 +19,6 @@
     "{{user `scripts`}}/rc_local.sh",
     "{{user `scripts`}}/grub.sh",
     "{{user `scripts`}}/cleanup.sh",
-    "{{user `scripts`}}/zfs.sh",
+    "{{user `scripts`}}/ubuntu/zfs.sh",
   ]
 }

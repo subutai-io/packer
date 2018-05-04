@@ -79,6 +79,17 @@ if [ -z "$cmd_path" ]; then
   exit 1;
 fi
 
+if [ -z "$(sudo zpool list | grep subutai)" ]; then
+  echo "Mounting container storage ..."
+  zpool create -f subutai /dev/mapper/main-zfs
+  zfs create -o mountpoint="/var/lib/lxc" subutai/fs
+  zpool set autoexpand=on subutai
+  
+  if [ $? -ne 0 ]; then exit 1; fi
+  sleep 2
+else
+  echo "Container storage already mounted."
+fi
 
 if [ "$ALLOW_INSECURE" = true ]; then
   CMD=$CMD ./insecure.sh

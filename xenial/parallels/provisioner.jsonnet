@@ -22,6 +22,6 @@
         "{{user `scripts`}}/cleanup.sh",
         "{{user `scripts`}}/parallels.sh",
         "{{user `scripts`}}/ubuntu/networking.sh",
-        "{{user `scripts`}}/zfs.sh",
+        "{{user `scripts`}}/ubuntu/zfs.sh",
     ]
 }

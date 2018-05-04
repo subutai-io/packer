@@ -23,6 +23,6 @@
         "{{user `scripts`}}/ubuntu/vmware.sh",
         "{{user `scripts`}}/ubuntu/networking.sh",
         "{{user `scripts`}}/interface.sh",
-        "{{user `scripts`}}/zfs.sh",
+        "{{user `scripts`}}/ubuntu/zfs.sh",
     ]
 }
