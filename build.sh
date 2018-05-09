@@ -80,7 +80,7 @@ elif [ -z "$PACKER_PROVIDERS" ]; then
   if [ $OS = "Darwin" ]; then
     PACKER_PROVIDERS='virtualbox-iso,vmware-iso,parallels-iso'
   else
-    PACKER_PROVIDERS='virtualbox-iso,qemu,vmware-iso'
+    PACKER_PROVIDERS='virtualbox-iso' #PACKER_PROVIDERS='virtualbox-iso,qemu,vmware-iso'
   fi
 fi
 
