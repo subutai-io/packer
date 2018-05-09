@@ -15,13 +15,13 @@
         "{{user `scripts`}}/authorized_keys.sh",
         "{{user `scripts`}}/apt_proxy.sh",
         "{{user `scripts`}}/apt.sh",
-        "{{user `scripts`}}/snap.sh",
         "{{user `scripts`}}/vagrant.sh",
         "{{user `scripts`}}/rc_local.sh",
         "{{user `scripts`}}/grub.sh",
         "{{user `scripts`}}/cleanup.sh",
         "{{user `scripts`}}/debian/vmware.sh",
         "{{user `scripts`}}/debian/networking.sh",
-        "{{user `scripts`}}/interface.sh"
+        "{{user `scripts`}}/interface.sh",
+        "{{user `scripts`}}/zfs.sh",
     ]
 }

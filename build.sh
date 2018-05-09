@@ -80,12 +80,13 @@ elif [ -z "$PACKER_PROVIDERS" ]; then
   if [ $OS = "Darwin" ]; then
     PACKER_PROVIDERS='virtualbox-iso,vmware-iso,parallels-iso'
   else
-    PACKER_PROVIDERS='virtualbox-iso,qemu,vmware-iso'
+    PACKER_PROVIDERS='qemu' #PACKER_PROVIDERS='virtualbox-iso,qemu,vmware-iso'
   fi
 fi
 
 # cleanup boxes
 rm -rf *.box; rm -rf *.log;
+
 echo Clean up output directories and boxes
 for BOXNAME in $VAGRANT_BOXES; do
   for bt in virtualbox-iso parallels-iso vmware-iso; do
@@ -323,5 +324,5 @@ for box in $VAGRANT_BOXES; do
       exit 1
     fi
 
-    vagrant box add --force subutai/$box $box*.box
+    vagrant box add --force subutai/$box vagrant-subutai-$box-*.box
 done
