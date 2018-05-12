@@ -9,10 +9,7 @@
           "echo Upgrading distribution ...",
           "apt-get -y dist-upgrade",
           "echo Adding needed packages ...",
-          "apt-get -y install net-tools snapd inotify-tools",
-          "echo Installing btrfs tool",
-          "apt-get -y install btrfs-tools",
-          "snap install core",
+          "apt-get -y install net-tools inotify-tools",
           "echo \"{{user `ssh_username`}}        ALL=(ALL)       NOPASSWD: ALL\" >> /etc/sudoers.d/{{user `ssh_username`}}",
           "chmod 440 /etc/sudoers.d/{{user `ssh_username`}}",
           "mkdir -pm 700 /home/{{user `ssh_username`}}/.ssh",
@@ -21,6 +18,14 @@
           "chown -R {{user `ssh_username`}}:{{user `ssh_username`}} /home/{{user `ssh_username`}}/.ssh",
           "cp /tmp/sources.list /etc/apt/sources.list",
           "apt-get update",
-          "sed -i '1 i\\ulimit -n 65535' /etc/profile"        
+          "sed -i '1 i\\ulimit -n 65535' /etc/profile",
+          "apt -y install zfsutils",
+          "/sbin/modprobe zfs",
+          "zpool create -f subutai /dev/mapper/main-zfs",
+          "zfs create -o mountpoint=\"/var/lib/lxc\" subutai/fs",
+          "zpool set autoexpand=on subutai",
+          "apt -y install lxc",
+          "apt-get -y install dirmngr",
+          "apt-key adv --recv-keys --keyserver keyserver.ubuntu.com C6B2AC7FBEB649F1"
         ]
       }
