@@ -79,11 +79,6 @@ Vagrant.configure('2') do |config|
     SHELL
   end
 
-  if SubutaiConfig.provision_snap?
-    config.vm.provision 'file', source: SubutaiConfig.get(:_ALT_SNAP), destination: '$HOME/subutai.snap'
-    SubutaiConfig.snap_provisioned!
-  end
-
   if SubutaiConfig.provision_management?
     config.vm.provision 'file', source: SubutaiConfig.get(:_ALT_MANAGEMENT), destination: '$HOME/subutai.management'
     SubutaiConfig.management_provisioned!
@@ -92,5 +87,6 @@ Vagrant.configure('2') do |config|
   config.vm.provision 'shell', env: SubutaiConfig.config,
                       path: 'https://raw.githubusercontent.com/subutai-io/packer/master/provisioning/en/provisioner.sh'
 
+  config.vm.provision :registration
   config.vm.provision :blueprint
 end
