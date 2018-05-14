@@ -23,6 +23,9 @@ elif [ -n "$APT_PROXY_HOST" -a -n "$(echo $APT_PROXY_HOST | grep ':')" ]; then
   DI_MIRROR_MIRROR="http://$APT_PROXY_HOST"
 fi
 
+# Get branch
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
 # TODO: extract from variables
 PASSWORD="ubuntai"
 
@@ -290,6 +293,19 @@ box=$box BASE_DIR=$BASE_DIR              \
   $BASE_DIR/http/virtio/xenial.sh
 
 for box in $VAGRANT_BOXES; do
+
+    # create master prefixed box subutai/stretch-master
+    if [ $BRANCH = "devops" ]; then
+      for hypervizor in libvirt parallels virtualbox vmware; do
+        BRANCH_PATH=$BASE_DIR/$box/$hypervizor/branch
+        rm -rf $BRANCH_PATH
+        mkdir -p $BRANCH_PATH
+        cp $BASE_DIR/$box/$hypervizor/Vagrantfile $BRANCH_PATH
+        sed -i s/vagrant-subutai-$box-$hypervizor/vagrant-subutai-$box-$hypervizor-$BRANCH/g $BRANCH_PATH/Vagrantfile
+        sed -i "s/subutai\/$box/subutai\/$box-$BRANCH/g" $BRANCH_PATH/Vagrantfile
+      done
+    fi
+
     echo "==> [$box] Validating $box/template.json ..."
     jsonnet $box/template.jsonnet > $box/template.json
 
@@ -307,23 +323,23 @@ for box in $VAGRANT_BOXES; do
     fi
 done
 
-for box in $VAGRANT_BOXES; do
-    echo "==> [$box] Running packer build on $box/template.json. Providers: $PACKER_PROVIDERS"
+#for box in $VAGRANT_BOXES; do
+#    echo "==> [$box] Running packer build on $box/template.json. Providers: $PACKER_PROVIDERS"
+#
+#    box=$box BASE_DIR=$BASE_DIR              \
+#      PROXY_ON=$PROXY_ON                     \
+#      PASSWORD=$PASSWORD                     \
+#      MIRROR_PORT=$MIRROR_PORT               \
+#      DI_MIRROR_MIRROR=$DI_MIRROR_MIRROR     \
+#      DI_MIRROR_HOSTNAME=$DI_MIRROR_HOSTNAME \
+#    packer build -on-error=ask -only=$PACKER_PROVIDERS -except=null $box/template.json
 
-    box=$box BASE_DIR=$BASE_DIR              \
-      PROXY_ON=$PROXY_ON                     \
-      PASSWORD=$PASSWORD                     \
-      MIRROR_PORT=$MIRROR_PORT               \
-      DI_MIRROR_MIRROR=$DI_MIRROR_MIRROR     \
-      DI_MIRROR_HOSTNAME=$DI_MIRROR_HOSTNAME \
-    packer build -on-error=ask -only=$PACKER_PROVIDERS -except=null $box/template.json
+#    if [ "$?" -ne 0 ]; then
+#      echo "[$box][ERROR] Aborting builds due to $box build failure."
+#      echo "build line was:"
+#      echo "packer build -on-error=ask -only=$PACKER_PROVIDERS -except=null $box/template.json"
+#      exit 1
+#    fi
 
-    if [ "$?" -ne 0 ]; then
-      echo "[$box][ERROR] Aborting builds due to $box build failure."
-      echo "build line was:"
-      echo "packer build -on-error=ask -only=$PACKER_PROVIDERS -except=null $box/template.json"
-      exit 1
-    fi
-
-    vagrant box add --force subutai/$box vagrant-subutai-$box-*.box
-done
+#    vagrant box add --force subutai/$box vagrant-subutai-$box-*.box
+#done

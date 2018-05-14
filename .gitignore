@@ -10,3 +10,14 @@ output-*
 *.log
 *.box
 copy.sh
+stretch/hyperv/branch
+stretch/libvirt/branch
+stretch/parallels/branch
+stretch/virtualbox/branch
+stretch/vmware/branch
+
+xenial/hyperv/branch
+xenial/libvirt/branch
+xenial/parallels/branch
+xenial/virtualbox/branch
+xenial/vmware/branch
