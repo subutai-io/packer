@@ -44,7 +44,7 @@ if [ -n "$1" ]; then
     esac
   done
 elif [ -z "$VAGRANT_BOXES" ]; then
-  VAGRANT_BOXES='xenial stretch'
+  VAGRANT_BOXES='stretch'
 fi
 
 if [ -n "$2" ]; then
@@ -295,16 +295,17 @@ box=$box BASE_DIR=$BASE_DIR              \
 for box in $VAGRANT_BOXES; do
 
     # create master prefixed box subutai/stretch-master
-    if [ $BRANCH = "devops" ]; then
       for hypervizor in libvirt parallels virtualbox vmware; do
         BRANCH_PATH=$BASE_DIR/$box/$hypervizor/branch
         rm -rf $BRANCH_PATH
         mkdir -p $BRANCH_PATH
         cp $BASE_DIR/$box/$hypervizor/Vagrantfile $BRANCH_PATH
-        sed -i s/vagrant-subutai-$box-$hypervizor/vagrant-subutai-$box-$hypervizor-$BRANCH/g $BRANCH_PATH/Vagrantfile
-        sed -i "s/subutai\/$box/subutai\/$box-$BRANCH/g" $BRANCH_PATH/Vagrantfile
+
+        if [ $BRANCH = "master" ]; then
+          sed -i s/vagrant-subutai-$box-$hypervizor/vagrant-subutai-$box-$hypervizor-$BRANCH/g $BRANCH_PATH/Vagrantfile
+          sed -i "s/subutai\/$box/subutai\/$box-$BRANCH/g" $BRANCH_PATH/Vagrantfile
+        fi
       done
-    fi
 
     echo "==> [$box] Validating $box/template.json ..."
     jsonnet $box/template.jsonnet > $box/template.json

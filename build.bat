@@ -4,7 +4,7 @@
 :: Packer Hyper-V box build json file
 set template=template.json
 
-FOR %%B IN (xenial) DO (
+FOR %%B IN (stretch) DO (
   :: Clean up boxes and log
   del /s /q /f vagrant-subutai-%%B-hyperv-*.box 2>nul
   del /s /q /f *.log 2>nul
