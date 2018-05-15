@@ -324,23 +324,27 @@ for box in $VAGRANT_BOXES; do
     fi
 done
 
-#for box in $VAGRANT_BOXES; do
-#    echo "==> [$box] Running packer build on $box/template.json. Providers: $PACKER_PROVIDERS"
-#
-#    box=$box BASE_DIR=$BASE_DIR              \
-#      PROXY_ON=$PROXY_ON                     \
-#      PASSWORD=$PASSWORD                     \
-#      MIRROR_PORT=$MIRROR_PORT               \
-#      DI_MIRROR_MIRROR=$DI_MIRROR_MIRROR     \
-#      DI_MIRROR_HOSTNAME=$DI_MIRROR_HOSTNAME \
-#    packer build -on-error=ask -only=$PACKER_PROVIDERS -except=null $box/template.json
+for box in $VAGRANT_BOXES; do
+    echo "==> [$box] Running packer build on $box/template.json. Providers: $PACKER_PROVIDERS"
 
-#    if [ "$?" -ne 0 ]; then
-#      echo "[$box][ERROR] Aborting builds due to $box build failure."
-#      echo "build line was:"
-#      echo "packer build -on-error=ask -only=$PACKER_PROVIDERS -except=null $box/template.json"
-#      exit 1
-#    fi
+    box=$box BASE_DIR=$BASE_DIR              \
+      PROXY_ON=$PROXY_ON                     \
+      PASSWORD=$PASSWORD                     \
+      MIRROR_PORT=$MIRROR_PORT               \
+      DI_MIRROR_MIRROR=$DI_MIRROR_MIRROR     \
+      DI_MIRROR_HOSTNAME=$DI_MIRROR_HOSTNAME \
+    packer build -on-error=ask -only=$PACKER_PROVIDERS -except=null $box/template.json
 
-#    vagrant box add --force subutai/$box vagrant-subutai-$box-*.box
-#done
+    if [ "$?" -ne 0 ]; then
+      echo "[$box][ERROR] Aborting builds due to $box build failure."
+      echo "build line was:"
+      echo "packer build -on-error=ask -only=$PACKER_PROVIDERS -except=null $box/template.json"
+      exit 1
+    fi
+
+    if [ $BRANCH = "master" ]; then
+      vagrant box add --force subutai/$box-master vagrant-subutai-$box-*.box;
+    else
+      vagrant box add --force subutai/$box vagrant-subutai-$box-*.box;
+    fi
+done
