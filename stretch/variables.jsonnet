@@ -27,5 +27,6 @@
     "ssh_password": "ubuntai",
     "version": "7.0.0",
     "virtualbox_guest_os_type": "Debian_64",
-    "vm_name": "stretch"
+    "vm_name": "stretch",
+    "branch": "{{env `BRANCH`}}"
 }

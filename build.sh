@@ -23,6 +23,9 @@ elif [ -n "$APT_PROXY_HOST" -a -n "$(echo $APT_PROXY_HOST | grep ':')" ]; then
   DI_MIRROR_MIRROR="http://$APT_PROXY_HOST"
 fi
 
+# Get branch
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
 # TODO: extract from variables
 PASSWORD="ubuntai"
 
@@ -41,7 +44,7 @@ if [ -n "$1" ]; then
     esac
   done
 elif [ -z "$VAGRANT_BOXES" ]; then
-  VAGRANT_BOXES='xenial stretch'
+  VAGRANT_BOXES='stretch'
 fi
 
 if [ -n "$2" ]; then
@@ -290,6 +293,20 @@ box=$box BASE_DIR=$BASE_DIR              \
   $BASE_DIR/http/virtio/xenial.sh
 
 for box in $VAGRANT_BOXES; do
+
+    # create master prefixed box subutai/stretch-master
+      for hypervizor in libvirt parallels virtualbox vmware; do
+        BRANCH_PATH=$BASE_DIR/$box/$hypervizor/branch
+        rm -rf $BRANCH_PATH
+        mkdir -p $BRANCH_PATH
+        cp $BASE_DIR/$box/$hypervizor/Vagrantfile $BRANCH_PATH
+
+        if [ $BRANCH = "master" ]; then
+          sed -i s/vagrant-subutai-$box-$hypervizor/vagrant-subutai-$box-$hypervizor-$BRANCH/g $BRANCH_PATH/Vagrantfile
+          sed -i "s/subutai\/$box/subutai\/$box-$BRANCH/g" $BRANCH_PATH/Vagrantfile
+        fi
+      done
+
     echo "==> [$box] Validating $box/template.json ..."
     jsonnet $box/template.jsonnet > $box/template.json
 
@@ -325,5 +342,9 @@ for box in $VAGRANT_BOXES; do
       exit 1
     fi
 
-    vagrant box add --force subutai/$box vagrant-subutai-$box-*.box
+    if [ $BRANCH = "master" ]; then
+      vagrant box add --force subutai/$box-master vagrant-subutai-$box-*.box;
+    else
+      vagrant box add --force subutai/$box vagrant-subutai-$box-*.box;
+    fi
 done
