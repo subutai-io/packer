@@ -9,7 +9,7 @@
   "disk_size": "{{user `disk_size`}}",
   "disk_type_id": "0",
 
-  "headless": "true",
+  "headless": "false",
 
   "http_directory": "{{user `http`}}",
 
@@ -19,6 +19,7 @@
     "{{ user `iso_path` }}/{{ user `iso_name` }}",
     "{{ user `iso_url` }}"
    ],
+   "tools_upload_flavor": "linux",
 
   "output_directory": "output-vmware-{{ user `vm_name` }}",
 

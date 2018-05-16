@@ -33,6 +33,7 @@
         ]
       ],
   "prlctl_version_file": ".prlctl_version",
+  "parallels_tools_flavor": "lin",
   "output_directory": "output-parallels-{{ user `vm_name` }}",
 
   "ssh_password": "{{user `ssh_password`}}",
