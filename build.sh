@@ -81,9 +81,9 @@ if [ -n "$2" ]; then
   done
 elif [ -z "$PACKER_PROVIDERS" ]; then
   if [ $OS = "Darwin" ]; then
-    PACKER_PROVIDERS='virtualbox-iso,vmware-iso,parallels-iso'
+    PACKER_PROVIDERS='virtualbox-iso,parallels-iso' # changed for devops Debian machine. You can set like PACKER_PROVIDERS='virtualbox-iso,vmware-iso,parallels-iso'
   else
-    PACKER_PROVIDERS='qemu' #PACKER_PROVIDERS='virtualbox-iso,qemu,vmware-iso'
+    PACKER_PROVIDERS='qemu,vmware-iso' # changed for devops Osx machine. You can set like PACKER_PROVIDERS='virtualbox-iso,qemu,vmware-iso'
   fi
 fi
 
