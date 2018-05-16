@@ -9,7 +9,7 @@
   "disk_size": "{{user `disk_size`}}",
   "disk_type_id": "0",
 
-  "headless": "false",
+  "headless": "true",
 
   "http_directory": "{{user `http`}}",
 
