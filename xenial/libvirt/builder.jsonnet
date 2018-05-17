@@ -13,7 +13,7 @@
   // "disk_image": "", TODO[devops] investigate this option for using existing images
 
 //   "headless": "{{ user `headless` }}",
-  "headless": "false",
+  "headless": "true",
   "http_directory": "{{user `http`}}",
 
   "iso_checksum": "{{ user `iso_checksum` }}",
