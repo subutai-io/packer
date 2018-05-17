@@ -10,7 +10,6 @@
   "disk_size": "{{user `disk_size`}}",
 
   "http_directory": "{{user `http`}}",
-  "headless": "true",
 
   "iso_checksum": "{{ user `iso_checksum` }}",
   "iso_checksum_type": "{{ user `iso_checksum_type` }}",

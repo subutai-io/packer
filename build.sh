@@ -307,8 +307,8 @@ for box in $VAGRANT_BOXES; do
         cp $BASE_DIR/$box/$hypervizor/Vagrantfile $BRANCH_PATH
 
         if [ $BRANCH = "master" ]; then
-          sed -i s/vagrant-subutai-$box-$hypervizor/vagrant-subutai-$box-$hypervizor-$BRANCH/g $BRANCH_PATH/Vagrantfile
-          sed -i "s/subutai\/$box/subutai\/$box-$BRANCH/g" $BRANCH_PATH/Vagrantfile
+          sed -i -e "s/vagrant-subutai-$box-$hypervizor/vagrant-subutai-$box-$hypervizor-$BRANCH/g" $BRANCH_PATH/Vagrantfile
+          sed -i -e "s/subutai\/$box/subutai\/$box-$BRANCH/g" $BRANCH_PATH/Vagrantfile
         fi
       done
 
