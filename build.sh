@@ -23,9 +23,6 @@ elif [ -n "$APT_PROXY_HOST" -a -n "$(echo $APT_PROXY_HOST | grep ':')" ]; then
   DI_MIRROR_MIRROR="http://$APT_PROXY_HOST"
 fi
 
-# Get branch
-BRANCH=$(git rev-parse --abbrev-ref HEAD)
-
 # TODO: extract from variables
 PASSWORD="ubuntai"
 
@@ -85,6 +82,14 @@ elif [ -z "$PACKER_PROVIDERS" ]; then
   else
     PACKER_PROVIDERS='qemu,vmware-iso' # changed for devops Osx machine. You can set like PACKER_PROVIDERS='virtualbox-iso,qemu,vmware-iso'
   fi
+fi
+
+# Get branch
+
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+if [ -n "$3" ]; then
+  BRANCH=$3
 fi
 
 # cleanup boxes
