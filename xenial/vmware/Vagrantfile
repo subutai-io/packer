@@ -25,7 +25,7 @@ Vagrant.configure('2') do |config|
 
   config.vm.box = 'subutai/xenial'
   url = SubutaiConfig.url_of_cdn
-  owner = '43d722f2c81bcd5159de5e5a482613b046c548b6'
+  owner = 'subutai'
   artifact_name = 'vagrant-subutai-xenial-vmware.box'
   config.vm.box_url = url + '/raw/download?id=' + SubutaiConfig.get_latest_id_artifact(owner, artifact_name)
   config.ssh.username = 'subutai'
@@ -36,7 +36,7 @@ Vagrant.configure('2') do |config|
     config.vm.network 'forwarded_port', guest: 8443, host: SubutaiConfig.get(:_CONSOLE_PORT), auto_correct: true
   end
 
-  config.vm.synced_folder ".", "/vagrant", type: "rsync"
+  config.vm.synced_folder ".", "/vagrant", :disabled => true, type: "rsync"
 
   config.vm.provider "vmware_desktop" do |v|
     v.whitelist_verified = true

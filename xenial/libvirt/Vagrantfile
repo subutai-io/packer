@@ -24,14 +24,14 @@ Vagrant.require_version '>= 2.0.1'
 Vagrant.configure('2') do |config|
   config.vm.box = 'subutai/xenial'
   url = SubutaiConfig.url_of_cdn
-  owner = '43d722f2c81bcd5159de5e5a482613b046c548b6'
+  owner = 'subutai'
   artifact_name = 'vagrant-subutai-xenial-libvirt.box'
   config.vm.box_url = url + '/raw/download?id=' + SubutaiConfig.get_latest_id_artifact(owner, artifact_name)
   config.ssh.username = 'subutai'
 
   # check LIBVIRT_USER and LIBVIRT_HOST
   if !SubutaiConfig.get(:LIBVIRT_HOST).nil? && !SubutaiConfig.get(:LIBVIRT_USER).nil?
-    STDOUT.puts "\e\nStarted libvirt operation in remote machine\n.\e[0m"
+    STDOUT.puts "\e\nStarted libvirt operation in remote machine\n. USER: #{SubutaiConfig.get(:LIBVIRT_USER)}, HOST: #{SubutaiConfig.get(:LIBVIRT_HOST).strip}\e[0m"
     proxy_timeout = 500000
 
     config.ssh.insert_key = false
