@@ -12,8 +12,7 @@
   "format": "qcow2",
   // "disk_image": "", TODO[devops] investigate this option for using existing images
 
-//   "headless": "{{ user `headless` }}",
-  "headless": "true",
+  "headless": "{{ user `headless` }}",
   "http_directory": "{{user `http`}}",
 
   "iso_checksum": "{{ user `iso_checksum` }}",

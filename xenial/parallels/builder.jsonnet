@@ -17,7 +17,6 @@
     "{{ user `iso_path` }}/{{ user `iso_name` }}",
     "{{ user `iso_url` }}"
    ],
-  "parallels_tools_flavor": "lin",
   "prlctl": [
          [
           "set",
