@@ -338,7 +338,7 @@ for box in $VAGRANT_BOXES; do
       MIRROR_PORT=$MIRROR_PORT               \
       DI_MIRROR_MIRROR=$DI_MIRROR_MIRROR     \
       DI_MIRROR_HOSTNAME=$DI_MIRROR_HOSTNAME \
-    #packer build -on-error=ask -only=$PACKER_PROVIDERS -except=null $box/template.json
+    packer build -on-error=ask -only=$PACKER_PROVIDERS -except=null $box/template.json
 
     if [ "$?" -ne 0 ]; then
       echo "[$box][ERROR] Aborting builds due to $box build failure."
@@ -347,9 +347,9 @@ for box in $VAGRANT_BOXES; do
       exit 1
     fi
 
-    #if [ $BRANCH = "master" ]; then
-    #  vagrant box add --force subutai/$box-master vagrant-subutai-$box-*.box;
-    #else
-    #  vagrant box add --force subutai/$box vagrant-subutai-$box-*.box;
-    #fi
+    if [ $BRANCH = "master" ]; then
+      vagrant box add --force subutai/$box-master vagrant-subutai-$box-*.box;
+    else
+      vagrant box add --force subutai/$box vagrant-subutai-$box-*.box;
+    fi
 done
