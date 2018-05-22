@@ -13,9 +13,6 @@ apt-get -y autoremove
 echo "cleaning up dhcp leases"
 rm /var/lib/dhcp/*
 
-echo "cleaning up pgp keys"
-rm -rf /var/snap/subutai$BRANCHTAG/current/.gnupg/
-
 echo "Remove the proxy configuration for local apt-cacher-ng setup"
 if [ -f /etc/apt/apt.conf.d/02proxy ]; then
   rm -f /etc/apt/apt.conf.d/02proxy;
