@@ -11,6 +11,10 @@ unless Vagrant.has_plugin?('vagrant-libvirt')
   raise 'Vagrant Libvirt Plugin required: vagrant plugin install vagrant-libvirt'
 end
 
+if Gem::Version.new(VagrantSubutai::VERSION) < Gem::Version.new('7.0.2')
+  raise "\e[33m\n\nVagrant Subutai Plugin version (#{VagrantSubutai::VERSION}) is incompatible with your box. Please update plugin by following command:\n\nvagrant plugin update vagrant-subutai\n\e[0m"
+end
+
 require 'vagrant-subutai'
 
 SubutaiConfig.bridged!

@@ -7,6 +7,10 @@ unless Vagrant.has_plugin?('vagrant-subutai')
   raise 'Vagrant Subutai Plugin required: vagrant plugin install vagrant-subutai'
 end
 
+if Gem::Version.new(VagrantSubutai::VERSION) < Gem::Version.new('7.0.2')
+  raise "\e[33m\n\nVagrant Subutai Plugin version (#{VagrantSubutai::VERSION}) is incompatible with your box. Please update plugin by following command:\n\nvagrant plugin update vagrant-subutai\n\e[0m"
+end
+
 unless Vagrant.has_plugin?('vagrant-vmware-desktop')
   raise 'Vagrant VMware Provider required. Please install: vagrant plugin install vagrant-vmware-desktop'
 end
