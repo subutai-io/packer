@@ -4,11 +4,11 @@
 require 'fileutils'
 
 unless Vagrant.has_plugin?('vagrant-subutai')
-  raise 'Vagrant Subutai Plugin required: vagrant plugin install vagrant-subutai'
+  raise "\e[33m\n\nVagrant Subutai Plugin is required. Please install plugin by following command:\n\nvagrant plugin install vagrant-subutai\n\e[0m"
 end
 
 unless Vagrant.has_plugin?('vagrant-parallels')
-  raise 'Vagrant Parallels Provider required. Please install: vagrant plugin install vagrant-parallels'
+  raise "\e[33m\n\nVagrant Parallels Plugin is required. Please install plugin by following command:\n\nvagrant plugin install vagrant-parallels\n\e[0m"
 end
 
 if Gem::Version.new(VagrantSubutai::VERSION) < Gem::Version.new('7.0.2')
