@@ -7,7 +7,6 @@ disk_name=`expr match "$result" '.*\([s][d][b-z]*\)'`
 
 if [ -z "$disk_name" ]; then
   echo ' ==> [ERROR] Not found disk'
-  exit 1
 else
   disk="/dev/${disk_name}"
   echo ' ==> [OK] Added new virtual disk '$disk
