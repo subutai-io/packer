@@ -47,7 +47,7 @@ Vagrant.configure('2') do |config|
   config.vm.network "private_network", type: "dhcp"
 
   config.vm.provider "parallels" do |v, override|
-    override.vm.synced_folder ".", "/vagrant", :disabled => true, mount_options: ["share"]
+    override.vm.synced_folder ".", "/vagrant", :disabled => false, mount_options: ["share"]
   end
 
   config.vm.provider "parallels" do |prl|
@@ -58,7 +58,7 @@ Vagrant.configure('2') do |config|
     # only for dev and master
     prl.linked_clone = true
 
-    if ARGV[0] == 'up' || ARGV[0] == 'reload'
+    if SubutaiConfig.write? || SubutaiConfig.reload?
       has_grow, grow_by = SubutaiDisk.has_grow
       file_disk = SubutaiDisk.file(grow_by)
 
@@ -70,7 +70,7 @@ Vagrant.configure('2') do |config|
     end
   end
 
-  if ARGV[0] == 'up' || ARGV[0] == 'reload'
+  if SubutaiConfig.write? || SubutaiConfig.reload?
     has_grow, grow_by = SubutaiDisk.has_grow
 
     if has_grow

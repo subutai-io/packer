@@ -31,7 +31,7 @@ Vagrant.configure('2') do |config|
 
   config.vm.base_mac = SubutaiConfig.get(:_BASE_MAC)
 
-  config.vm.synced_folder ".", "/vagrant", disabled: true
+  config.vm.synced_folder ".", "/vagrant", disabled: false
 
   config.vm.network 'public_network', :bridge => SubutaiConfig.get(:BRIDGE)
 

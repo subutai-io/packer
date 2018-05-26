@@ -1,5 +1,8 @@
 #!/bin/sh -eux
 
+# install open-vm-tools
+apt-get install -y open-vm-tools;
+
 # set a default HOME_DIR environment variable if not set
 HOME_DIR="${HOME_DIR:-/home/subutai}";
 
@@ -23,3 +26,4 @@ umount /tmp/vmware;
 rm -rf  /tmp/vmware;
 rm -rf  /tmp/vmware-archive;
 rm -f $HOME_DIR/*.iso;
+
