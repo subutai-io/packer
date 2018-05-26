@@ -9,7 +9,7 @@
     "desktop": "false",
     "disk_size": "131070",
     "distribution": "debian",
-    "headless": "true",
+    "headless": "false",
     "hostname": "subutai",
     "iso_checksum_type": "md5",
     "iso_checksum": "73bd8aaaeb843745ec939f6ae3906e48",
