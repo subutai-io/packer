@@ -31,7 +31,7 @@ Vagrant.configure('2') do |config|
 
   config.vm.base_mac = SubutaiConfig.get(:_BASE_MAC)
 
-  config.vm.synced_folder ".", "/vagrant", disabled: false
+  config.vm.synced_folder ".", "/vagrant", disabled: true
 
   config.vm.network 'public_network', :bridge => SubutaiConfig.get(:BRIDGE)
 
@@ -41,7 +41,7 @@ Vagrant.configure('2') do |config|
     h.cpus = SubutaiConfig.get(:SUBUTAI_CPU)
   end
 
-  if ARGV[0] == 'up' || ARGV[0] == 'reload'
+  if SubutaiConfig.write? || SubutaiConfig.reload?
     has_grow, grow_by = SubutaiDisk.has_grow
 
     if has_grow
