@@ -20,5 +20,6 @@
         "{{user `scripts`}}/grub.sh",
         "{{user `scripts`}}/cleanup.sh",
         "{{user `scripts`}}/zfs.sh",
+        "{{user `scripts`}}/virtualbox.sh"
     ]
 }
