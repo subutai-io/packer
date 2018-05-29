@@ -7,7 +7,7 @@ unless Vagrant.has_plugin?('vagrant-subutai')
 end
 
 # check dependency
-if Gem::Version.new(VagrantSubutai::VERSION) < Gem::Version.new('7.0.2')
+if Gem::Version.new(VagrantSubutai::VERSION) < Gem::Version.new('7.0.3')
   raise "\e[33m\n\nVagrant Subutai Plugin version (#{VagrantSubutai::VERSION}) is incompatible with your box. Please update plugin by following command:\n\nvagrant plugin update vagrant-subutai\n\e[0m"
 end
 
@@ -92,4 +92,6 @@ Vagrant.configure('2') do |config|
     config.vm.provision :registration
     config.vm.provision :blueprint
   end
+
+  config.vm.provision :cleanup
 end
