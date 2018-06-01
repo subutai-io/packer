@@ -11,9 +11,6 @@ echo 'DESIRED_SSH_PORT         = '$DESIRED_SSH_PORT
 echo 'SUBUTAI_ENV              = '$SUBUTAI_ENV
 echo 'SUBUTAI_RAM              = '$SUBUTAI_RAM
 echo 'SUBUTAI_CPU              = '$SUBUTAI_CPU
-echo 'SUBUTAI_DESKTOP          = '$SUBUTAI_DESKTOP
-echo 'SUBUTAI_MAN_TMPL         = '$SUBUTAI_MAN_TMPL
-echo 'APT_PROXY_URL            = '$APT_PROXY_URL
 echo 'BRIDGE                   = '$BRIDGE
 echo 'AUTHORIZED_KEYS          = '$AUTHORIZED_KEYS
 echo
@@ -23,9 +20,6 @@ echo '------------------------------------------------------------------'
 echo '_CONSOLE_PORT            = '$_CONSOLE_PORT
 echo '_BRIDGED                 = '$_BRIDGED
 echo '_BASE_MAC                = '$_BASE_MAC
-echo '_ALT_MANAGEMENT_MD5      = '$_ALT_MANAGEMENT_MD5
-echo '_ALT_MANAGEMENT_MD5_LAST = '$_ALT_MANAGEMENT_MD5_LAST
-echo '_ALT_MANAGEMENT          = '$_ALT_MANAGEMENT
 echo
 
 if [ "$PROVISION" = "false" ]; then
@@ -67,6 +61,7 @@ cmd_path="$(which $CMD)"
 if [ -n "$cmd_path" ]; then
   echo "$CMD is installed"
 else
+  export DEBIAN_FRONTEND=noninteractive
   echo "Installing $CMD ..."
   echo  >> /etc/apt/sources.list
   echo "deb http://deb.subutai.io/subutai $ENV main" | tee --append /etc/apt/sources.list
