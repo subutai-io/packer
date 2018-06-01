@@ -133,6 +133,10 @@ Vagrant.configure('2') do |config|
     SHELL
   end
 
+  # Add cdn url to host file
+  config.vm.provision 'shell', env: {SUBUTAI_ENV: SubutaiConfig.get(:SUBUTAI_ENV).to_s},
+                      path: 'https://raw.githubusercontent.com/subutai-io/packer/master/provisioning/en/kvm_cdn_host.sh'
+
 
   if SubutaiConfig.provision_management?
     config.vm.provision 'file', source: SubutaiConfig.get(:_ALT_MANAGEMENT), destination: '$HOME/subutai.management'
