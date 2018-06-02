@@ -11,7 +11,7 @@ unless Vagrant.has_plugin?('vagrant-vmware-desktop')
   raise "\e[33m\n\nVagrant VMware Desktop Plugin is required. Please install plugin by following command:\n\nvagrant plugin install vagrant-vmware-desktop\n\e[0m"
 end
 
-if Gem::Version.new(VagrantSubutai::VERSION) < Gem::Version.new('7.0.3')
+if Gem::Version.new(VagrantSubutai::VERSION) < Gem::Version.new('7.0.4')
   raise "\e[33m\n\nVagrant Subutai Plugin version (#{VagrantSubutai::VERSION}) is incompatible with your box. Please update plugin by following command:\n\nvagrant plugin update vagrant-subutai\n\e[0m"
 end
 
@@ -66,7 +66,7 @@ Vagrant.configure('2') do |config|
       unless File.exist? (file_disk)
         if has_grow
           if SubutaiDisk.vmware_create_disk(grow_by, file_disk)
-            STDOUT.puts  "\e[33m==> default: Disk size configured to #{SubutaiConfig.get(:DISK_SIZE)}GB, increasing #{grow_by}GB default by 100GB.\e[0m"
+            STDOUT.puts  "\e[33m#{SubutaiDisk.message(grow_by)}\e[0m"
 
             v.vmx["scsi0:#{port}.filename"] = file_disk
             v.vmx["scsi0:#{port}.present"] = "TRUE"
