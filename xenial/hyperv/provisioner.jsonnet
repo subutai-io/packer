@@ -21,12 +21,12 @@
           "cp /tmp/sources.list /etc/apt/sources.list",
           "apt-get update",
           "sed -i '1 i\\ulimit -n 65535' /etc/profile",
-          "apt -y install zfsutils-linux",
+          "apt-get -y install zfsutils-linux",
           "/sbin/modprobe zfs",
           "zpool create -f subutai /dev/mapper/main-zfs",
           "zfs create -o mountpoint=\"/var/lib/lxc\" subutai/fs",
           "zpool set autoexpand=on subutai",
-          "apt -y install lxc",
+          "apt-get -y install lxc",
           "apt-get -y install dirmngr",
           "apt-key adv --recv-keys --keyserver keyserver.ubuntu.com C6B2AC7FBEB649F1"
         ]

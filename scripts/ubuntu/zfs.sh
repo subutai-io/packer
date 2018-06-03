@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-apt -y install zfsutils-linux
+apt-get -y install zfsutils-linux
 
 /sbin/modprobe zfs
 
@@ -10,7 +10,7 @@ zfs create -o mountpoint="/var/lib/lxc" subutai/fs
 
 zpool set autoexpand=on subutai
 
-apt -y install lxc
+apt-get -y install lxc
 
 apt-get -y install dirmngr
 
