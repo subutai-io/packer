@@ -80,5 +80,5 @@ echo d-i finish-install/reboot_in_progress note
 type .\http\packages.cfg>>.\http\stretch.cfg
 
 (
-echo d-i preseed/late_command string sed -i -e "s/.*PermitRootLogin.*/PermitRootLogin yes/g" /target/etc/ssh/sshd_config ; chroot /target /bin/bash -c 'service ssh stop ; apt-get install hyperv-daemons' ;
+echo d-i preseed/late_command string sed -i -e "s/.*PermitRootLogin.*/PermitRootLogin yes/g" /target/etc/ssh/sshd_config ; chroot /target /bin/bash -c 'service ssh stop ; DEBIAN_FRONTEND=noninteractive apt-get install hyperv-daemons' ;
 )>>.\http\stretch.cfg
