@@ -1,6 +1,6 @@
 #!/bin/bash
 
-apt -y install zfsutils
+DEBIAN_FRONTEND=noninteractive apt-get -y install zfsutils
 
 /sbin/modprobe zfs
 
@@ -10,9 +10,9 @@ zfs create -o mountpoint="/var/lib/lxc" subutai/fs
 
 zpool set autoexpand=on subutai
 
-apt -y install lxc
+DEBIAN_FRONTEND=noninteractive apt-get -y install lxc
 
-apt-get -y install dirmngr
+DEBIAN_FRONTEND=noninteractive apt-get -y install dirmngr
 
 apt-key adv --recv-keys --keyserver keyserver.ubuntu.com C6B2AC7FBEB649F1
 
