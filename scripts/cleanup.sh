@@ -5,7 +5,7 @@ if [ -z "$BRANCHTAG" ]; then
   exit -1
 fi
 
-DEBIAN_FRONTEND=noninteractive apt-get -y autoremove
+DEBIAN_FRONTEND=noninteractive apt-get -q -y autoremove
 
 # seems this is removing everything we install
 #sudo dpkg -l 'linux-*' | sed '/^ii/!d;/'"$(uname -r | sed "s/\(.*\)-\([^0-9]\+\)/\1/")"'/d;s/^[^ ]* [^ ]* \([^ ]*\).*/\1/;/[0-9]/!d' | xargs sudo DEBIAN_FRONTEND=noninteractive apt-get -y purge
@@ -20,7 +20,7 @@ fi
 
 echo "Replacing /etc/apt/sources.list with standard sources"
 cp /tmp/sources.list /etc/apt/sources.list
-DEBIAN_FRONTEND=noninteractive apt-get update
+DEBIAN_FRONTEND=noninteractive apt-get -q update
 
 echo "Setting ulimit -n 65535 in /etc/profile"
 sed -i '1 i\ulimit -n 65535' /etc/profile

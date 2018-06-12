@@ -70,7 +70,7 @@ else
   echo "Installing $CMD ..."
   echo  >> /etc/apt/sources.list
   echo "deb http://deb.subutai.io/subutai $ENV main" | tee --append /etc/apt/sources.list
-  DEBIAN_FRONTEND=noninteractive apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install subutai
+  DEBIAN_FRONTEND=noninteractive apt-get -q update && DEBIAN_FRONTEND=noninteractive apt-get -q -y install subutai
   cmd_path="$(which $CMD)"
 fi
 
