@@ -16,9 +16,9 @@ Vagrant.configure("2") do |config|
   end
 
   config.vm.provision "shell", inline: <<-SHELL
-    DEBIAN_FRONTEND=noninteractive apt-get update
-    DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
-    DEBIAN_FRONTEND=noninteractive apt-get install apt-cacher-ng
+    DEBIAN_FRONTEND=noninteractive apt-get -q update
+    DEBIAN_FRONTEND=noninteractive apt-get -q upgrade -y
+    DEBIAN_FRONTEND=noninteractive apt-get -q -y install apt-cacher-ng
     
     if [ -f /home/vagrant/apt-cacher-ng.tgz ]; then
       cd /var/cache
