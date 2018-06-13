@@ -65,16 +65,17 @@ cmd_path="$(which $CMD)"
 if [ -n "$cmd_path" ]; then
   echo "$CMD is installed"
 else
+  echo "--------------------------------------------------------------------------------------------"
+  echo "   The red message about \"rng-tools.service\" while installing the subutai is all right."
+  echo "                       Please, do not worry about it."
+  echo "--------------------------------------------------------------------------------------------"
+
   echo "Installing $CMD ..."
 
+  # Add subutai source list
   echo "deb http://deb.subutai.io/subutai $ENV main" > /etc/apt/sources.list.d/subutai.list
 
-  DEBIAN_FRONTEND=noninteractive apt-get -q update
-
-  echo "INFO: The red message about \"rng-tools.service\" while installing the subutai is all right. Please, do not worry about it."
-
-  DEBIAN_FRONTEND=noninteractive apt-get -q -y install subutai
-  
+  DEBIAN_FRONTEND=noninteractive apt-get -q update && DEBIAN_FRONTEND=noninteractive apt-get -q -y install subutai
   cmd_path="$(which $CMD)"
 fi
 
