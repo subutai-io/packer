@@ -11,9 +11,7 @@ echo 'DESIRED_SSH_PORT         = '$DESIRED_SSH_PORT
 echo 'SUBUTAI_ENV              = '$SUBUTAI_ENV
 echo 'SUBUTAI_RAM              = '$SUBUTAI_RAM
 echo 'SUBUTAI_CPU              = '$SUBUTAI_CPU
-echo 'SUBUTAI_DESKTOP          = '$SUBUTAI_DESKTOP
 echo 'SUBUTAI_MAN_TMPL         = '$SUBUTAI_MAN_TMPL
-echo 'APT_PROXY_URL            = '$APT_PROXY_URL
 echo 'BRIDGE                   = '$BRIDGE
 echo 'AUTHORIZED_KEYS          = '$AUTHORIZED_KEYS
 echo
@@ -67,9 +65,16 @@ cmd_path="$(which $CMD)"
 if [ -n "$cmd_path" ]; then
   echo "$CMD is installed"
 else
+  echo "--------------------------------------------------------------------------------------------"
+  echo "   The red message about \"rng-tools.service\" while installing the subutai is all right."
+  echo "                       Please, do not worry about it."
+  echo "--------------------------------------------------------------------------------------------"
+
   echo "Installing $CMD ..."
-  echo  >> /etc/apt/sources.list
-  echo "deb http://deb.subutai.io/subutai $ENV main" | tee --append /etc/apt/sources.list
+
+  # Add subutai source list
+  echo "deb http://deb.subutai.io/subutai $ENV main" > /etc/apt/sources.list.d/subutai.list
+
   DEBIAN_FRONTEND=noninteractive apt-get -q update && DEBIAN_FRONTEND=noninteractive apt-get -q -y install subutai
   cmd_path="$(which $CMD)"
 fi
