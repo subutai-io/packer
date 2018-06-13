@@ -69,13 +69,13 @@ else
   echo "Installing $CMD ..."
   echo  >> /etc/apt/sources.list
   echo "deb http://deb.subutai.io/subutai $ENV main" | tee --append /etc/apt/sources.list
-
+  
   DEBIAN_FRONTEND=noninteractive apt-get -q update
 
   echo "INFO: The red message about \"rng-tools.service\" while installing the subutai is all right. Please, do not worry about it."
 
   DEBIAN_FRONTEND=noninteractive apt-get -q -y install subutai
-
+  
   cmd_path="$(which $CMD)"
 fi
 

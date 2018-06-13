@@ -2,8 +2,7 @@
 echo "==> Installing VirtualBox guest additions"
 
 # Assuming the following packages are installed
-DEBIAN_FRONTEND=noninteractive apt-get install -y linux-headers-$(uname -r) build-essential perl
-DEBIAN_FRONTEND=noninteractive apt-get install -y dkms
+DEBIAN_FRONTEND=noninteractive apt-get -q install -y linux-headers-$(uname -r) build-essential perl dkms
 
 VBOX_VERSION=$(cat /home/${SSH_USERNAME}/.vbox_version)
 mount -o loop /home/${SSH_USERNAME}/VBoxGuestAdditions_$VBOX_VERSION.iso /mnt

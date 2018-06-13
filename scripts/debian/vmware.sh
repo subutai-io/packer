@@ -1,7 +1,7 @@
 #!/bin/sh -eux
 
 # install open-vm-tools
-DEBIAN_FRONTEND=noninteractive apt-get install -y open-vm-tools;
+DEBIAN_FRONTEND=noninteractive apt-get -q install -y open-vm-tools;
 
 # set a default HOME_DIR environment variable if not set
 HOME_DIR="${HOME_DIR:-/home/subutai}";
