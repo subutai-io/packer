@@ -65,10 +65,8 @@ cmd_path="$(which $CMD)"
 if [ -n "$cmd_path" ]; then
   echo "$CMD is installed"
 else
-  export DEBIAN_FRONTEND=noninteractive
   echo "Installing $CMD ..."
-  echo  >> /etc/apt/sources.list
-  echo "deb http://deb.subutai.io/subutai $ENV main" | tee --append /etc/apt/sources.list
+  echo "deb http://deb.subutai.io/subutai $ENV main" > /etc/apt/sources.list.d/subutai.list
 
   DEBIAN_FRONTEND=noninteractive apt-get -q update
 
