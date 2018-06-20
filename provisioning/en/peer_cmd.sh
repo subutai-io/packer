@@ -5,6 +5,15 @@ Provisioning management capabilities (converting RH into peer)
 This might take a little time ...
 EOM
 
+# Check ipfs swarm with peers
+# timeout 5 min (300 sec)
+NEXT_WAIT_TIME=5
+until (export IPFS_PATH=/var/lib/ipfs/node && ipfs swarm peers) || [ $NEXT_WAIT_TIME -eq 300 ]; do
+   echo "IPFS swarm with peers not ready"
+   sleep $NEXT_WAIT_TIME
+   NEXT_WAIT_TIME=$((NEXT_WAIT_TIME + 5))
+done
+
 errcode=0
 if [ -n "$(/usr/bin/$CMD list | grep management)" ]; then
   echo "Management seems to already be installed. Checking for upgrades..."
