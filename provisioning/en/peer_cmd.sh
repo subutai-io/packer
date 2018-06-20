@@ -8,12 +8,15 @@ EOM
 # Check ipfs swarm with peers
 # timeout 5 min (300 sec)
 NEXT_WAIT_TIME=10
+# BEFORE sleep
 sleep $NEXT_WAIT_TIME
 until (export IPFS_PATH=/var/lib/ipfs/node && ipfs swarm peers > /dev/null) || [ $NEXT_WAIT_TIME -eq 300 ]; do
    echo "IPFS swarm with peers not ready"
-   sleep $NEXT_WAIT_TIME
+   sleep 10
    NEXT_WAIT_TIME=$((NEXT_WAIT_TIME + 10))
 done
+# AFTER sleep
+sleep 10
 
 errcode=0
 if [ -n "$(/usr/bin/$CMD list | grep management)" ]; then
