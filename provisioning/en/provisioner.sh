@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Write provisioning steps to file for ControlCenter
-if [ -d "/vagrant" ]; then
-  echo 1 > /vagrant/provision_step
+if [ -d "/vagrant/.vagrant/" ]; then
+  echo 1 > /vagrant/.vagrant/provision_step
 fi
 
 echo '------------------------------------------------------------------'
@@ -89,8 +89,8 @@ if [ -z "$cmd_path" ]; then
 fi
 
 # Write provisioning steps to file for ControlCenter
-if [ -d "/vagrant" ]; then
-  echo 2 > /vagrant/provision_step
+if [ -d "/vagrant/.vagrant" ]; then
+  echo 2 > /vagrant/.vagrant/provision_step
 fi
 
 if [ -z "$(sudo zpool list | grep subutai)" ]; then
@@ -118,8 +118,8 @@ else
 fi
 
 # Write provisioning steps to file for ControlCenter
-if [ -d "/vagrant" ]; then
-  echo 3 > /vagrant/provision_step
+if [ -d "/vagrant/.vagrant" ]; then
+  echo 3 > /vagrant/.vagrant/provision_step
 fi
 
 _CONSOLE_PORT=$_CONSOLE_PORT \
