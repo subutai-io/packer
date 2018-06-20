@@ -1,6 +1,10 @@
 #!/bin/bash
 
-echo
+# Write provisioning steps to file for ControlCenter
+if [ -d "/vagrant/.vagrant/" ]; then
+  echo 1 > /vagrant/.vagrant/provision_step
+fi
+
 echo '------------------------------------------------------------------'
 echo 'User Specified Parameters:'
 echo '------------------------------------------------------------------'
@@ -84,6 +88,11 @@ if [ -z "$cmd_path" ]; then
   exit 1;
 fi
 
+# Write provisioning steps to file for ControlCenter
+if [ -d "/vagrant/.vagrant" ]; then
+  echo 2 > /vagrant/.vagrant/provision_step
+fi
+
 if [ -z "$(sudo zpool list | grep subutai)" ]; then
   echo "Mounting container storage ..."
   zpool create -f subutai /dev/mapper/main-zfs
@@ -106,6 +115,11 @@ if [ "$SUBUTAI_PEER" = true ]; then
   if [ $? -ne 0 ]; then exit 1; fi
 else
   ./rhost_message.sh
+fi
+
+# Write provisioning steps to file for ControlCenter
+if [ -d "/vagrant/.vagrant" ]; then
+  echo 3 > /vagrant/.vagrant/provision_step
 fi
 
 _CONSOLE_PORT=$_CONSOLE_PORT \
