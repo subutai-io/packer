@@ -69,10 +69,10 @@ cmd_path="$(which $CMD)"
 if [ -n "$cmd_path" ]; then
   echo "$CMD is installed"
 else
-  echo "--------------------------------------------------------------------------------------------"
-  echo "   The red message about \"rng-tools.service\" while installing the subutai is all right."
-  echo "                       Please, do not worry about it."
-  echo "--------------------------------------------------------------------------------------------"
+  echo "----------------------------------------------------------------------------------------------"
+  echo " Requirements for \"rng-tools.service\" are handled automatically during Subutai installation."
+  echo "                   You may ignore failure notices regarding this tool."
+  echo "----------------------------------------------------------------------------------------------"
 
   echo "Installing $CMD ..."
 
