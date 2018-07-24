@@ -29,7 +29,23 @@ echo "Installing GoogleChrome"
 # install chrome
 CHROME_PACKAGE=google-chrome-stable_current_amd64.deb
 wget --no-cache -O /home/subutai/$CHROME_PACKAGE https://cdn.subutai.io:8338/kurjun/rest/raw/get?name=$CHROME_PACKAGE >/dev/null 2>&1
-DEBIAN_FRONTEND=noninteractive apt install -q -y /home/subutai/$CHROME_PACKAGE
+
+if [ -f /home/subutai/$CHROME_PACKAGE ]; then
+  DEBIAN_FRONTEND=noninteractive apt install -q -y /home/subutai/$CHROME_PACKAGE
+
+  # clean package
+  rm /home/subutai/$CHROME_PACKAGE
+fi
+
+echo "Installing E2E plugin"
+touch /home/subutai/ffddnlbamkjlbngpekmdpnoccckapcnh.json
+echo "{\"external_update_url\": \"https://clients2.google.com/service/update2/crx\"}" >> /home/subutai/ffddnlbamkjlbngpekmdpnoccckapcnh.json
+
+
+if [ -f /home/subutai/ffddnlbamkjlbngpekmdpnoccckapcnh.json ]; then
+  mkdir -p /opt/google/chrome/extensions;
+  cp -p /home/subutai/ffddnlbamkjlbngpekmdpnoccckapcnh.json /opt/google/chrome/extensions/
+fi
 
 echo "Installing SubutaiControlCenter"
 # install CC
@@ -52,8 +68,13 @@ esac
 
 wget --no-cache -O /home/subutai/$CC_PACKAGE https://cdn.subutai.io:8338/kurjun/rest/raw/get?name=$CC_PACKAGE >/dev/null 2>&1
 DEBIAN_FRONTEND=noninteractive apt-get install -q -y libssl1.0-dev
-DEBIAN_FRONTEND=noninteractive apt install -q -y /home/subutai/$CC_PACKAGE
 
-# clean packages
-rm $CHROME_PACKAGE
-rm $CC_PACKAGE
+if [ -f /home/subutai/$CC_PACKAGE ]; then
+  DEBIAN_FRONTEND=noninteractive apt install -q -y /home/subutai/$CC_PACKAGE
+
+  # clean package
+  rm /home/subutai/$CC_PACKAGE
+fi
+
+# after installing MATE desktop, system should reboot
+reboot
