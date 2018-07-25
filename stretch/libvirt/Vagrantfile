@@ -71,6 +71,7 @@ Vagrant.configure('2') do |config|
     libvirt.driver = 'kvm'
     libvirt.username = 'subutai'
     libvirt.storage_pool_name = 'default'
+    libvirt.random_hostname = "#{(0...8).map { ('a'..'z').to_a[rand(26)] }.join}" # generates random 8 character string
 
     libvirt.memory = SubutaiConfig.get(:SUBUTAI_RAM)
     libvirt.cpus = SubutaiConfig.get(:SUBUTAI_CPU)
