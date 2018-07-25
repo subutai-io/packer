@@ -71,6 +71,7 @@ Vagrant.configure('2') do |config|
     libvirt.driver = 'kvm'
     libvirt.username = 'subutai'
     libvirt.storage_pool_name = 'default'
+    libvirt.random_hostname = "#{(0...8).map { ('a'..'z').to_a[rand(26)] }.join}" # generates random 8 character string
 
     libvirt.memory = SubutaiConfig.get(:SUBUTAI_RAM)
     libvirt.cpus = SubutaiConfig.get(:SUBUTAI_CPU)
@@ -144,6 +145,11 @@ Vagrant.configure('2') do |config|
   if SubutaiConfig.boolean?(:PROVISION)
     config.vm.provision :registration
     config.vm.provision :blueprint
+  end
+
+  if SubutaiConfig.boolean?(:SUBUTAI_DESKTOP)
+    config.vm.provision 'shell', env: SubutaiConfig.config,
+                        path: 'https://raw.githubusercontent.com/subutai-io/packer/master/provisioning/en/subutai_desktop.sh'
   end
 
   config.vm.provision :cleanup

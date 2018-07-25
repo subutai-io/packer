@@ -133,5 +133,10 @@ Vagrant.configure('2') do |config|
     config.vm.provision :blueprint
   end
 
+  if SubutaiConfig.boolean?(:SUBUTAI_DESKTOP)
+    config.vm.provision 'shell', env: SubutaiConfig.config,
+                        path: 'https://raw.githubusercontent.com/subutai-io/packer/master/provisioning/en/subutai_desktop.sh'
+  end
+
   config.vm.provision :cleanup
 end

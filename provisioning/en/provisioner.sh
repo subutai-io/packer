@@ -15,6 +15,7 @@ echo 'DESIRED_SSH_PORT         = '$DESIRED_SSH_PORT
 echo 'SUBUTAI_ENV              = '$SUBUTAI_ENV
 echo 'SUBUTAI_RAM              = '$SUBUTAI_RAM
 echo 'SUBUTAI_CPU              = '$SUBUTAI_CPU
+echo 'SUBUTAI_DESKTOP          = '$SUBUTAI_DESKTOP
 echo 'SUBUTAI_MAN_TMPL         = '$SUBUTAI_MAN_TMPL
 echo 'BRIDGE                   = '$BRIDGE
 echo 'AUTHORIZED_KEYS          = '$AUTHORIZED_KEYS
