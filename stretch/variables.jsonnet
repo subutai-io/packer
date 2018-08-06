@@ -25,7 +25,7 @@
     "skip_export": "false",
     "ssh_username": "subutai",
     "ssh_password": "ubuntai",
-    "version": "7.0.3",
+    "version": "7.0.5",
     "virtualbox_guest_os_type": "Debian_64",
     "vm_name": "stretch",
     "branch": "{{env `BRANCH`}}"

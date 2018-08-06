@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+if [ "$PROVISION" = "false" ]; then
+    echo Provisioning has been disabled, existing with SUCCESS
+    exit 0;
+fi
+
 # install mate-desktop
 echo "Installing mate-desktop"
 DEBIAN_FRONTEND=noninteractive apt-get -q install mate-desktop -y
