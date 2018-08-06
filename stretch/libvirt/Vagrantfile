@@ -152,5 +152,8 @@ Vagrant.configure('2') do |config|
                         path: 'https://raw.githubusercontent.com/subutai-io/packer/master/provisioning/en/subutai_desktop.sh'
   end
 
+  config.vm.provision 'shell',
+                      path: 'https://raw.githubusercontent.com/subutai-io/packer/master/provisioning/en/logrotate.sh'
+
   config.vm.provision :cleanup
 end
