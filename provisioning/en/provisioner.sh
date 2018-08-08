@@ -80,6 +80,9 @@ else
   # Add subutai source list
   echo "deb http://deb.subutai.io/subutai $ENV main" > /etc/apt/sources.list.d/subutai.list
 
+  # Load zfs kernel module
+  /sbin/modprobe zfs
+
   DEBIAN_FRONTEND=noninteractive apt-get -q update && DEBIAN_FRONTEND=noninteractive apt-get -q -y install subutai
   cmd_path="$(which $CMD)"
 fi
