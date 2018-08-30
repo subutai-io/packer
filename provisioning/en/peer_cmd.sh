@@ -32,7 +32,7 @@ if [[ ! -z $ipfs ]]; then
 fi
 
 errcode=0
-if [ -n "$(/usr/bin/$CMD list info -n management | grep management)" ]; then
+if [ -n "$(/usr/bin/$CMD list containers -n management | grep management)" ]; then
   echo "Management seems to already be installed. Checking for upgrades..."
   /usr/bin/$CMD update management
   exit 0
