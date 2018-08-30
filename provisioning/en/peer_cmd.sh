@@ -5,7 +5,9 @@ Provisioning management capabilities (converting RH into peer)
 This might take a little time ...
 EOM
 
-errcode=`mountpoint /var/lib/lxc`
+mountpoint /var/lib/lxc
+
+errcode=$?
 
 if [ $errcode -ne 0 ]; then
   exit $errcode
