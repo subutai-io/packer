@@ -297,6 +297,8 @@ box=$box BASE_DIR=$BASE_DIR              \
   DI_MIRROR_HOSTNAME=$DI_MIRROR_HOSTNAME \
   $BASE_DIR/http/virtio/xenial.sh
 
+MAIN_URL="https://raw.githubusercontent.com/subutai-io/packer"
+
 for box in $VAGRANT_BOXES; do
 
     # create master prefixed box subutai/stretch-master
@@ -312,12 +314,10 @@ for box in $VAGRANT_BOXES; do
 
           # Change provisioning scripts url to "stage"
           # (We use stage url for master vagrant boxes)
-          MAIN_URL="https://raw.githubusercontent.com/subutai-io/packer"
-          sed -i -e "s,$MAIN_URL/master/provisioning/en/virtio/subutai_disk.sh,$MAIN_URL/stage/provisioning/en/virtio/subutai_disk.sh,g" $BRANCH_PATH/Vagrantfile
-          sed -i -e "s,$MAIN_URL/master/provisioning/en/subutai_disk.sh,$MAIN_URL/stage/provisioning/en/subutai_disk.sh,g" $BRANCH_PATH/Vagrantfile
-          sed -i -e "s,$MAIN_URL/master/provisioning/en/provisioner.sh,$MAIN_URL/stage/provisioning/en/provisioner.sh,g" $BRANCH_PATH/Vagrantfile
-          sed -i -e "s,$MAIN_URL/master/provisioning/en/subutai_desktop.sh,$MAIN_URL/stage/provisioning/en/subutai_desktop.sh,g" $BRANCH_PATH/Vagrantfile
-          sed -i -e "s,$MAIN_URL/master/provisioning/en/logrotate.sh,$MAIN_URL/stage/provisioning/en/logrotate.sh,g" $BRANCH_PATH/Vagrantfile
+          sed -i -e "s,$MAIN_URL/master,$MAIN_URL/stage,g" $BRANCH_PATH/Vagrantfile
+          sed -i -e "s,$MAIN_URL/master,$MAIN_URL/stage,g" $BASE_DIR/provisioning/en/provisioner.sh
+        else
+          sed -i -e "s,$MAIN_URL/stage,$MAIN_URL/master,g" $BASE_DIR/provisioning/en/provisioner.sh
         fi
       done
 
