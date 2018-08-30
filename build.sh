@@ -78,9 +78,9 @@ if [ -n "$2" ]; then
   done
 elif [ -z "$PACKER_PROVIDERS" ]; then
   if [ $OS = "Darwin" ]; then
-    PACKER_PROVIDERS='virtualbox-iso,parallels-iso' # changed for devops Debian machine. You can set like PACKER_PROVIDERS='virtualbox-iso,vmware-iso,parallels-iso'
+    PACKER_PROVIDERS='parallels-iso' # changed for devops Debian machine. You can set like PACKER_PROVIDERS='virtualbox-iso,vmware-iso,parallels-iso'
   else
-    PACKER_PROVIDERS='qemu,vmware-iso' # changed for devops Osx machine. You can set like PACKER_PROVIDERS='virtualbox-iso,qemu,vmware-iso'
+    PACKER_PROVIDERS='qemu,vmware-iso,virtualbox-iso' # changed for devops Osx machine. You can set like PACKER_PROVIDERS='virtualbox-iso,qemu,vmware-iso'
   fi
 fi
 
@@ -309,6 +309,15 @@ for box in $VAGRANT_BOXES; do
         if [ $BRANCH = "master" ]; then
           sed -i -e "s/vagrant-subutai-$box-$hypervizor/vagrant-subutai-$box-$hypervizor-$BRANCH/g" $BRANCH_PATH/Vagrantfile
           sed -i -e "s/subutai\/$box/subutai\/$box-$BRANCH/g" $BRANCH_PATH/Vagrantfile
+
+          # Change provisioning scripts url to "stage"
+          # (We use stage url for master vagrant boxes)
+          MAIN_URL="https://raw.githubusercontent.com/subutai-io/packer"
+          sed -i -e "s,$MAIN_URL/master/provisioning/en/virtio/subutai_disk.sh,$MAIN_URL/stage/provisioning/en/virtio/subutai_disk.sh,g" $BRANCH_PATH/Vagrantfile
+          sed -i -e "s,$MAIN_URL/master/provisioning/en/subutai_disk.sh,$MAIN_URL/stage/provisioning/en/subutai_disk.sh,g" $BRANCH_PATH/Vagrantfile
+          sed -i -e "s,$MAIN_URL/master/provisioning/en/provisioner.sh,$MAIN_URL/stage/provisioning/en/provisioner.sh,g" $BRANCH_PATH/Vagrantfile
+          sed -i -e "s,$MAIN_URL/master/provisioning/en/subutai_desktop.sh,$MAIN_URL/stage/provisioning/en/subutai_desktop.sh,g" $BRANCH_PATH/Vagrantfile
+          sed -i -e "s,$MAIN_URL/master/provisioning/en/logrotate.sh,$MAIN_URL/stage/provisioning/en/logrotate.sh,g" $BRANCH_PATH/Vagrantfile
         fi
       done
 
@@ -338,7 +347,7 @@ for box in $VAGRANT_BOXES; do
       MIRROR_PORT=$MIRROR_PORT               \
       DI_MIRROR_MIRROR=$DI_MIRROR_MIRROR     \
       DI_MIRROR_HOSTNAME=$DI_MIRROR_HOSTNAME \
-    packer build -on-error=ask -only=$PACKER_PROVIDERS -except=null $box/template.json
+    #packer build -on-error=ask -only=$PACKER_PROVIDERS -except=null $box/template.json
 
     if [ "$?" -ne 0 ]; then
       echo "[$box][ERROR] Aborting builds due to $box build failure."
@@ -347,9 +356,9 @@ for box in $VAGRANT_BOXES; do
       exit 1
     fi
 
-    if [ $BRANCH = "master" ]; then
-      vagrant box add --force subutai/$box-master vagrant-subutai-$box-*.box;
-    else
-      vagrant box add --force subutai/$box vagrant-subutai-$box-*.box;
-    fi
+    #if [ $BRANCH = "master" ]; then
+    #  vagrant box add --force subutai/$box-master vagrant-subutai-$box-*.box;
+    #else
+    #  vagrant box add --force subutai/$box vagrant-subutai-$box-*.box;
+    #fi
 done
