@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 if [ "$PROVISION" = "false" ]; then
-    echo Provisioning has been disabled, existing with SUCCESS
     exit 0;
 fi
 
@@ -82,4 +81,6 @@ if [ -f /home/subutai/$CC_PACKAGE ]; then
 fi
 
 # after installing MATE desktop, system should reboot
-reboot
+echo "\nSuccessfully installed Debian Mate Desktop and SubutaiControlCenter."
+
+echo "\e[33m\n\nReboot OS required. Please reboot OS by following command:\n\nvagrant reload\n\e[0m"
