@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 if [ "$PROVISION" = "false" ]; then
-    echo Provisioning has been disabled, existing with SUCCESS
     exit 0;
 fi
 

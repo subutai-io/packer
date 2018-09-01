@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 if [ "$PROVISION" = "false" ]; then
     exit 0;
@@ -81,6 +81,11 @@ if [ -f /home/subutai/$CC_PACKAGE ]; then
 fi
 
 # after installing MATE desktop, system should reboot
-echo "\nSuccessfully installed Debian Mate Desktop and SubutaiControlCenter."
-
-echo "\e[33m\n\nReboot OS required. Please reboot OS by following command:\n\nvagrant reload\n\e[0m"
+echo ""
+echo "Successfully installed Debian Mate Desktop and SubutaiControlCenter."
+echo ""
+echo "Reboot OS required. Please reboot OS by following command:"
+echo ""
+echo "vagrant reload"
+echo ""
+echo ""
