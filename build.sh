@@ -78,9 +78,9 @@ if [ -n "$2" ]; then
   done
 elif [ -z "$PACKER_PROVIDERS" ]; then
   if [ $OS = "Darwin" ]; then
-    PACKER_PROVIDERS='virtualbox-iso,parallels-iso' # changed for devops Debian machine. You can set like PACKER_PROVIDERS='virtualbox-iso,vmware-iso,parallels-iso'
+    PACKER_PROVIDERS='parallels-iso' # changed for devops Debian machine. You can set like PACKER_PROVIDERS='virtualbox-iso,vmware-iso,parallels-iso'
   else
-    PACKER_PROVIDERS='qemu,vmware-iso' # changed for devops Osx machine. You can set like PACKER_PROVIDERS='virtualbox-iso,qemu,vmware-iso'
+    PACKER_PROVIDERS='qemu,vmware-iso,virtualbox-iso' # changed for devops Osx machine. You can set like PACKER_PROVIDERS='virtualbox-iso,qemu,vmware-iso'
   fi
 fi
 
@@ -297,6 +297,8 @@ box=$box BASE_DIR=$BASE_DIR              \
   DI_MIRROR_HOSTNAME=$DI_MIRROR_HOSTNAME \
   $BASE_DIR/http/virtio/xenial.sh
 
+MAIN_URL="https://raw.githubusercontent.com/subutai-io/packer"
+
 for box in $VAGRANT_BOXES; do
 
     # create master prefixed box subutai/stretch-master
@@ -309,6 +311,13 @@ for box in $VAGRANT_BOXES; do
         if [ $BRANCH = "master" ]; then
           sed -i -e "s/vagrant-subutai-$box-$hypervizor/vagrant-subutai-$box-$hypervizor-$BRANCH/g" $BRANCH_PATH/Vagrantfile
           sed -i -e "s/subutai\/$box/subutai\/$box-$BRANCH/g" $BRANCH_PATH/Vagrantfile
+
+          # Change provisioning scripts url to "stage"
+          # (We use stage url for master vagrant boxes)
+          sed -i -e "s,$MAIN_URL/master,$MAIN_URL/stage,g" $BRANCH_PATH/Vagrantfile
+          sed -i -e "s,$MAIN_URL/master,$MAIN_URL/stage,g" $BASE_DIR/provisioning/en/provisioner.sh
+        else
+          sed -i -e "s,$MAIN_URL/stage,$MAIN_URL/master,g" $BASE_DIR/provisioning/en/provisioner.sh
         fi
       done
 

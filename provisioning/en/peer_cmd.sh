@@ -5,6 +5,14 @@ Provisioning management capabilities (converting RH into peer)
 This might take a little time ...
 EOM
 
+mountpoint /var/lib/lxc
+
+errcode=$?
+
+if [ $errcode -ne 0 ]; then
+  exit $errcode
+fi
+
 # Check ipfs exist
 ipfs=`which ipfs`
 
@@ -24,7 +32,7 @@ if [[ ! -z $ipfs ]]; then
 fi
 
 errcode=0
-if [ -n "$(/usr/bin/$CMD list | grep management)" ]; then
+if [ -n "$(/usr/bin/$CMD list containers -n management | grep management)" ]; then
   echo "Management seems to already be installed. Checking for upgrades..."
   /usr/bin/$CMD update management
   exit 0
