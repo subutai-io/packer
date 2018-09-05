@@ -68,6 +68,10 @@ if [ $errcode -ne 0 ]; then
   if [ $errcode -ne 0 ]; then exit $errcode; fi
 fi
 
+# In very rare cases some network issue prevents agent from successful communication with Console 
+# right after installation and can be solved only by agent restart. 
+service subutai restart
+
 /bin/cat <<EOM
 
 SUCCESS: Your peer is up. Welcome to the Horde!
