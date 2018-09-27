@@ -70,6 +70,7 @@ fi
 
 # In very rare cases some network issue prevents agent from successful communication with Console 
 # right after installation and can be solved only by agent restart. 
+sleep 3 
 service subutai restart
 
 /bin/cat <<EOM
