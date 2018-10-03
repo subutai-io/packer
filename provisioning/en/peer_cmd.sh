@@ -33,6 +33,7 @@ fi
 
 errcode=0
 if [ -n "$(/usr/bin/$CMD list containers -n management | grep management)" ]; then
+  localedef -i en_US -f UTF-8 en_US.UTF-8
   echo "Management seems to already be installed. Checking for upgrades..."
   /usr/bin/$CMD update management
   exit 0
