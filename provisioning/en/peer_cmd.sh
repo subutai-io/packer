@@ -5,7 +5,7 @@ Provisioning management capabilities (converting RH into peer)
 This might take a little time ...
 EOM
 
-mountpoint /var/lib/lxc
+zfs list -H subutai/fs
 
 errcode=$?
 
