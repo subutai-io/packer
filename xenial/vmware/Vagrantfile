@@ -45,7 +45,7 @@ Vagrant.configure('2') do |config|
   config.vm.provider "vmware_desktop" do |v|
     v.whitelist_verified = true
 
-    v.linked_clone = false
+    v.linked_clone = true
     v.vmx["memsize"] = SubutaiConfig.get(:SUBUTAI_RAM)
     v.vmx["numvcpus"] = SubutaiConfig.get(:SUBUTAI_CPU)
     v.vmx["ethernet0.pcislotnumber"] = "33"
