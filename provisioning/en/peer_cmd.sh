@@ -31,6 +31,8 @@ if [[ ! -z $ipfs ]]; then
   sleep 10
 fi
 
+chmod +x /var/lib/lxc
+
 errcode=0
 if [ -n "$(/usr/bin/$CMD list containers -n management | grep management)" ]; then
   echo "Management seems to already be installed. Checking for upgrades..."
