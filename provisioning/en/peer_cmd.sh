@@ -5,7 +5,7 @@ Provisioning management capabilities (converting RH into peer)
 This might take a little time ...
 EOM
 
-mountpoint /var/lib/lxc
+zfs list -H subutai/fs
 
 errcode=$?
 
@@ -67,6 +67,11 @@ if [ $errcode -ne 0 ]; then
   (>&2 cat import.err)
   if [ $errcode -ne 0 ]; then exit $errcode; fi
 fi
+
+# In very rare cases some network issue prevents agent from successful communication with Console 
+# right after installation and can be solved only by agent restart. 
+sleep 3 
+service subutai restart
 
 /bin/cat <<EOM
 
