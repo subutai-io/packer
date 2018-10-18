@@ -3,10 +3,11 @@
 require 'fileutils'
 
 unless Vagrant.has_plugin?('vagrant-subutai')
-  raise 'Vagrant Subutai Plugin required: vagrant plugin install vagrant-subutai'
+  raise "\e[33m\n\nVagrant Subutai Plugin is required. Please install plugin by following command:\n\nvagrant plugin install vagrant-subutai\n\e[0m"
 end
 
-if Gem::Version.new(VagrantSubutai::VERSION) < Gem::Version.new('7.0.2')
+# check dependency
+if Gem::Version.new(VagrantSubutai::VERSION) < Gem::Version.new('7.0.3')
   raise "\e[33m\n\nVagrant Subutai Plugin version (#{VagrantSubutai::VERSION}) is incompatible with your box. Please update plugin by following command:\n\nvagrant plugin update vagrant-subutai\n\e[0m"
 end
 
@@ -40,7 +41,7 @@ Vagrant.configure('2') do |config|
     h.cpus = SubutaiConfig.get(:SUBUTAI_CPU)
   end
 
-  if ARGV[0] == 'up' || ARGV[0] == 'reload'
+  if SubutaiConfig.write? || SubutaiConfig.reload?
     has_grow, grow_by = SubutaiDisk.has_grow
 
     if has_grow
@@ -91,4 +92,14 @@ Vagrant.configure('2') do |config|
     config.vm.provision :registration
     config.vm.provision :blueprint
   end
+
+  if SubutaiConfig.boolean?(:SUBUTAI_DESKTOP)
+    config.vm.provision 'shell', env: SubutaiConfig.config,
+                        path: 'https://raw.githubusercontent.com/subutai-io/packer/master/provisioning/en/subutai_desktop.sh'
+  end
+
+  config.vm.provision 'shell', env: SubutaiConfig.config,
+                      path: 'https://raw.githubusercontent.com/subutai-io/packer/master/provisioning/en/logrotate.sh'
+
+  config.vm.provision :cleanup
 end

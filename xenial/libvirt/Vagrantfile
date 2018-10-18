@@ -4,14 +4,14 @@
 require 'fileutils'
 
 unless Vagrant.has_plugin?('vagrant-subutai')
-  raise 'Vagrant Subutai Plugin required: vagrant plugin install vagrant-subutai'
+  raise "\e[33m\n\nVagrant Subutai Plugin is required. Please install plugin by following command:\n\nvagrant plugin install vagrant-subutai\n\e[0m"
 end
 
 unless Vagrant.has_plugin?('vagrant-libvirt')
-  raise 'Vagrant Libvirt Plugin required: vagrant plugin install vagrant-libvirt'
+  raise "\e[33m\n\nVagrant Libvirt Plugin is required. Please install plugin by following command:\n\nvagrant plugin install vagrant-libvirt\n\e[0m"
 end
 
-if Gem::Version.new(VagrantSubutai::VERSION) < Gem::Version.new('7.0.2')
+if Gem::Version.new(VagrantSubutai::VERSION) < Gem::Version.new('7.0.4')
   raise "\e[33m\n\nVagrant Subutai Plugin version (#{VagrantSubutai::VERSION}) is incompatible with your box. Please update plugin by following command:\n\nvagrant plugin update vagrant-subutai\n\e[0m"
 end
 
@@ -26,6 +26,7 @@ SubutaiConfig.print
 Vagrant.require_version '>= 2.0.1'
 
 Vagrant.configure('2') do |config|
+
   config.vm.box = 'subutai/xenial'
   url = SubutaiConfig.url_of_cdn
   owner = 'subutai'
@@ -35,7 +36,7 @@ Vagrant.configure('2') do |config|
 
   # check LIBVIRT_USER and LIBVIRT_HOST
   if !SubutaiConfig.get(:LIBVIRT_HOST).nil? && !SubutaiConfig.get(:LIBVIRT_USER).nil?
-    STDOUT.puts "\e\nStarted libvirt operation in remote machine\n. USER: #{SubutaiConfig.get(:LIBVIRT_USER)}, HOST: #{SubutaiConfig.get(:LIBVIRT_HOST).strip}\e[0m"
+    STDOUT.puts "\e\n==> default: Started libvirt operation in remote machine\n. USER: #{SubutaiConfig.get(:LIBVIRT_USER)}, HOST: #{SubutaiConfig.get(:LIBVIRT_HOST).strip}\e[0m"
     proxy_timeout = 500000
 
     config.ssh.insert_key = false
@@ -64,23 +65,24 @@ Vagrant.configure('2') do |config|
     config.vm.network 'forwarded_port', guest: 8443, host: SubutaiConfig.get(:_CONSOLE_PORT)
   end
 
-  config.vm.synced_folder ".", "/vagrant", type: "rsync"
+  config.vm.synced_folder ".", "/vagrant", disabled: false
 
   config.vm.provider 'libvirt' do |libvirt|
     libvirt.driver = 'kvm'
     libvirt.username = 'subutai'
     libvirt.storage_pool_name = 'default'
+    libvirt.random_hostname = "#{(0...8).map { ('a'..'z').to_a[rand(26)] }.join}" # generates random 8 character string
 
     libvirt.memory = SubutaiConfig.get(:SUBUTAI_RAM)
     libvirt.cpus = SubutaiConfig.get(:SUBUTAI_CPU)
 
-    if ARGV[0] == 'up' || ARGV[0] == 'reload'
+    if SubutaiConfig.write? || SubutaiConfig.reload?
       has_grow, grow_by = SubutaiDisk.has_grow
 
       if has_grow
         size = SubutaiDisk.libvirt_size(grow_by)
 
-        STDOUT.puts  "\e[33mDisk size is growing by #{grow_by} gb.\e[0m"
+        STDOUT.puts  "\e[33m#{SubutaiDisk.message(grow_by)}\e[0m"
 
         libvirt.storage :file, :size => size, :cache => "none"
 
@@ -95,7 +97,7 @@ Vagrant.configure('2') do |config|
     end
   end
 
-  if ARGV[0] == 'up' || ARGV[0] == 'reload'
+  if SubutaiConfig.write? || SubutaiConfig.reload?
     has_grow, grow_by = SubutaiDisk.has_grow
 
     if has_grow
@@ -106,9 +108,8 @@ Vagrant.configure('2') do |config|
 
   config.vm.provision 'shell', env: SubutaiConfig.config, inline: <<-SHELL
     echo "SUBUTAI_VAGRANT_VERSION=$VERSION"   >> /etc/environment
-    echo "SUBUTAI_BRIDGE_IFACE=eth1"          >> /etc/environment
-    echo "SUBUTAI_NAT_IFACE=eth0"             >> /etc/environment
-   # echo "SUBUTAI_HOST_IFACE=enp0s9"          >> /etc/environment
+    echo "SUBUTAI_BRIDGE_IFACE=eth1"        >> /etc/environment
+    echo "SUBUTAI_NAT_IFACE=eth0"           >> /etc/environment
 
     if [ -n "$PASSWORD_OVERRIDE" ]; then
       usermod --password $(echo "$PASSWORD_OVERRIDE" | openssl passwd -1 -stdin) subutai
@@ -133,7 +134,6 @@ Vagrant.configure('2') do |config|
     SHELL
   end
 
-
   if SubutaiConfig.provision_management?
     config.vm.provision 'file', source: SubutaiConfig.get(:_ALT_MANAGEMENT), destination: '$HOME/subutai.management'
     SubutaiConfig.management_provisioned!
@@ -146,4 +146,14 @@ Vagrant.configure('2') do |config|
     config.vm.provision :registration
     config.vm.provision :blueprint
   end
+
+  if SubutaiConfig.boolean?(:SUBUTAI_DESKTOP)
+    config.vm.provision 'shell', env: SubutaiConfig.config,
+                        path: 'https://raw.githubusercontent.com/subutai-io/packer/master/provisioning/en/subutai_desktop.sh'
+  end
+
+  config.vm.provision 'shell', env: SubutaiConfig.config,
+                      path: 'https://raw.githubusercontent.com/subutai-io/packer/master/provisioning/en/logrotate.sh'
+
+  config.vm.provision :cleanup
 end

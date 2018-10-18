@@ -4,14 +4,14 @@
 require 'fileutils'
 
 unless Vagrant.has_plugin?('vagrant-subutai')
-  raise 'Vagrant Subutai Plugin required: vagrant plugin install vagrant-subutai'
+  raise "\e[33m\n\nVagrant Subutai Plugin is required. Please install plugin by following command:\n\nvagrant plugin install vagrant-subutai\n\e[0m"
 end
 
 unless Vagrant.has_plugin?('vagrant-parallels')
-  raise 'Vagrant Parallels Provider required. Please install: vagrant plugin install vagrant-parallels'
+  raise "\e[33m\n\nVagrant Parallels Plugin is required. Please install plugin by following command:\n\nvagrant plugin install vagrant-parallels\n\e[0m"
 end
 
-if Gem::Version.new(VagrantSubutai::VERSION) < Gem::Version.new('7.0.2')
+if Gem::Version.new(VagrantSubutai::VERSION) < Gem::Version.new('7.0.4')
   raise "\e[33m\n\nVagrant Subutai Plugin version (#{VagrantSubutai::VERSION}) is incompatible with your box. Please update plugin by following command:\n\nvagrant plugin update vagrant-subutai\n\e[0m"
 end
 
@@ -42,12 +42,9 @@ Vagrant.configure('2') do |config|
 
   # Second Bridged Interface enp???
   config.vm.network 'public_network', :bridge => SubutaiConfig.get(:BRIDGE)
-  
-  # Third Host-Only Interface enp???
-  config.vm.network "private_network", type: "dhcp"
 
   config.vm.provider "parallels" do |v, override|
-    override.vm.synced_folder ".", "/vagrant", :disabled => true, mount_options: ["share"]
+    override.vm.synced_folder ".", "/vagrant", :disabled => false, mount_options: ["share"]
   end
 
   config.vm.provider "parallels" do |prl|
@@ -58,19 +55,20 @@ Vagrant.configure('2') do |config|
     # only for dev and master
     prl.linked_clone = true
 
-    if ARGV[0] == 'up' || ARGV[0] == 'reload'
+    if SubutaiConfig.write? || SubutaiConfig.reload?
       has_grow, grow_by = SubutaiDisk.has_grow
       file_disk = SubutaiDisk.file(grow_by)
 
       if has_grow
-        STDOUT.puts  "\e[33mDisk size is growing by #{grow_by} gb.\e[0m"
+        STDOUT.puts  "\e[33m#{SubutaiDisk.message(grow_by)}\e[0m"
+
         prl.customize ["set", :id, "--device-add=hdd", "--size=#{SubutaiDisk.size(grow_by)}"]
         SubutaiDisk.save_conf(grow_by)
       end
     end
   end
 
-  if ARGV[0] == 'up' || ARGV[0] == 'reload'
+  if SubutaiConfig.write? || SubutaiConfig.reload?
     has_grow, grow_by = SubutaiDisk.has_grow
 
     if has_grow
@@ -108,7 +106,6 @@ Vagrant.configure('2') do |config|
     SHELL
   end
 
-
   if SubutaiConfig.provision_management?
     config.vm.provision 'file', source: SubutaiConfig.get(:_ALT_MANAGEMENT), destination: '$HOME/subutai.management'
     SubutaiConfig.management_provisioned!
@@ -121,4 +118,14 @@ Vagrant.configure('2') do |config|
     config.vm.provision :registration
     config.vm.provision :blueprint
   end
+
+  if SubutaiConfig.boolean?(:SUBUTAI_DESKTOP)
+    config.vm.provision 'shell', env: SubutaiConfig.config,
+                        path: 'https://raw.githubusercontent.com/subutai-io/packer/master/provisioning/en/subutai_desktop.sh'
+  end
+
+  config.vm.provision 'shell', env: SubutaiConfig.config,
+                      path: 'https://raw.githubusercontent.com/subutai-io/packer/master/provisioning/en/logrotate.sh'
+
+  config.vm.provision :cleanup
 end

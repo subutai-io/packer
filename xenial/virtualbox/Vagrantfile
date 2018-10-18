@@ -1,12 +1,17 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
+
 require 'fileutils'
 
 unless Vagrant.has_plugin?('vagrant-subutai')
-  raise 'Vagrant Subutai Plugin required: vagrant plugin install vagrant-subutai'
+  raise "\e[33m\n\nVagrant Subutai Plugin is required. Please install plugin by following command:\n\nvagrant plugin install vagrant-subutai\n\e[0m"
 end
 
-if Gem::Version.new(VagrantSubutai::VERSION) < Gem::Version.new('7.0.2')
+unless Vagrant.has_plugin?('vagrant-vbguest')
+  raise "\e[33m\n\nVagrant Vbguest Plugin is required. Please install plugin by following command:\n\nvagrant plugin install vagrant-vbguest\n\e[0m"
+end
+
+if Gem::Version.new(VagrantSubutai::VERSION) < Gem::Version.new('7.0.4')
   raise "\e[33m\n\nVagrant Subutai Plugin version (#{VagrantSubutai::VERSION}) is incompatible with your box. Please update plugin by following command:\n\nvagrant plugin update vagrant-subutai\n\e[0m"
 end
 
@@ -43,9 +48,6 @@ Vagrant.configure('2') do |config|
     config.vm.network 'forwarded_port', guest: 8443, host: SubutaiConfig.get(:_CONSOLE_PORT), auto_correct: true
   end
 
-  # Third Host-Only Interface enp???
-  config.vm.network 'private_network', :type => 'dhcp', :adapter => 3, nic_type: 'virtio'
-
   config.vm.provider 'virtualbox' do |vb|
     vb.memory = SubutaiConfig.get(:SUBUTAI_RAM)
     vb.cpus = SubutaiConfig.get(:SUBUTAI_CPU)
@@ -62,28 +64,26 @@ Vagrant.configure('2') do |config|
     # only for dev and master
     vb.linked_clone = true
 
-    unless Vagrant.has_plugin?("vagrant-vbguest")
-      raise 'VBGuest plugin required: vagrant plugin install vagrant-vbguest!'
-    end
-
-    if ARGV[0] == 'up' || ARGV[0] == 'reload'
+    if SubutaiConfig.write? || SubutaiConfig.reload?
       has_grow, grow_by = SubutaiDisk.has_grow
       file_disk = SubutaiDisk.file(grow_by)
 
       unless File.exist? (file_disk)
         if has_grow
-          STDOUT.puts  "\e[33mDisk size is growing by #{grow_by} gb.\e[0m"
+          STDOUT.puts  "\e[33m#{SubutaiDisk.message(grow_by)}\e[0m"
 
           vb.customize ['createhd', '--filename', file_disk, '--size', SubutaiDisk.size(grow_by)]
           vb.customize ['storageattach', :id,  '--storagectl', 'SATA Controller', '--port', SubutaiDisk.port, '--device', 0, '--type', 'hdd', '--medium', file_disk]
           vb.customize ["setextradata", :id, "VBoxInternal/Devices/ahci/0/LUN#1/Config/IgnoreFlush", "0"]
+          SubutaiDisk.save_path(SubutaiDisk.port,
+                                file_disk)
           SubutaiDisk.save_conf(grow_by)
         end
       end
     end
   end
 
-  if ARGV[0] == 'up' || ARGV[0] == 'reload'
+  if SubutaiConfig.write? || SubutaiConfig.reload?
     has_grow, grow_by = SubutaiDisk.has_grow
 
     if has_grow
@@ -133,4 +133,14 @@ Vagrant.configure('2') do |config|
     config.vm.provision :registration
     config.vm.provision :blueprint
   end
+
+  if SubutaiConfig.boolean?(:SUBUTAI_DESKTOP)
+    config.vm.provision 'shell', env: SubutaiConfig.config,
+                        path: 'https://raw.githubusercontent.com/subutai-io/packer/master/provisioning/en/subutai_desktop.sh'
+  end
+
+  config.vm.provision 'shell', env: SubutaiConfig.config,
+                      path: 'https://raw.githubusercontent.com/subutai-io/packer/master/provisioning/en/logrotate.sh'
+
+  config.vm.provision :cleanup
 end
