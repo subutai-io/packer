@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Exec=/usr/local/bin/check_wallpaper.sh
+Hidden=false
+NoDisplay=false
+X-GNOME-Autostart-enabled=true
+Name=Check Wallpaper
