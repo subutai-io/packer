@@ -31,11 +31,15 @@ DEBIAN_FRONTEND=noninteractive apt-get -q install lightdm -y
 
 # TODO - add more
 echo "Installing hypervisor desktop tools"
+if [ -z "`which virt-what`" ]; then
+  DEBIAN_FRONTEND=noninteractive apt-get -q install virt-what -y
+fi
+
 HYPERVISOR=`virt-what`
 case $HYPERVISOR in
   vmware)
     echo "Installing open-vm-tools for vmware hypervisor"
-    DEBIAN_FRONTEND=noninteractive apt-get -q install open-vm-tools open-vm-tools-desktop -y
+    DEBIAN_FRONTEND=noninteractive apt-get -q install open-vm-tools open-vm-tools-desktop open-vm-tools-dkms -y
     ;;
   *)
     echo "Unknown hypervisor: $HYPERVISOR"
