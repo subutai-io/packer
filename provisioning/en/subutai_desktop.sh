@@ -102,6 +102,7 @@ DTBASE='https://raw.githubusercontent.com/subutai-io/packer/master/provisioning/
 wget --no-cache -O /usr/local/bin/check_wallpaper.sh "$DTBASE/check_wallpaper.sh" >/dev/null 2>&1
 chmod 755 /usr/local/bin/check_wallpaper.sh
 mkdir -p /home/subutai/.config/autostart
+chown subutai:subutai /home/subutai/.config
 wget --no-cache -O /home/subutai/.config/autostart/check_wallpaper.desktop "$DTBASE/check_wallpaper.desktop" >/dev/null 2>&1
 wget --no-cache -O /home/subutai/wallpaper.jpg "$DTBASE/wallpaper.jpg" >/dev/null 2>&1
 
