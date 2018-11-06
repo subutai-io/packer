@@ -98,6 +98,10 @@ Vagrant.configure('2') do |config|
     echo "SUBUTAI_NAT_IFACE=enp0s3"           >> /etc/environment
     echo "SUBUTAI_HOST_IFACE=enp0s9"          >> /etc/environment
 
+    if [ -n "$APT_PROXY_URL" ]; then
+      echo 'Acquire::http { Proxy "'$APT_PROXY_URL'"; };' > /etc/apt/apt.conf.d/02proxy
+    fi
+
     if [ -n "$PASSWORD_OVERRIDE" ]; then
       usermod --password $(echo "$PASSWORD_OVERRIDE" | openssl passwd -1 -stdin) subutai
     fi

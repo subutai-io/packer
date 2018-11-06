@@ -29,6 +29,23 @@ echo "Installing mate-desktop-environment"
 DEBIAN_FRONTEND=noninteractive apt-get -q install mate-desktop-environment -y
 DEBIAN_FRONTEND=noninteractive apt-get -q install lightdm -y
 
+# TODO - add more
+echo "Installing hypervisor desktop tools"
+if [ -z "`which virt-what`" ]; then
+  DEBIAN_FRONTEND=noninteractive apt-get -q install virt-what -y
+fi
+
+HYPERVISOR=`virt-what`
+case $HYPERVISOR in
+  vmware)
+    echo "Installing open-vm-tools for vmware hypervisor"
+    DEBIAN_FRONTEND=noninteractive apt-get -q install open-vm-tools open-vm-tools-desktop open-vm-tools-dkms -y
+    ;;
+  *)
+    echo "Unknown hypervisor: $HYPERVISOR"
+    ;;
+esac
+
 echo "Installing GoogleChrome"
 # install chrome
 CHROME_PACKAGE=google-chrome-stable_current_amd64.deb
@@ -80,11 +97,20 @@ if [ -f /home/subutai/$CC_PACKAGE ]; then
   rm /home/subutai/$CC_PACKAGE
 fi
 
+# add subutai wallpaper
+DTBASE='https://raw.githubusercontent.com/subutai-io/packer/master/provisioning/en/desktop'
+wget --no-cache -O /usr/local/bin/check_wallpaper.sh "$DTBASE/check_wallpaper.sh" >/dev/null 2>&1
+chmod 755 /usr/local/bin/check_wallpaper.sh
+mkdir -p /home/subutai/.config/autostart
+chown -R subutai:subutai /home/subutai/.config
+wget --no-cache -O /home/subutai/.config/autostart/check_wallpaper.desktop "$DTBASE/check_wallpaper.desktop" >/dev/null 2>&1
+wget --no-cache -O /home/subutai/wallpaper.jpg "$DTBASE/wallpaper.jpg" >/dev/null 2>&1
+
 # after installing MATE desktop, system should reboot
 echo ""
 echo "Successfully installed Debian Mate Desktop and SubutaiControlCenter."
 echo ""
-echo "Reboot OS required. Please reboot OS by following command:"
+echo "WARNING: OS reboot required. Please issue the vagrant reload command:"
 echo ""
 echo "vagrant reload"
 echo ""
