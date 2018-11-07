@@ -6,6 +6,8 @@
           "date > /home/{{user `ssh_username`}}/vagrant_box_build_time",
           "echo Updating from repositories ...",
           "DEBIAN_FRONTEND=noninteractive apt-get -y update",
+          "echo Upgrading...",
+          "DEBIAN_FRONTEND=noninteractive apt-get -q -y upgrade",
           "echo Upgrading distribution ...",
           "DEBIAN_FRONTEND=noninteractive apt-get -y dist-upgrade",
           "echo Adding needed packages ...",

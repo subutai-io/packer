@@ -11,7 +11,7 @@ unless Vagrant.has_plugin?('vagrant-parallels')
   raise "\e[33m\n\nVagrant Parallels Plugin is required. Please install plugin by following command:\n\nvagrant plugin install vagrant-parallels\n\e[0m"
 end
 
-if Gem::Version.new(VagrantSubutai::VERSION) < Gem::Version.new('7.0.4')
+if Gem::Version.new(VagrantSubutai::VERSION) < Gem::Version.new('7.0.7')
   raise "\e[33m\n\nVagrant Subutai Plugin version (#{VagrantSubutai::VERSION}) is incompatible with your box. Please update plugin by following command:\n\nvagrant plugin update vagrant-subutai\n\e[0m"
 end
 
@@ -28,10 +28,6 @@ Vagrant.require_version '>= 2.0.1'
 Vagrant.configure('2') do |config|
 
   config.vm.box = 'subutai/xenial'
-  url = SubutaiConfig.url_of_cdn
-  owner = 'subutai'
-  artifact_name = 'vagrant-subutai-xenial-parallels.box'
-  config.vm.box_url = url + '/raw/download?id=' + SubutaiConfig.get_latest_id_artifact(owner, artifact_name)
   config.ssh.username = 'subutai'
 
   config.vm.base_mac = SubutaiConfig.get(:_BASE_MAC)
@@ -54,24 +50,13 @@ Vagrant.configure('2') do |config|
 
     # only for dev and master
     prl.linked_clone = true
-
-    if SubutaiConfig.write? || SubutaiConfig.reload?
-      has_grow, grow_by = SubutaiDisk.has_grow
-      file_disk = SubutaiDisk.file(grow_by)
-
-      if has_grow
-        STDOUT.puts  "\e[33m#{SubutaiDisk.message(grow_by)}\e[0m"
-
-        prl.customize ["set", :id, "--device-add=hdd", "--size=#{SubutaiDisk.size(grow_by)}"]
-        SubutaiDisk.save_conf(grow_by)
-      end
-    end
   end
 
   if SubutaiConfig.write? || SubutaiConfig.reload?
     has_grow, grow_by = SubutaiDisk.has_grow
 
     if has_grow
+      config.vm.provision :create_disk, run: "always"
       config.vm.provision "shell", run: "always", env: {DISK_SIZE: grow_by.to_i},
                           path: 'https://raw.githubusercontent.com/subutai-io/packer/master/provisioning/en/subutai_disk.sh'
     end

@@ -3,6 +3,9 @@
 echo Updating from repositories ...
 sudo DEBIAN_FRONTEND=noninteractive apt-get -q -y update
 
+echo Upgrading...
+sudo DEBIAN_FRONTEND=noninteractive apt-get -q -y upgrade
+
 echo Upgrading distribution ...
 sudo DEBIAN_FRONTEND=noninteractive apt-get -q -y dist-upgrade
 
