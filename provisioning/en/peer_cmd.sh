@@ -33,6 +33,10 @@ fi
 
 chmod +x /var/lib/lxc
 
+# SLEEP 10 seconds between 
+# installation subutai and importing management container
+sleep 10
+
 errcode=0
 if [ -n "$(/usr/bin/$CMD list containers -n management | grep management)" ]; then
   echo "Management seems to already be installed. Checking for upgrades..."
