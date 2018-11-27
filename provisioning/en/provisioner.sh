@@ -83,7 +83,8 @@ else
   # Load zfs kernel module
   /sbin/modprobe zfs
 
-  DEBIAN_FRONTEND=noninteractive apt-get -q update && DEBIAN_FRONTEND=noninteractive apt-get -q -y install subutai
+  DEBIAN_FRONTEND=noninteractive apt-get -q -y update && DEBIAN_FRONTEND=noninteractive apt-get -q -y upgrade
+  DEBIAN_FRONTEND=noninteractive apt-get -q -y install subutai
   cmd_path="$(which $CMD)"
 fi
 
