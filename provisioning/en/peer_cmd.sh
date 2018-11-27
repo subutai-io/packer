@@ -1,13 +1,13 @@
 #!/bin/bash
 
 isSubutaiRngServiceRunning() {
-  systemctl status subutai-rng.service
+  systemctl status subutai-rng.service >> /dev/null;
   SERVICE_CODE=$?
-
+  
   if [ $SERVICE_CODE -eq 0 ]; then
-    true
+    SERVICE_CODE=true
   else
-    false
+    SERVICE_CODE=false
   fi
 }
 
@@ -51,14 +51,19 @@ sleep 10
 
 # Wait until subutai-rng.service status is running
 # timeout check 10 seconds
-if [ "$(isSubutaiRngServiceRunning)" = false ]; then
+isSubutaiRngServiceRunning
+
+if [ $SERVICE_CODE = false ]; then
   CHECK_TIMEOUT=10
   NEXT_WAIT_TIME=2
+  # sleep
   sleep $NEXT_WAIT_TIME
+  isSubutaiRngServiceRunning
 
-  until ("$(isSubutaiRngServiceRunning)") ||  [ $NEXT_WAIT_TIME -eq 10 ]; do
+  until ($SERVICE_CODE) ||  [ $NEXT_WAIT_TIME -eq 10 ]; do
     sleep 2
     NEXT_WAIT_TIME=$((NEXT_WAIT_TIME + 2))
+    isSubutaiRngServiceRunning
   done
 fi
 
