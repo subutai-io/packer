@@ -74,6 +74,7 @@ if [ -n "$(/usr/bin/$CMD list containers -n management | grep management)" ]; th
   exit 0
 else
   /usr/bin/$CMD import management 2> import.err
+  /usr/bin/$CMD update management 2> import.err
   errcode=$?
 fi
 
