@@ -1,5 +1,17 @@
 #!/bin/bash
 
+isSubutaiRngServiceRunning() {
+  systemctl status subutai-rng.service >> /dev/null;
+  SERVICE_CODE=$?
+  
+  if [ $SERVICE_CODE -eq 0 ]; then
+    SERVICE_CODE=true
+  else
+    SERVICE_CODE=false
+  fi
+}
+
+
 /bin/cat <<EOM
 Provisioning management capabilities (converting RH into peer)
 This might take a little time ...
@@ -32,6 +44,28 @@ if [[ ! -z $ipfs ]]; then
 fi
 
 chmod +x /var/lib/lxc
+
+# SLEEP 10 seconds between 
+# installation subutai and importing management container
+sleep 10
+
+# Wait until subutai-rng.service status is running
+# timeout check 10 seconds
+isSubutaiRngServiceRunning
+
+if [ $SERVICE_CODE = false ]; then
+  CHECK_TIMEOUT=10
+  NEXT_WAIT_TIME=2
+  # sleep
+  sleep $NEXT_WAIT_TIME
+  isSubutaiRngServiceRunning
+
+  until ($SERVICE_CODE) ||  [ $NEXT_WAIT_TIME -eq 10 ]; do
+    sleep 2
+    NEXT_WAIT_TIME=$((NEXT_WAIT_TIME + 2))
+    isSubutaiRngServiceRunning
+  done
+fi
 
 errcode=0
 if [ -n "$(/usr/bin/$CMD list containers -n management | grep management)" ]; then
