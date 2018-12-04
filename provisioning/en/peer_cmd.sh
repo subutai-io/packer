@@ -44,27 +44,27 @@ fi
 
 chmod +x /var/lib/lxc
 
-# SLEEP 10 seconds between 
+# SLEEP 21 seconds between 
 # installation subutai and importing management container
-#sleep 20
+sleep 21
 
 # Wait until subutai-rng.service status is running
 # timeout check 10 seconds
-#isSubutaiRngServiceRunning
+isSubutaiRngServiceRunning
 
-#if [ $SERVICE_CODE = false ]; then
-#  CHECK_TIMEOUT=10
-#  NEXT_WAIT_TIME=2
+if [ $SERVICE_CODE = false ]; then
+  CHECK_TIMEOUT=10
+  NEXT_WAIT_TIME=2
   # sleep
-#  sleep $NEXT_WAIT_TIME
-#  isSubutaiRngServiceRunning
+  sleep $NEXT_WAIT_TIME
+  isSubutaiRngServiceRunning
 
-#  until ($SERVICE_CODE) ||  [ $NEXT_WAIT_TIME -eq 10 ]; do
-#    sleep 2
-#    NEXT_WAIT_TIME=$((NEXT_WAIT_TIME + 2))
-#    isSubutaiRngServiceRunning
-#  done
-#fi
+  until ($SERVICE_CODE) ||  [ $NEXT_WAIT_TIME -eq 10 ]; do
+    sleep 2
+    NEXT_WAIT_TIME=$((NEXT_WAIT_TIME + 2))
+    isSubutaiRngServiceRunning
+  done
+fi
 
 errcode=0
 if [ -n "$(/usr/bin/$CMD list containers -n management | grep management)" ]; then
@@ -72,7 +72,7 @@ if [ -n "$(/usr/bin/$CMD list containers -n management | grep management)" ]; th
   /usr/bin/$CMD update management
   exit 0
 else
-  /usr/bin/$CMD import -d management 2> import.err
+  /usr/bin/$CMD import management 2> import.err
   /usr/bin/$CMD update management 2> import.err
   errcode=$?
 fi
@@ -86,7 +86,7 @@ if [ $errcode -ne 0 ]; then
       echo "You're not using production so I'll enable insecure CDN downloads for you now."
       CMD=$CMD ./insecure.sh
       echo "Trying management import again ..."
-      /usr/bin/$CMD import -d management
+      /usr/bin/$CMD import management
       errcode=$?
       if [ $errcode -ne 0 ]; then
         exit $errcode
