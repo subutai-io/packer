@@ -11,7 +11,6 @@ isSubutaiRngServiceRunning() {
   fi
 }
 
-
 /bin/cat <<EOM
 Provisioning management capabilities (converting RH into peer)
 This might take a little time ...

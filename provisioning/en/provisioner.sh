@@ -36,6 +36,18 @@ if [ "$PROVISION" = "false" ]; then
     exit 0;
 fi
 
+if [ -z "$(sudo zpool list | grep subutai)" ]; then
+  echo "Mounting container storage ..."
+  zpool create -f subutai /dev/mapper/main-zfs
+  zfs create -o mountpoint="/var/lib/lxc" subutai/fs
+  zpool set autoexpand=on subutai
+  
+  if [ $? -ne 0 ]; then exit 1; fi
+  sleep 2
+else
+  echo "Container storage already mounted."
+fi
+
 base="https://raw.githubusercontent.com/subutai-io/packer/stage/provisioning/en/"
 
 wget --no-cache -O peer_cmd.sh $base/peer_cmd.sh >/dev/null 2>&1
@@ -96,18 +108,6 @@ fi
 # Write provisioning steps to file for ControlCenter
 if [ -d "/vagrant/.vagrant" ]; then
   echo 2 > /vagrant/.vagrant/provision_step
-fi
-
-if [ -z "$(sudo zpool list | grep subutai)" ]; then
-  echo "Mounting container storage ..."
-  zpool create -f subutai /dev/mapper/main-zfs
-  zfs create -o mountpoint="/var/lib/lxc" subutai/fs
-  zpool set autoexpand=on subutai
-  
-  if [ $? -ne 0 ]; then exit 1; fi
-  sleep 2
-else
-  echo "Container storage already mounted."
 fi
 
 if [ "$ALLOW_INSECURE" = true ]; then
