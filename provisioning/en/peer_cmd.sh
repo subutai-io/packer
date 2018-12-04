@@ -50,21 +50,21 @@ chmod +x /var/lib/lxc
 
 # Wait until subutai-rng.service status is running
 # timeout check 10 seconds
-isSubutaiRngServiceRunning
+#isSubutaiRngServiceRunning
 
-if [ $SERVICE_CODE = false ]; then
-  CHECK_TIMEOUT=10
-  NEXT_WAIT_TIME=2
+#if [ $SERVICE_CODE = false ]; then
+#  CHECK_TIMEOUT=10
+#  NEXT_WAIT_TIME=2
   # sleep
-  sleep $NEXT_WAIT_TIME
-  isSubutaiRngServiceRunning
+#  sleep $NEXT_WAIT_TIME
+#  isSubutaiRngServiceRunning
 
-  until ($SERVICE_CODE) ||  [ $NEXT_WAIT_TIME -eq 10 ]; do
-    sleep 2
-    NEXT_WAIT_TIME=$((NEXT_WAIT_TIME + 2))
-    isSubutaiRngServiceRunning
-  done
-fi
+#  until ($SERVICE_CODE) ||  [ $NEXT_WAIT_TIME -eq 10 ]; do
+#    sleep 2
+#    NEXT_WAIT_TIME=$((NEXT_WAIT_TIME + 2))
+#    isSubutaiRngServiceRunning
+#  done
+#fi
 
 errcode=0
 if [ -n "$(/usr/bin/$CMD list containers -n management | grep management)" ]; then
