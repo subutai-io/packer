@@ -11,7 +11,6 @@ isSubutaiRngServiceRunning() {
   fi
 }
 
-
 /bin/cat <<EOM
 Provisioning management capabilities (converting RH into peer)
 This might take a little time ...
@@ -45,9 +44,9 @@ fi
 
 chmod +x /var/lib/lxc
 
-# SLEEP 10 seconds between 
+# SLEEP 21 seconds between 
 # installation subutai and importing management container
-sleep 10
+sleep 21
 
 # Wait until subutai-rng.service status is running
 # timeout check 10 seconds
