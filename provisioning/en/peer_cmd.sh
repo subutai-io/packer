@@ -46,7 +46,7 @@ chmod +x /var/lib/lxc
 
 # SLEEP 10 seconds between 
 # installation subutai and importing management container
-sleep 20
+#sleep 20
 
 # Wait until subutai-rng.service status is running
 # timeout check 10 seconds
@@ -72,7 +72,7 @@ if [ -n "$(/usr/bin/$CMD list containers -n management | grep management)" ]; th
   /usr/bin/$CMD update management
   exit 0
 else
-  /usr/bin/$CMD import management 2> import.err
+  /usr/bin/$CMD import -d management 2> import.err
   /usr/bin/$CMD update management 2> import.err
   errcode=$?
 fi
@@ -86,7 +86,7 @@ if [ $errcode -ne 0 ]; then
       echo "You're not using production so I'll enable insecure CDN downloads for you now."
       CMD=$CMD ./insecure.sh
       echo "Trying management import again ..."
-      /usr/bin/$CMD import management
+      /usr/bin/$CMD import -d management
       errcode=$?
       if [ $errcode -ne 0 ]; then
         exit $errcode
