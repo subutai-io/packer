@@ -46,7 +46,7 @@ chmod +x /var/lib/lxc
 
 # SLEEP 10 seconds between 
 # installation subutai and importing management container
-sleep 10
+sleep 20
 
 # Wait until subutai-rng.service status is running
 # timeout check 10 seconds
