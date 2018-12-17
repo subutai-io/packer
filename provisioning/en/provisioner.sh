@@ -93,6 +93,12 @@ if [ -z "$cmd_path" ]; then
   exit 1;
 fi
 
+# IPFS CACHE
+if [ -f /etc/subutai/agent.conf ]; then
+  sed 's/TemplateDownloadUrl = https*/TemplateDownloadUrl = http/gI' -i /etc/subutai/agent.conf
+  systemctl restart subutai
+fi
+
 # Write provisioning steps to file for ControlCenter
 if [ -d "/vagrant/.vagrant" ]; then
   echo 2 > /vagrant/.vagrant/provision_step
