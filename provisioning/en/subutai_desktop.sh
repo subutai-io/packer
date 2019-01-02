@@ -49,7 +49,7 @@ esac
 echo "Installing GoogleChrome"
 # install chrome
 CHROME_PACKAGE=google-chrome-stable_current_amd64.deb
-wget -nv -O $HOME/$CHROME_PACKAGE "https://masterbazaar.subutai.io/rest/v1/cdn/raw?name=$CHROME_PACKAGE&latest&download"
+wget -nv -O $HOME/$CHROME_PACKAGE "https://bazaar.subutai.io/rest/v1/cdn/raw?name=$CHROME_PACKAGE&latest&download"
 
 if [ -f $HOME/$CHROME_PACKAGE ]; then
   DEBIAN_FRONTEND=noninteractive apt install -q -y $HOME/$CHROME_PACKAGE
