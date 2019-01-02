@@ -49,13 +49,13 @@ esac
 echo "Installing GoogleChrome"
 # install chrome
 CHROME_PACKAGE=google-chrome-stable_current_amd64.deb
-wget --no-cache -O /home/subutai/$CHROME_PACKAGE https://cdn.subutai.io:8338/kurjun/rest/raw/get?name=$CHROME_PACKAGE >/dev/null 2>&1
+wget -nv -O $HOME/$CHROME_PACKAGE "https://masterbazaar.subutai.io/rest/v1/cdn/raw?name=$CHROME_PACKAGE&latest&download"
 
-if [ -f /home/subutai/$CHROME_PACKAGE ]; then
-  DEBIAN_FRONTEND=noninteractive apt install -q -y /home/subutai/$CHROME_PACKAGE
+if [ -f $HOME/$CHROME_PACKAGE ]; then
+  DEBIAN_FRONTEND=noninteractive apt install -q -y $HOME/$CHROME_PACKAGE
 
   # clean package
-  rm /home/subutai/$CHROME_PACKAGE
+  rm $HOME/$CHROME_PACKAGE
 fi
 
 echo "Installing E2E plugin"
@@ -70,32 +70,8 @@ fi
 
 echo "Installing SubutaiControlCenter"
 # install CC
-case $SUBUTAI_ENV in
-  sysnet)
-    CC_PACKAGE=subutai-control-center-dev.deb
-    ;;
-  dev*)
-    CC_PACKAGE=subutai-control-center-dev.deb
-    ;;
-  master)
-    CC_PACKAGE=subutai-control-center-master.deb
-    ;;
-  prod*)
-    CC_PACKAGE=subutai-control-center.deb
-    ;;
-  *)
-    CC_PACKAGE=subutai-control-center.deb
-esac
-
-wget --no-cache -O /home/subutai/$CC_PACKAGE https://cdn.subutai.io:8338/kurjun/rest/raw/get?name=$CC_PACKAGE >/dev/null 2>&1
+DEBIAN_FRONTEND=noninteractive apt-get install -q -y subutai-control-center
 DEBIAN_FRONTEND=noninteractive apt-get install -q -y libssl1.0-dev
-
-if [ -f /home/subutai/$CC_PACKAGE ]; then
-  DEBIAN_FRONTEND=noninteractive apt install -q -y /home/subutai/$CC_PACKAGE
-
-  # clean package
-  rm /home/subutai/$CC_PACKAGE
-fi
 
 # add subutai wallpaper
 DTBASE='https://raw.githubusercontent.com/subutai-io/packer/master/provisioning/en/desktop'
