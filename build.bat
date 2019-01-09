@@ -3,6 +3,7 @@
 
 :: Packer Hyper-V box build json file
 set template=template.json
+set branch=%1
 
 FOR %%B IN (stretch) DO (
   :: Clean up boxes and log
@@ -12,7 +13,7 @@ FOR %%B IN (stretch) DO (
   del ".\%%B\hyperv\%template%" 2>nul
 
   :: Generate template.json file.
-  jsonnet ".\%%B\hyperv\template.jsonnet" > ".\%%B\hyperv\%template%"
+  jsonnet --ext-str branch="%branch%" ".\%%B\hyperv\template.jsonnet" > ".\%%B\hyperv\%template%"
 
   if exist ".\%%B\hyperv\%template%" (
       :: Generate preseed file (stretch.cfg or xenial.cfg)
