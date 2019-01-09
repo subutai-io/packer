@@ -32,7 +32,13 @@ FOR %%B IN (stretch) DO (
         echo "packer build -on-error=ask -except=null %%B/hyperv/template.json"
         exit /b %errorlevel%
       )
-      vagrant box add --force subutai/%%B vagrant-subutai-%%B-hyperv-*.box    
+
+      IF %branch%=="prod" (
+         ::adding the vagrant box
+         vagrant box add --force subutai/%%B vagrant-subutai-%%B-hyperv-*.box
+      ) ELSE (
+        vagrant box add --force subutai/%%B-master vagrant-subutai-%%B-hyperv-*.box
+      )    
   ) else (
       ECHO "Can't generate .\%%B\hyperv\%template% file"
       ECHO "If you don't have jsonnet: "
