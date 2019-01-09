@@ -3,6 +3,7 @@
 
 :: Packer Hyper-V box build json file
 set template=template.json
+set branch=%1
 
 FOR %%B IN (stretch) DO (
   :: Clean up boxes and log
@@ -12,7 +13,7 @@ FOR %%B IN (stretch) DO (
   del ".\%%B\hyperv\%template%" 2>nul
 
   :: Generate template.json file.
-  jsonnet ".\%%B\hyperv\template.jsonnet" > ".\%%B\hyperv\%template%"
+  jsonnet --ext-str branch="%branch%" ".\%%B\hyperv\template.jsonnet" > ".\%%B\hyperv\%template%"
 
   if exist ".\%%B\hyperv\%template%" (
       :: Generate preseed file (stretch.cfg or xenial.cfg)
@@ -31,7 +32,13 @@ FOR %%B IN (stretch) DO (
         echo "packer build -on-error=ask -except=null %%B/hyperv/template.json"
         exit /b %errorlevel%
       )
-      vagrant box add --force subutai/%%B vagrant-subutai-%%B-hyperv-*.box    
+
+      IF %branch%=="prod" (
+         ::adding the vagrant box
+         vagrant box add --force subutai/%%B vagrant-subutai-%%B-hyperv-*.box
+      ) ELSE (
+        vagrant box add --force subutai/%%B-master vagrant-subutai-%%B-hyperv-*.box
+      )    
   ) else (
       ECHO "Can't generate .\%%B\hyperv\%template% file"
       ECHO "If you don't have jsonnet: "
