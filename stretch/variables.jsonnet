@@ -14,7 +14,7 @@
     "iso_checksum_type": "md5",
     "iso_checksum": "0a5352e3568bc893a9f7b65192caf1e1",
     "iso_name": "debian-9.6.0-amd64-netinst.iso",
-    "iso_url": "https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-9.6.0-amd64-netinst.iso",
+    "iso_url": "https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-9.7.0-amd64-netinst.iso",
     "keep_registered": "false",
     "locale": "en_US.UTF8",
     "memory": "4096",
