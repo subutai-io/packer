@@ -28,6 +28,10 @@ Vagrant.require_version '>= 2.0.1'
 Vagrant.configure('2') do |config|
 
   config.vm.box = 'subutai/stretch'
+  url = SubutaiConfig.url_of_cdn
+  owner = 'subutai'
+  artifact_name = 'vagrant-subutai-stretch-parallels.box'
+  config.vm.box_url = url + '/raw/download?id=' + SubutaiConfig.get_latest_id_artifact(owner, artifact_name)
   config.ssh.username = 'subutai'
 
   config.vm.base_mac = SubutaiConfig.get(:_BASE_MAC)
@@ -50,6 +54,7 @@ Vagrant.configure('2') do |config|
 
     # only for dev and master
     prl.linked_clone = true
+
   end
 
   if SubutaiConfig.write? || SubutaiConfig.reload?
