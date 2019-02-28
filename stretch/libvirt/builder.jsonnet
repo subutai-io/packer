@@ -1,5 +1,6 @@
 {
   "type": "qemu",
+  "accelerator": "kvm",
   "vm_name": "{{ user `vm_name` }}",
 
   "boot_command": import "../../http/virtio/debian-boot.jsonnet",
@@ -11,7 +12,7 @@
   "disk_compression": "false",
   "format": "qcow2",
   // "disk_image": "", TODO[devops] investigate this option for using existing images
-  "accelerator": "kvm",
+
 //   "headless": "{{ user `headless` }}",
   "headless": "true",
   "http_directory": "{{user `http`}}",
