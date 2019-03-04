@@ -11,7 +11,7 @@
   "disk_compression": "false",
   "format": "qcow2",
   // "disk_image": "", TODO[devops] investigate this option for using existing images
-  "accelerator": "kvm",
+
 //   "headless": "{{ user `headless` }}",
   "headless": "true",
   "http_directory": "{{user `http`}}",
