@@ -1,6 +1,5 @@
 {
   "type": "qemu",
-  "accelerator": "kvm",
   "vm_name": "{{ user `vm_name` }}",
 
   "boot_command": import "../../http/virtio/debian-boot.jsonnet",
