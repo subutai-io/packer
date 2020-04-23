@@ -1,0 +1,105 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+require 'fileutils'
+
+unless Vagrant.has_plugin?('vagrant-subutai')
+  raise "\e[33m\n\nVagrant Subutai Plugin is required. Please install plugin by following command:\n\nvagrant plugin install vagrant-subutai\n\e[0m"
+end
+
+# check dependency
+if Gem::Version.new(VagrantSubutai::VERSION) < Gem::Version.new('7.0.3')
+  raise "\e[33m\n\nVagrant Subutai Plugin version (#{VagrantSubutai::VERSION}) is incompatible with your box. Please update plugin by following command:\n\nvagrant plugin update vagrant-subutai\n\e[0m"
+end
+
+require 'vagrant-subutai'
+
+SubutaiConfig.bridged!
+# SubutaiConfig.logging!(:debug)
+
+SubutaiConfig.load_config(ARGV[0], :hyper_v)
+SubutaiConfig.print
+
+Vagrant.require_version '>= 2.0.1'
+
+Vagrant.configure('2') do |config|
+  config.vm.box = 'subutai/buster-master'
+  config.ssh.username = 'subutai'
+
+  config.vm.base_mac = SubutaiConfig.get(:_BASE_MAC)
+
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+
+  config.vm.network 'public_network', :bridge => SubutaiConfig.get(:BRIDGE)
+
+  config.vm.provider "hyperv" do |h|
+    h.maxmemory = SubutaiConfig.get(:SUBUTAI_RAM)
+    h.memory = SubutaiConfig.get(:SUBUTAI_RAM)
+    h.cpus = SubutaiConfig.get(:SUBUTAI_CPU)
+  end
+
+  if SubutaiConfig.write? || SubutaiConfig.reload?
+    has_grow, grow_by = SubutaiDisk.has_grow
+
+    if has_grow
+      config.vm.provision :create_disk, run: "always"
+      config.vm.provision "shell", run: "always", env: {DISK_SIZE: grow_by.to_i},
+                          path: 'https://raw.githubusercontent.com/subutai-io/packer/stage/provisioning/en/subutai_disk.sh'
+    end
+  end
+
+  config.vm.provision 'shell', env: SubutaiConfig.config, inline: <<-SHELL
+    echo "SUBUTAI_VAGRANT_VERSION=$VERSION"   >> /etc/environment
+    echo "SUBUTAI_BRIDGE_IFACE=eth0"        >> /etc/environment
+    #echo "SUBUTAI_NAT_IFACE=enp0s3"           >> /etc/environment
+    #echo "SUBUTAI_HOST_IFACE=enp0s9"          >> /etc/environment
+
+    if [ -n "$APT_PROXY_URL" ]; then
+      echo 'Acquire::http { Proxy "'$APT_PROXY_URL'"; };' > /etc/apt/apt.conf.d/02proxy
+    fi
+
+    if [ -n "$PASSWORD_OVERRIDE" ]; then
+      usermod --password $(echo "$PASSWORD_OVERRIDE" | openssl passwd -1 -stdin) subutai
+    fi
+  SHELL
+
+  unless SubutaiConfig.get(:AUTHORIZED_KEYS).nil?
+    config.vm.provision 'file', source: SubutaiConfig.get(:AUTHORIZED_KEYS), destination: '/tmp/authorized_keys'
+
+    config.vm.provision 'shell', inline: <<-SHELL
+      mkdir -p /root/.ssh
+      cat /tmp/authorized_keys >> /root/.ssh/authorized_keys
+      chmod 600 /root/.ssh/authorized_keys
+      chmod 700 /root/.ssh
+
+      mkdir -p /home/subutai/.ssh
+      cat /tmp/authorized_keys >> /home/subutai/.ssh/authorized_keys
+      chown subutai:subutai /home/subutai/.ssh/authorized_keys
+      chmod 600 /home/subutai/.ssh/authorized_keys
+      chmod 700 /home/subutai/.ssh
+      chown subutai:subutai /home/subutai/.ssh
+    SHELL
+  end
+
+  if SubutaiConfig.provision_management?
+    config.vm.provision 'file', source: SubutaiConfig.get(:_ALT_MANAGEMENT), destination: '$HOME/subutai.management'
+    SubutaiConfig.management_provisioned!
+  end
+
+  config.vm.provision 'shell', env: SubutaiConfig.config,
+                      path: 'https://raw.githubusercontent.com/subutai-io/packer/stage/provisioning/en/provisioner.sh'
+
+  if SubutaiConfig.boolean?(:PROVISION)
+    config.vm.provision :registration
+    config.vm.provision :blueprint
+  end
+
+  if SubutaiConfig.boolean?(:SUBUTAI_DESKTOP)
+    config.vm.provision 'shell', env: SubutaiConfig.config,
+                        path: 'https://raw.githubusercontent.com/subutai-io/packer/stage/provisioning/en/subutai_desktop.sh'
+  end
+
+  config.vm.provision 'shell', env: SubutaiConfig.config,
+                      path: 'https://raw.githubusercontent.com/subutai-io/packer/stage/provisioning/en/logrotate.sh'
+
+  config.vm.provision :cleanup
+end
