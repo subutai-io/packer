@@ -29,7 +29,7 @@
   "provisioners": [
     {
       type: "file",
-      source: "http/xenial.sources.list",
+      source: "http/bionic.sources.list",
       destination: "/tmp/sources.list"
     },
     {

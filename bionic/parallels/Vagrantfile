@@ -27,7 +27,7 @@ Vagrant.require_version '>= 2.0.1'
 
 Vagrant.configure('2') do |config|
 
-  config.vm.box = 'subutai/xenial'
+  config.vm.box = 'subutai/bionic'
   config.ssh.username = 'subutai'
 
   config.vm.base_mac = SubutaiConfig.get(:_BASE_MAC)

@@ -13,7 +13,7 @@
           "echo Adding needed packages ...",
           "DEBIAN_FRONTEND=noninteractive apt-get -q -y install net-tools inotify-tools",
           "DEBIAN_FRONTEND=noninteractive apt-get -q -y install linux-cloud-tools-$(uname -r)",
-          "DEBIAN_FRONTEND=noninteractive apt-get -q -y install linux-virtual-lts-xenial linux-tools-virtual-lts-xenial linux-cloud-tools-virtual-lts-xenial",
+          "DEBIAN_FRONTEND=noninteractive apt-get -q -y install linux-virtual-lts-bionic linux-tools-virtual-lts-bionic linux-cloud-tools-virtual-lts-bionic",
           "echo \"{{user `ssh_username`}}        ALL=(ALL)       NOPASSWD: ALL\" >> /etc/sudoers.d/{{user `ssh_username`}}",
           "chmod 440 /etc/sudoers.d/{{user `ssh_username`}}",
           "mkdir -pm 700 /home/{{user `ssh_username`}}/.ssh",

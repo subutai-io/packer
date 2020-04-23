@@ -1,7 +1,7 @@
-Base Box `nat-xenial`
+Base Box `bionic`
 ======================
 
-This box builds a NAT'd Ubuntu Xenial RH or Peer based on configuration settings.
+This box builds an Ubuntu Bionic RH or Peer based on configuration settings.
 
 Unless stated otherwise all machine architectures are amd64.
 

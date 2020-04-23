@@ -1,6 +1,6 @@
 {
    "builders": [
-        import ".\\xenial\\hyperv\\builder.jsonnet",
+        import ".\\bionic\\hyperv\\builder.jsonnet",
    ],
    "post-processors": [
       [
@@ -11,7 +11,7 @@
                "hyperv-iso"
             ],
             "override": {
-               "hyperv": import ".\\xenial\\hyperv\\post-processor.jsonnet"
+               "hyperv": import ".\\bionic\\hyperv\\post-processor.jsonnet"
             },
             "type": "vagrant"
          }
@@ -20,15 +20,15 @@
   "provisioners": [
     {
       type: "file",
-      source: ".\\http\\xenial.sources.list",
+      source: ".\\http\\bionic.sources.list",
       destination: "/tmp/sources.list"
     },
     {
       "override": {
-        "hyperv-iso": import ".\\xenial\\hyperv\\provisioner.jsonnet",
+        "hyperv-iso": import ".\\bionic\\hyperv\\provisioner.jsonnet",
       },
       "type": "shell"
     },
   ],
-   "variables": import ".\\xenial\\variables.jsonnet"
+   "variables": import ".\\bionic\\variables.jsonnet"
 }
