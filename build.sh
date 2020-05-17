@@ -8,7 +8,7 @@ if [ -n "$ACNG_PORT" ]; then
   MIRROR_PORT="$ACNG_PORT"
 elif [ -n "$APT_PROXY_PORT" ]; then
   MIRROR_PORT="$APT_PROXY_PORT"
-else 
+else
   MIRROR_PORT=3142
 fi
 
@@ -36,12 +36,18 @@ if [ -n "$1" ]; then
       "stretch")
         break
         ;;
+      "bionic")
+        break
+        ;;
+      "buster")
+        break
+        ;;
       *) echo "Bad box name in box list: $box"; exit 1
         ;;
     esac
   done
 elif [ -z "$VAGRANT_BOXES" ]; then
-  VAGRANT_BOXES='stretch xenial'
+  VAGRANT_BOXES='buster bionic'
 fi
 
 if [ -n "$2" ]; then
@@ -62,7 +68,7 @@ if [ -n "$2" ]; then
           echo Enabling parallels builder
           break
         fi
-        ;;  
+        ;;
       "qemu")
         if [ $OS = "Darwin" ]; then
           echo "Libvirt builder not supported in $OS";
@@ -78,7 +84,8 @@ if [ -n "$2" ]; then
   done
 elif [ -z "$PACKER_PROVIDERS" ]; then
   if [ $OS = "Darwin" ]; then
-    PACKER_PROVIDERS='parallels-iso' # changed for devops Debian machine. You can set like PACKER_PROVIDERS='virtualbox-iso,vmware-iso,parallels-iso'
+     PACKER_PROVIDERS='virtualbox-iso,vmware-iso'
+#    PACKER_PROVIDERS='parallels-iso' # changed for devops Debian machine. You can set like PACKER_PROVIDERS='virtualbox-iso,vmware-iso,parallels-iso'
   else
     PACKER_PROVIDERS='qemu,vmware-iso,virtualbox-iso' # changed for devops Osx machine. You can set like PACKER_PROVIDERS='virtualbox-iso,qemu,vmware-iso'
   fi
@@ -150,37 +157,37 @@ do_local_proxy() {
 
 # check for packer
 packer=`which packer`
-if [ -z "$packer" ]; then 
+if [ -z "$packer" ]; then
   echo ' ==> [ERROR] Packer not found'
   exit 1
-else 
+else
   echo ' ==> [OK] Packer executable found at '$packer
 fi
 
 # check for vagrant
 vagrant=`which vagrant`
-if [ -z "$vagrant" ]; then 
+if [ -z "$vagrant" ]; then
   echo ' ==> [ERROR] Vagrant not found'
   exit 1
-else 
+else
   echo ' ==> [OK] Vagrant executable found at '$vagrant
 fi
 
 # check for jsonnet
 jsonnet=`which jsonnet`
-if [ -z "$jsonnet" ]; then 
+if [ -z "$jsonnet" ]; then
   echo ' ==> [ERROR] Jsonnet not found'
   exit 1
-else 
+else
   echo ' ==> [OK] Jsonnet executable found at '$jsonnet
 fi
 
 # check for vbox
 vbox=`which VirtualBox`
-if [ -z "$vbox" ]; then 
+if [ -z "$vbox" ]; then
   echo ' ==> [ERROR] Virtualbox not found'
   exit 1
-else 
+else
   echo ' ==> [OK] VirtualBox executable found at '$vbox
 fi
 
@@ -296,6 +303,41 @@ box=$box BASE_DIR=$BASE_DIR              \
   DI_MIRROR_MIRROR=$DI_MIRROR_MIRROR     \
   DI_MIRROR_HOSTNAME=$DI_MIRROR_HOSTNAME \
   $BASE_DIR/http/virtio/xenial.sh
+
+box=$box BASE_DIR=$BASE_DIR              \
+  PROXY_ON=$PROXY_ON                     \
+  PASSWORD=$PASSWORD                     \
+  MIRROR_PORT=$MIRROR_PORT               \
+  DI_MIRROR_MIRROR=$DI_MIRROR_MIRROR     \
+  DI_MIRROR_HOSTNAME=$DI_MIRROR_HOSTNAME \
+  $BASE_DIR/http/buster.sh
+
+# for virtio disk interface
+box=$box BASE_DIR=$BASE_DIR              \
+  PROXY_ON=$PROXY_ON                     \
+  PASSWORD=$PASSWORD                     \
+  MIRROR_PORT=$MIRROR_PORT               \
+  DI_MIRROR_MIRROR=$DI_MIRROR_MIRROR     \
+  DI_MIRROR_HOSTNAME=$DI_MIRROR_HOSTNAME \
+  $BASE_DIR/http/virtio/buster.sh
+
+# for sata disk interface
+box=$box BASE_DIR=$BASE_DIR              \
+  PROXY_ON=$PROXY_ON                     \
+  PASSWORD=$PASSWORD                     \
+  MIRROR_PORT=$MIRROR_PORT               \
+  DI_MIRROR_MIRROR=$DI_MIRROR_MIRROR     \
+  DI_MIRROR_HOSTNAME=$DI_MIRROR_HOSTNAME \
+  $BASE_DIR/http/bionic.sh
+
+# for virtio disk interface
+box=$box BASE_DIR=$BASE_DIR              \
+  PROXY_ON=$PROXY_ON                     \
+  PASSWORD=$PASSWORD                     \
+  MIRROR_PORT=$MIRROR_PORT               \
+  DI_MIRROR_MIRROR=$DI_MIRROR_MIRROR     \
+  DI_MIRROR_HOSTNAME=$DI_MIRROR_HOSTNAME \
+  $BASE_DIR/http/virtio/bionic.sh
 
 MAIN_URL="https://raw.githubusercontent.com/subutai-io/packer"
 

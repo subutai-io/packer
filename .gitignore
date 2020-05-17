@@ -1,4 +1,6 @@
 coverage
+**/branch/
+temp/
 test/
 template.json
 packer_cache

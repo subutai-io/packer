@@ -36,7 +36,7 @@ if [ "$PROVISION" = "false" ]; then
     exit 0;
 fi
 
-base="https://raw.githubusercontent.com/subutai-io/packer/stage/provisioning/en/"
+base="https://raw.githubusercontent.com/subutai-io/packer/master/provisioning/en/"
 
 wget --no-cache -O peer_cmd.sh $base/peer_cmd.sh >/dev/null 2>&1
 wget --no-cache -O final_message.sh $base/final_message.sh >/dev/null 2>&1
