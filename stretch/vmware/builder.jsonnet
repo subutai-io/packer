@@ -25,7 +25,7 @@
 
   "ssh_password": "{{user `ssh_password`}}",
   "ssh_username": "{{user `ssh_username`}}",
-  "ssh_wait_timeout": "10000s",
+  "ssh_timeout": "10000s",
   "vmx_data": {
     "cpuid.coresPerSocket": "1"
   },
