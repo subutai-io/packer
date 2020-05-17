@@ -17,7 +17,7 @@
     "iso_url": "https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-10.4.0-amd64-netinst.iso",
     "keep_registered": "false",
     "locale": "en_US.UTF8",
-    "memory": "6020",
+    "memory": "4096",
     "null_host": "192.168.81.129",
     "preseed": "buster.cfg",
     "preseed_virtio": "virtio/buster.cfg",
