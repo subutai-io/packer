@@ -13,7 +13,7 @@
 
   "http_directory": "{{user `http`}}",
   "memory": "{{ user `memory` }}",
-  
+
   "iso_checksum": "{{ user `iso_checksum` }}",
   "iso_checksum_type": "{{ user `iso_checksum_type` }}",
   "iso_urls": [ // TODO check to use correct location for this and other providers
