@@ -202,7 +202,7 @@ if [ $OS = "Linux" ]; then
 fi
 
 # check for vmware
-vmware=`which vmware`
+vmware=`which vmrun`
 if [ -z "$vmware" ]; then
   echo ' ==> [WARNING] Vmware not found'
 else
@@ -344,27 +344,29 @@ MAIN_URL="https://raw.githubusercontent.com/subutai-io/packer"
 for box in $VAGRANT_BOXES; do
 
     # create master prefixed box subutai/stretch-master
-      for hypervizor in libvirt parallels virtualbox vmware; do
-        BRANCH_PATH=$BASE_DIR/$box/$hypervizor/branch
-        rm -rf $BRANCH_PATH
-        mkdir -p $BRANCH_PATH
-        cp $BASE_DIR/$box/$hypervizor/Vagrantfile $BRANCH_PATH
+    for hypervizor in libvirt parallels virtualbox vmware; do
+      BRANCH_PATH=$BASE_DIR/$box/$hypervizor/branch
+      rm -rf $BRANCH_PATH
+      mkdir -p $BRANCH_PATH
+      cp $BASE_DIR/$box/$hypervizor/Vagrantfile $BRANCH_PATH
 
-        if [ $BRANCH = "master" ]; then
-          sed -i -e "s/vagrant-subutai-$box-$hypervizor/vagrant-subutai-$box-$hypervizor-$BRANCH/g" $BRANCH_PATH/Vagrantfile
-          sed -i -e "s/subutai\/$box/subutai\/$box-$BRANCH/g" $BRANCH_PATH/Vagrantfile
+      if [ $BRANCH = "master" ]; then
+        sed -i -e "s/vagrant-subutai-$box-$hypervizor/vagrant-subutai-$box-$hypervizor-$BRANCH/g" $BRANCH_PATH/Vagrantfile
+        sed -i -e "s/subutai\/$box/subutai\/$box-$BRANCH/g" $BRANCH_PATH/Vagrantfile
 
-          # Change provisioning scripts url to "stage"
-          # (We use stage url for master vagrant boxes)
-          sed -i -e "s,$MAIN_URL/master,$MAIN_URL/stage,g" $BRANCH_PATH/Vagrantfile
-          sed -i -e "s,$MAIN_URL/master,$MAIN_URL/stage,g" $BASE_DIR/provisioning/en/provisioner.sh
-        else
-          sed -i -e "s,$MAIN_URL/stage,$MAIN_URL/master,g" $BASE_DIR/provisioning/en/provisioner.sh
-        fi
-      done
+        # Change provisioning scripts url to "stage"
+        # (We use stage url for master vagrant boxes)
+        sed -i -e "s,$MAIN_URL/master,$MAIN_URL/stage,g" $BRANCH_PATH/Vagrantfile
+        sed -i -e "s,$MAIN_URL/master,$MAIN_URL/stage,g" $BASE_DIR/provisioning/en/provisioner.sh
+      else
+        sed -i -e "s,$MAIN_URL/stage,$MAIN_URL/master,g" $BASE_DIR/provisioning/en/provisioner.sh
+      fi
+    done
 
     echo "==> [$box] Validating $box/template.json ..."
-    jsonnet $box/template.jsonnet > $box/template.json
+    jsonnet $box/template.jsonnet > $box/template-fixme.json
+    packer fix $box/template-fixme.json > $box/template.json
+    rm $box/template-fixme.json
 
     box=$box BASE_DIR=$BASE_DIR              \
       PROXY_ON=$PROXY_ON                     \
@@ -380,6 +382,8 @@ for box in $VAGRANT_BOXES; do
     fi
 done
 
+ONLY_LIST=$(echo $PACKER_PROVIDERS | sed 's/ /,/g')
+echo ONLY_LIST = $ONLY_LIST
 for box in $VAGRANT_BOXES; do
     echo "==> [$box] Running packer build on $box/template.json. Providers: $PACKER_PROVIDERS"
 
@@ -389,12 +393,12 @@ for box in $VAGRANT_BOXES; do
       MIRROR_PORT=$MIRROR_PORT               \
       DI_MIRROR_MIRROR=$DI_MIRROR_MIRROR     \
       DI_MIRROR_HOSTNAME=$DI_MIRROR_HOSTNAME \
-    packer build -on-error=ask -only=$PACKER_PROVIDERS -except=null $box/template.json
+    packer build -parallel-builds=0 -on-error=ask -only=$ONLY_LIST -except=null $box/template.json
 
     if [ "$?" -ne 0 ]; then
       echo "[$box][ERROR] Aborting builds due to $box build failure."
       echo "build line was:"
-      echo "packer build -on-error=ask -only=$PACKER_PROVIDERS -except=null $box/template.json"
+      echo "packer build -on-error=ask -only=$ONLY_LIST -except=null $box/template.json"
       exit 1
     fi
 

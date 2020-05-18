@@ -1,5 +1,6 @@
 coverage
 **/branch/
+.DS_Store
 temp/
 test/
 template.json

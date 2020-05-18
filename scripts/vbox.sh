@@ -11,6 +11,7 @@ umount /mnt
 rm /home/${SSH_USERNAME}/VBoxGuestAdditions_$VBOX_VERSION.iso
 rm /home/${SSH_USERNAME}/.vbox_version
 
+# TODO fix this version shit
 if [[ $VBOX_VERSION = "4.3.10" ]]; then
     ln -s /opt/VBoxGuestAdditions-4.3.10/lib/VBoxGuestAdditions /usr/lib/VBoxGuestAdditions
 fi

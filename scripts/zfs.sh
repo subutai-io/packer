@@ -30,7 +30,7 @@ systemctl restart zfs-share
 
 zpool create -f subutai /dev/mapper/main-zfs
 
-zfs create -o mountpoint="/var/lib/lxc" subutai/fs
+zfs create -o mountpoint="/var/lib/lxc" -o acltype=posixacl subutai/fs
 
 zpool set autoexpand=on subutai
 

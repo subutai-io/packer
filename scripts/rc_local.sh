@@ -36,6 +36,26 @@ fi
 exit 0
 EOT
 
-chmod +x /tmp/rc.local
+cat <<EOT > /tmp/rc-local.service
+[Unit]
+ Description=/etc/rc.local Compatibility
+ ConditionPathExists=/etc/rc.local
+
+[Service]
+ Type=forking
+ ExecStart=/etc/rc.local start
+ TimeoutSec=0
+ StandardOutput=tty
+ RemainAfterExit=yes
+
+[Install]
+ WantedBy=multi-user.target
+EOT
+
 sudo rm -f /etc/rc.local
 sudo cp /tmp/rc.local /etc/rc.local
+sudo chmod +x /etc/rc.local
+
+sudo rm -f /etc/rc-local.service
+sudo cp /tmp/rc-local.service /etc/systemd/system/rc-local.service
+sudo systemctl enable rc-local.service

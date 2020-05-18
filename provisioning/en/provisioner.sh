@@ -107,9 +107,9 @@ fi
 if [ -z "$(sudo zpool list | grep subutai)" ]; then
   echo "Mounting container storage ..."
   zpool create -f subutai /dev/mapper/main-zfs
-  zfs create -o mountpoint="/var/lib/lxc" subutai/fs
+  zfs create -o mountpoint="/var/lib/lxc" -o acltype=posixacl subutai/fs
   zpool set autoexpand=on subutai
-  
+
   if [ $? -ne 0 ]; then exit 1; fi
   sleep 2
 else

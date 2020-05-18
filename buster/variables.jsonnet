@@ -25,7 +25,7 @@
     "skip_export": "false",
     "ssh_username": "subutai",
     "ssh_password": "ubuntai",
-    "version": "8.0.0",
+    "version": "8.0.1",
     "virtualbox_guest_os_type": "Debian_64",
     "vm_name": "buster",
     "branch": "{{env `BRANCH`}}"
