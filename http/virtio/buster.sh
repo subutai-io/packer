@@ -89,6 +89,9 @@ d-i grub-installer/bootdev string default
 # Turn off last message about the install being complete
 d-i finish-install/reboot_in_progress note
 
+# fix to issue https://github.com/hashicorp/packer/issues/8528
+d-i preseed/late_command string sed -i 's/^#*\(send dhcp-client-identifier\).*$/\1 = hardware;/' /target/etc/dhcp/dhclient.conf
+
 EOF
 
 #
